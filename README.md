@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# osufriends.com
 
-## Getting Started
+A matchmaking web app for osu! players to find friends with similar skill levels and playtimes.
 
-First, run the development server:
+## What it does
+
+- Log in with your osu! account via OAuth
+- We pull your rank, avatar, and game mode preferences from the osu! API v2
+- Browse other players filtered by rank range and game mode
+- Send friend requests to people who play when you do
+
+## Tech stack
+
+- **Next.js 14** (App Router) + TypeScript
+- **Tailwind CSS** — dark theme with osu! pink/purple accents
+- **Prisma** + PostgreSQL (Supabase)
+- **next-auth** — osu! OAuth 2.0
+- **Vercel** — deployment
+
+## Getting started
 
 ```bash
+cp .env.example .env
+# fill in your osu! OAuth credentials and DATABASE_URL
+
+npm install
+npx prisma migrate dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## osu! OAuth setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Go to https://osu.ppy.sh/home/account/edit → OAuth → New OAuth Application
+2. Set callback URL to `http://localhost:3000/api/auth/callback/osu`
+3. Copy Client ID and Client Secret into `.env`
 
-## Learn More
+## Environment variables
 
-To learn more about Next.js, take a look the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [`.env.example`](.env.example) for all required variables.
