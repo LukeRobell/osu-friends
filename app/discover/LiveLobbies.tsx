@@ -1,30 +1,45 @@
 import { prisma } from '@/lib/prisma';
-import { fetchActiveRooms, fetchUserProfile, fetchParticipantAccountPp, ppToStars } from '@/lib/osu-api';
+import { fetchActiveRooms, fetchUserAvgTopPp, fetchUserProfile, fetchParticipantAccountPp, ppToStars } from '@/lib/osu-api';
 import LiveLobbyCard, { ProcessedRoom } from '@/components/LiveLobbyCard';
 
 interface Props {
   userPp: number | null;
   userOsuId: number | null;
+  mode: string | null;
 }
 
-export default async function LiveLobbies({ userPp, userOsuId }: Props) {
+export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
   const rooms = await fetchActiveRooms(50).catch(() => []);
   if (rooms.length === 0) return null;
 
-  const targetStars = ppToStars(userPp ?? 0);
+  // When a mode filter is active, fetch the user's top-play pp in that mode so the
+  // star target reflects their skill in the selected mode, not their primary mode.
+  let effectivePp = userPp;
+  if (mode && userOsuId) {
+    const modePp = await fetchUserAvgTopPp(userOsuId, mode, 300).catch(() => null);
+    if (modePp != null) effectivePp = modePp;
+  }
+
+  const targetStars = ppToStars(effectivePp ?? 0);
 
   // Fetch the signed-in user's account pp — needed to compare against participant account pp.
   // Account pp (weighted total) and avg-top-5 pp are different metrics, so we can only do
   // apples-to-apples comparison using account pp from both sides.
   let userAccountPp: number | null = null;
   if (userOsuId) {
-    const profile = await fetchUserProfile(userOsuId, 'osu', 300).catch(() => null);
+    const activeMode = mode ?? 'osu';
+    const profile = await fetchUserProfile(userOsuId, activeMode, 300).catch(() => null);
     userAccountPp = profile?.accountPp ?? null;
   }
 
-  // Collect every participant osuId across all rooms for osufriends highlighting
+  // Filter by game mode first so participant lookup only covers relevant rooms
+  const modeFiltered = mode
+    ? rooms.filter(room => room.current_playlist_item?.beatmap?.mode === mode)
+    : rooms;
+
+  // Collect participant osuIds for osufriends highlighting
   const allParticipantIds = new Set<number>();
-  for (const room of rooms) {
+  for (const room of modeFiltered) {
     for (const p of (room.recent_participants ?? [])) {
       allParticipantIds.add(p.id as number);
     }
@@ -38,8 +53,7 @@ export default async function LiveLobbies({ userPp, userOsuId }: Props) {
     : [];
   const friendIds = new Set(dbUsers.map(u => u.osuId));
 
-  // Star-filter rooms — keep ±1.0★ from user's target; skip rooms with no map selected
-  const starFiltered = rooms.filter(room => {
+  const starFiltered = modeFiltered.filter(room => {
     const stars = room.current_playlist_item?.beatmap?.difficulty_rating as number | null ?? null;
     if (stars == null) return false;
     return Math.abs(stars - targetStars) <= 1.0;

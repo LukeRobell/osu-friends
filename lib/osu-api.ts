@@ -19,11 +19,14 @@ async function getClientToken(): Promise<string> {
 }
 
 // Returns the average pp of a player's top 5 best plays — the skill metric stored in DB
-export async function fetchUserAvgTopPp(osuId: number, mode: string): Promise<number | null> {
+export async function fetchUserAvgTopPp(osuId: number, mode: string, revalidate?: number): Promise<number | null> {
   const token = await getClientToken();
+  const cacheOpt = revalidate != null
+    ? { next: { revalidate } }
+    : { cache: 'no-store' as const };
   const res = await fetch(
     `https://osu.ppy.sh/api/v2/users/${osuId}/scores/best?mode=${mode}&limit=5`,
-    { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }, cache: 'no-store' }
+    { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }, ...cacheOpt }
   );
   if (!res.ok) return null;
   const scores = await res.json();

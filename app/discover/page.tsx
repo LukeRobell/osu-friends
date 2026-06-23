@@ -89,7 +89,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
 
       {/* Live lobbies stream in independently so they don't delay the player grid */}
       <Suspense fallback={null}>
-        <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} />
+        <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={mode ?? null} />
       </Suspense>
 
       {displayUsers.length === 0 ? (
