@@ -16,6 +16,10 @@ model User {
   countryCode    String
   preferredModes String[]
   timezone       String?
+  isRegistered   Boolean  @default(false)
+  isOnline       Boolean  @default(false)
+  pp             Float?
+  lastSeen       DateTime?
   createdAt      DateTime @default(now())
 
   playSessions     PlaySession[]
