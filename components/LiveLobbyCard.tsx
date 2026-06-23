@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import AskToJoinButton from './AskToJoinButton';
 
 export interface ProcessedRoom {
   id: number;
@@ -18,7 +17,7 @@ export interface ProcessedRoom {
   starDiff: number;
 }
 
-export default function LiveLobbyCard({ room, canSendDm }: { room: ProcessedRoom; canSendDm: boolean }) {
+export default function LiveLobbyCard({ room }: { room: ProcessedRoom }) {
   const friendsInRoom = room.recentParticipants.filter(p => p.isOsufriend);
 
   return (
@@ -89,14 +88,6 @@ export default function LiveLobbyCard({ room, canSendDm }: { room: ProcessedRoom
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">{room.participantCount} players</span>
           <div className="flex items-center gap-3">
-            {canSendDm && room.host && (
-              <AskToJoinButton
-                targetId={room.host.id}
-                targetUsername={room.host.username}
-                roomName={room.name}
-                variant="host"
-              />
-            )}
             <a
               href={`https://osu.ppy.sh/multiplayer/rooms/${room.id}`}
               target="_blank"

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import AskToJoinButton from './AskToJoinButton';
 
 export interface OsuFriendData {
   osuId: number;
@@ -32,14 +31,6 @@ export default function OsuFriendCard({ friend }: { friend: OsuFriendData }) {
           </p>
         )}
       </div>
-      {friend.inRoom && (
-        <AskToJoinButton
-          targetId={friend.osuId}
-          targetUsername={friend.username}
-          roomName={friend.inRoom.name}
-          variant="friend"
-        />
-      )}
     </div>
   );
 }

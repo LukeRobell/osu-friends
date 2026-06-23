@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.OSU_CLIENT_SECRET,
       authorization: {
         url: 'https://osu.ppy.sh/oauth/authorize',
-        params: { scope: 'identify public chat.write friends.read' },
+        params: { scope: 'identify public friends.read' },
       },
       token: 'https://osu.ppy.sh/oauth/token',
       userinfo: 'https://osu.ppy.sh/api/v2/me',
