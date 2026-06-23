@@ -43,6 +43,14 @@ enum FriendRequestStatus {
   DECLINED
 }
 
+model BotToken {
+  id           String   @id @default("singleton")
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  updatedAt    DateTime @updatedAt
+}
+
 model FriendRequest {
   id         String              @id @default(cuid())
   fromUserId String

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { getBotToken } from '@/lib/bot-token';
 
 export async function POST(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -20,9 +21,7 @@ export async function POST(req: NextRequest) {
     ? `Hey! ${senderUsername} from osu!friends wants to join you in "${roomName}"!\nInvite them: /invite ${senderUsername}\nProfile: https://osu.ppy.sh/users/${senderOsuId}`
     : `${senderUsername} from osu!friends wants to join your lobby "${roomName}"!\nInvite them: /invite ${senderUsername}\nProfile: https://osu.ppy.sh/users/${senderOsuId}`;
 
-  // Use the server-side bot token — chat.write is restricted to the app owner's account.
-  // OSU_BOT_ACCESS_TOKEN is Luke's OAuth access token stored in Vercel env vars.
-  const botToken = process.env.OSU_BOT_ACCESS_TOKEN;
+  const botToken = await getBotToken();
   if (!botToken) {
     return NextResponse.json({ error: 'DM service not configured' }, { status: 503 });
   }
