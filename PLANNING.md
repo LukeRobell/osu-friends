@@ -58,15 +58,15 @@ A matchmaking site for osu! players. Users log in with their osu! account, we pu
 
 ---
 
-## Sprint 4 — osu! Friends integration (next)
+## Sprint 4 — osu! Friends integration ✅
 Goal: surface the real osu! social graph rather than building a parallel one. Users connect on osu! itself; osufriends just reflects and enhances that.
 
-- [ ] Add `friends.read` to OAuth scope (`identify public chat.write friends.read`) — one-time re-auth
-- [ ] `GET /friends` using user's OAuth access token → returns their full osu! friends list
-- [ ] **Discover**: show "osu! friend" badge on cards for users already in your osu! friends list
-- [ ] **Own profile — "Your osu! friends on osufriends" section**:
+- [x] Add `friends.read` to OAuth scope (`identify public chat.write friends.read`) — one-time re-auth
+- [x] `GET /friends` using user's OAuth access token → returns their full osu! friends list
+- [x] **Discover**: show "osu! friend" badge (cyan) on cards for users already in your osu! friends list
+- [x] **Own profile — "Your osu! friends on osufriends" section**:
   - Cross-reference osu! friends list against registered osufriends users in DB
-  - Show friend cards: avatar, username, pp, rank, online status
+  - Show friend cards: avatar, username, pp, rank
   - Cross-reference friends' osuIds against active room `recent_participants`
   - If a friend is in a lobby: show room name + "Ask to join" DM button
     - DM goes to the **friend** (not the room host): "Hey! I see you're in [room] — mind if I hop in?"
@@ -75,10 +75,77 @@ Goal: surface the real osu! social graph rather than building a parallel one. Us
 
 ---
 
-## Sprint 5 — Polish + deploy
-- [ ] Deploy to Vercel
-- [ ] Point osufriends.com domain
-- [ ] Rotate osu! client secret (was briefly exposed in a screenshot during development)
+## Sprint 5 — Polish + deploy ✅
+- [x] Rotate osu! client secret (was briefly exposed in a screenshot during development)
+- [x] Deploy to Vercel (set all env vars in Vercel dashboard)
+- [x] Point osufriends.com domain to Vercel
+- [x] Update osu! OAuth app redirect URI from localhost to https://osufriends.com
+
+---
+
+## Sprint 6 — Tournament Matchmaking + Bot
+
+### Vision
+Daily 4v4 matchmaking: the site groups 8 active osu!friends players at similar skill levels, proposes fixed time slots, lets them vote on when to play, then notifies them via osu! DM when the tournament is about to start. Urgent, social, and frictionless.
+
+---
+
+### osu! Bot constraints (read before building)
+- **Cannot create a bot account by registering** — that is multi-accounting and bannable
+- **Must run on Luke's personal account first** — `chat.write` works only for the OAuth app owner's own account
+- **Apply to osu! account support** for an official bot account once user base is established — they create it, you don't
+- **Bot rate limit**: 300 msg / 60 sec (personal: 10 / 5 sec)
+- **No unsolicited DMs** — users must explicitly opt in to receive tournament invites
+- **DMs during Phase 1 will appear as coming from Luke's osu! account** — not ideal but acceptable for early testing
+
+---
+
+### Phase 1 — Infrastructure (build now)
+- [ ] **User opt-in + timezone**
+  - Add `tournamentOptIn` boolean to User schema (default false)
+  - Add `timezone` string field to User schema
+  - Toggle on own profile page: "Receive daily tournament invites"
+  - Timezone picker on profile (browser can auto-detect via `Intl.DateTimeFormat`)
+- [ ] **Database models**
+  - `Tournament`: id, status (pending_votes | voting | scheduled | cancelled | completed), gameMode, scheduledFor, createdAt
+  - `TournamentParticipant`: tournamentId, userId, status (invited | accepted | declined), timeVote (slot index)
+- [ ] **Matchmaking algorithm**
+  - Vercel Cron job runs once daily (e.g. 12pm UTC)
+  - Queries opt-in registered users, groups by pp range (same adaptive window as discover: ±15% pp)
+  - Requires minimum 8 players to form a group; skips days with insufficient players
+  - One tournament invite per user per day — skip users already in an active tournament
+  - Creates Tournament + TournamentParticipant records, sets status to `pending_votes`
+- [ ] **Voting page** `/tournament/[id]`
+  - Shows 4 fixed time slots for today (e.g. 6pm, 8pm, 10pm, midnight — in user's local timezone via `timezone` field)
+  - Players accept/decline and vote on a slot
+  - When majority votes for a slot OR all 8 players vote, locks in the time and sets status to `scheduled`
+  - If < 6 players accept within 4 hours, tournament is cancelled
+  - Shows who has voted (avatars), countdown timer, and locked time once decided
+- [ ] **Notification triggers** (Phase 1: fire-and-forget from Luke's account)
+  - On tournament creation: DM each invited player via `/api/bot/notify` route using Luke's stored access token
+  - Message: `"osu!friends found a 4v4 group at your level! Vote on a time to play today: https://osufriends.com/tournament/[id]"`
+  - 30-min reminder DM when tournament is about to start
+  - Separate Vercel Cron checks for upcoming tournaments every 15 min
+
+### Phase 2 — Official bot account (after user growth)
+- [ ] Apply to osu! account support for an official bot account
+- [ ] Store bot OAuth credentials in Vercel env vars (`OSU_BOT_TOKEN`)
+- [ ] Switch `/api/bot/notify` to use bot credentials instead of Luke's token
+- [ ] DMs then appear from the bot account — cleaner UX
+
+### Phase 3 — Discord bot (future sprint)
+- [ ] Mirror all tournament notifications to Discord via a Discord bot
+- [ ] Players can accept/vote from Discord as well as the site
+
+---
+
+### Key design decisions
+- **4v4 only for now** — simpler to match, creates clear group identity
+- **Opt-in required** — respects osu!'s "no unsolicited DMs" policy and prevents spam
+- **One invite per user per day** — prevents notification fatigue
+- **Fixed time slots** — reduces back-and-forth, creates urgency (play today or not at all)
+- **Bot does NOT create the lobby** — players handle that themselves; bot only coordinates timing
+- **osu!friends members only** — no random players, prevents abuse
 
 ---
 
