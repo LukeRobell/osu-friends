@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-type State = 'idle' | 'sending' | 'sent' | { error: string };
+type State = 'idle' | 'sending' | 'sent' | 'bot_unavailable' | 'opened' | { error: string };
 
 interface Props {
   targetId: number;
@@ -22,12 +22,30 @@ export default function AskToJoinButton({ targetId, targetUsername, roomName, va
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ targetId, roomName, variant }),
       });
+
       if (res.ok) {
         setState('sent');
-      } else {
-        const data = await res.json().catch(() => ({}));
-        setState({ error: data.error ?? `HTTP ${res.status}` });
+        return;
       }
+
+      const data = await res.json().catch(() => ({}));
+
+      if (data.error === 'bot_unavailable') {
+        setState('bot_unavailable');
+        return;
+      }
+
+      if (data.fallback) {
+        window.open(
+          `https://osu.ppy.sh/home/messages/users/${targetId}`,
+          'osu-dm',
+          'width=900,height=650,noopener'
+        );
+        setState('opened');
+        return;
+      }
+
+      setState({ error: data.error ?? `HTTP ${res.status}` });
     } catch {
       setState({ error: 'Network error' });
     }
@@ -35,6 +53,18 @@ export default function AskToJoinButton({ targetId, targetUsername, roomName, va
 
   if (state === 'sent') {
     return <span className="text-xs text-green-400">Sent!</span>;
+  }
+
+  if (state === 'opened') {
+    return <span className="text-xs text-blue-400">Opened osu! chat ↗</span>;
+  }
+
+  if (state === 'bot_unavailable') {
+    return (
+      <span className="text-xs text-yellow-500" title="The DM bot is offline — try again later">
+        DM unavailable
+      </span>
+    );
   }
 
   if (typeof state === 'object') {

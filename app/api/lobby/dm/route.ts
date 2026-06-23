@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const botToken = await getBotToken();
   if (!botToken) {
-    return NextResponse.json({ error: 'DM service not configured' }, { status: 503 });
+    return NextResponse.json({ error: 'bot_unavailable' }, { status: 503 });
   }
 
   const res = await fetch('https://osu.ppy.sh/api/v2/chat/new', {
@@ -36,12 +36,8 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify({ target_id: targetId, message, is_action: false }),
   });
 
-  if (res.status === 401) {
-    return NextResponse.json({ error: 'Bot token expired — contact admin' }, { status: 401 });
-  }
   if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    return NextResponse.json({ error: `osu! API error: ${res.status}`, detail: text }, { status: 502 });
+    return NextResponse.json({ error: 'dm_failed', fallback: true }, { status: 502 });
   }
 
   return NextResponse.json({ ok: true });
