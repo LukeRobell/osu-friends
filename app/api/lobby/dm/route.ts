@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt';
 
 export async function POST(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  if (!token?.accessToken) {
+  if (!token) {
     return NextResponse.json({ error: 'Not signed in' }, { status: 401 });
   }
 
@@ -13,14 +13,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing targetId or roomName' }, { status: 400 });
   }
 
+  const senderUsername = token.username as string;
+  const senderOsuId = token.osuId as number;
+
   const message = variant === 'friend'
-    ? `Hey! I see you're in "${roomName}" on osu!friends — mind if I hop in?`
-    : `Hey! I found your lobby "${roomName}" on osu!friends — mind if I join?`;
+    ? `Hey! ${senderUsername} from osu!friends wants to join you in "${roomName}"!\nInvite them: /invite ${senderUsername}\nProfile: https://osu.ppy.sh/users/${senderOsuId}`
+    : `${senderUsername} from osu!friends wants to join your lobby "${roomName}"!\nInvite them: /invite ${senderUsername}\nProfile: https://osu.ppy.sh/users/${senderOsuId}`;
+
+  // Use the server-side bot token — chat.write is restricted to the app owner's account.
+  // OSU_BOT_ACCESS_TOKEN is Luke's OAuth access token stored in Vercel env vars.
+  const botToken = process.env.OSU_BOT_ACCESS_TOKEN;
+  if (!botToken) {
+    return NextResponse.json({ error: 'DM service not configured' }, { status: 503 });
+  }
 
   const res = await fetch('https://osu.ppy.sh/api/v2/chat/new', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token.accessToken}`,
+      Authorization: `Bearer ${botToken}`,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
@@ -28,7 +38,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (res.status === 401) {
-    return NextResponse.json({ error: 'osu! token expired — please sign out and back in' }, { status: 401 });
+    return NextResponse.json({ error: 'Bot token expired — contact admin' }, { status: 401 });
   }
   if (!res.ok) {
     const text = await res.text().catch(() => '');
