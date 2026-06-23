@@ -129,18 +129,22 @@ Daily 4v4 matchmaking: the site groups 8 active osu!friends players at similar s
 - If < 6 players accept within 2 hours, tournament is cancelled and players are freed for next invite
 - Shows participant avatars, who voted, and countdown once time is locked
 
-**Server-side DM system** (Phase 1: Luke's account token)
-- Store `OSU_BOT_ACCESS_TOKEN` as Vercel env var — Luke's OAuth access token manually refreshed
-- `/api/bot/notify` route uses this token to send DMs via `POST /chat/new`
-- Fires on: tournament invite, time locked, 30-min reminder before start
+**Server-side DM system** ✅ (built ahead of schedule)
+- `BotToken` Prisma model stores access + refresh token with expiry in DB
+- `lib/bot-token.ts` — `getBotToken()` reads from DB, auto-refreshes before expiry using osu! refresh token flow
+- `/api/bot/authorize` — owner-only route (protected by `OSU_OWNER_ID` env var) that initiates OAuth flow scoped to `chat.write`
+- `/api/bot/callback` — exchanges code for tokens, stores in DB via `storeBotToken()`
+- No manual 24h rotation — token refreshes automatically forever
+- `/api/bot/notify` still needed for tournament DMs (fire on: invite, time locked, 30-min reminder)
 - Tournament invite message: `"osu!friends found a 4v4 group at your level! Ready to play? https://osufriends.com/tournament/[id]"`
 - Start reminder: `"Your osu!friends match starts in 30 minutes! Coordinate here: https://osufriends.com/tournament/[id]"`
 
-**"Ask to join" lobby DM — re-enabled via bot token**
-- Re-add the "Ask to join" button to lobby cards and friend cards
-- Button click → `/api/lobby/dm` → backend sends DM using `OSU_BOT_ACCESS_TOKEN`
-- DM attributes the request: `"[username] from osu!friends wants to join your lobby '[room name]' — reply to them directly!"`
-- User-initiated action, not unsolicited — compliant with osu! rules
+**"Ask to join" lobby DM** ✅ (re-enabled and live)
+- Button restored on lobby cards and osu! friend cards
+- `/api/lobby/dm` uses `getBotToken()` from DB — no user token required
+- DM format: `"[username] from osu!friends wants to join your lobby '[room]'!\nInvite them: /invite [username]\nProfile: https://osu.ppy.sh/users/[id]"`
+- `/invite [username]` command is clickable in osu! chat — host can invite in one step
+- User-initiated, attributed to the requester — compliant with osu! rules
 
 ---
 
