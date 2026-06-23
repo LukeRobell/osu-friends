@@ -8,23 +8,25 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(cuid())
-  osuId          Int      @unique
-  username       String
-  avatarUrl      String
-  globalRank     Int?
-  countryCode    String
-  preferredModes String[]
-  timezone       String?
-  isRegistered   Boolean  @default(false)
-  isOnline       Boolean  @default(false)
-  pp             Float?
-  lastSeen       DateTime?
-  createdAt      DateTime @default(now())
+  id                String   @id @default(cuid())
+  osuId             Int      @unique
+  username          String
+  avatarUrl         String
+  globalRank        Int?
+  countryCode       String
+  preferredModes    String[]
+  timezone          String?
+  tournamentOptIn   Boolean  @default(false)
+  isRegistered      Boolean  @default(false)
+  isOnline          Boolean  @default(false)
+  pp                Float?
+  lastSeen          DateTime?
+  createdAt         DateTime @default(now())
 
-  playSessions     PlaySession[]
-  sentRequests     FriendRequest[] @relation("SentRequests")
-  receivedRequests FriendRequest[] @relation("ReceivedRequests")
+  playSessions          PlaySession[]
+  sentRequests          FriendRequest[]        @relation("SentRequests")
+  receivedRequests      FriendRequest[]        @relation("ReceivedRequests")
+  tournamentParticipants TournamentParticipant[]
 }
 
 model PlaySession {
@@ -41,6 +43,42 @@ enum FriendRequestStatus {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+enum TournamentStatus {
+  PENDING_VOTES
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum ParticipantStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+}
+
+model Tournament {
+  id           String           @id @default(cuid())
+  status       TournamentStatus @default(PENDING_VOTES)
+  gameMode     String           @default("osu")
+  scheduledFor DateTime?
+  createdAt    DateTime         @default(now())
+
+  participants TournamentParticipant[]
+}
+
+model TournamentParticipant {
+  id           String            @id @default(cuid())
+  tournamentId String
+  userId       String
+  status       ParticipantStatus @default(INVITED)
+  availability String?
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id])
+
+  @@unique([tournamentId, userId])
 }
 
 model BotToken {

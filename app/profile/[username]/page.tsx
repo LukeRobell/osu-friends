@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import SyncButton from '@/components/SyncButton';
+import TournamentOptIn from '@/components/TournamentOptIn';
 import OsuFriends from './OsuFriends';
 
 interface Props {
@@ -104,9 +105,12 @@ export default async function ProfilePage({ params }: Props) {
           )}
 
           {isOwnProfile && (
-            <Suspense fallback={null}>
-              <OsuFriends />
-            </Suspense>
+            <>
+              <TournamentOptIn initialValue={user.tournamentOptIn} />
+              <Suspense fallback={null}>
+                <OsuFriends />
+              </Suspense>
+            </>
           )}
         </div>
       </div>
