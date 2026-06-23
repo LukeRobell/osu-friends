@@ -86,7 +86,7 @@ Goal: surface the real osu! social graph rather than building a parallel one. Us
 ## Sprint 6 — Tournament Matchmaking + Bot
 
 ### Vision
-Daily 4v4 matchmaking: the site groups 8 active osu!friends players at similar skill levels, proposes fixed time slots, lets them vote on when to play, then notifies them via osu! DM when the tournament is about to start. Urgent, social, and frictionless.
+Daily 4v4 matchmaking: the site groups 8 active osu!friends players at similar skill levels, asks if they can play right now or later today, coordinates the time, then notifies them via osu! DM when the session is about to start. Urgent, social, and frictionless — we bring players to each other, they handle the lobby themselves.
 
 ---
 
@@ -94,58 +94,76 @@ Daily 4v4 matchmaking: the site groups 8 active osu!friends players at similar s
 - **Cannot create a bot account by registering** — that is multi-accounting and bannable
 - **Must run on Luke's personal account first** — `chat.write` works only for the OAuth app owner's own account
 - **Apply to osu! account support** for an official bot account once user base is established — they create it, you don't
-- **Bot rate limit**: 300 msg / 60 sec (personal: 10 / 5 sec)
+- **Bot rate limit**: 300 msg / 60 sec (personal: 10 / 5 sec rate limit)
 - **No unsolicited DMs** — users must explicitly opt in to receive tournament invites
-- **DMs during Phase 1 will appear as coming from Luke's osu! account** — not ideal but acceptable for early testing
+- **DMs during Phase 1 appear as coming from Luke's osu! account** — acceptable for early testing, replaced by bot account in Phase 2
+- **"Ask to join" DMs are user-initiated, not unsolicited** — a user explicitly clicking a button is not spam; the bot sends on their behalf with attribution
 
 ---
 
 ### Phase 1 — Infrastructure (build now)
-- [ ] **User opt-in + timezone**
-  - Add `tournamentOptIn` boolean to User schema (default false)
-  - Add `timezone` string field to User schema
-  - Toggle on own profile page: "Receive daily tournament invites"
-  - Timezone picker on profile (browser can auto-detect via `Intl.DateTimeFormat`)
-- [ ] **Database models**
-  - `Tournament`: id, status (pending_votes | voting | scheduled | cancelled | completed), gameMode, scheduledFor, createdAt
-  - `TournamentParticipant`: tournamentId, userId, status (invited | accepted | declined), timeVote (slot index)
-- [ ] **Matchmaking algorithm**
-  - Vercel Cron job runs once daily (e.g. 12pm UTC)
-  - Queries opt-in registered users, groups by pp range (same adaptive window as discover: ±15% pp)
-  - Requires minimum 8 players to form a group; skips days with insufficient players
-  - One tournament invite per user per day — skip users already in an active tournament
-  - Creates Tournament + TournamentParticipant records, sets status to `pending_votes`
-- [ ] **Voting page** `/tournament/[id]`
-  - Shows 4 fixed time slots for today (e.g. 6pm, 8pm, 10pm, midnight — in user's local timezone via `timezone` field)
-  - Players accept/decline and vote on a slot
-  - When majority votes for a slot OR all 8 players vote, locks in the time and sets status to `scheduled`
-  - If < 6 players accept within 4 hours, tournament is cancelled
-  - Shows who has voted (avatars), countdown timer, and locked time once decided
-- [ ] **Notification triggers** (Phase 1: fire-and-forget from Luke's account)
-  - On tournament creation: DM each invited player via `/api/bot/notify` route using Luke's stored access token
-  - Message: `"osu!friends found a 4v4 group at your level! Vote on a time to play today: https://osufriends.com/tournament/[id]"`
-  - 30-min reminder DM when tournament is about to start
-  - Separate Vercel Cron checks for upcoming tournaments every 15 min
+
+**User opt-in + timezone**
+- Add `tournamentOptIn` boolean to User schema (default false)
+- Add `timezone` string field to User schema
+- Toggle on own profile page: "Receive daily match invites"
+- Timezone auto-detected via `Intl.DateTimeFormat().resolvedOptions().timeZone` on profile save
+
+**Database models**
+- `Tournament`: id, status (pending_votes | scheduled | cancelled | completed), gameMode, scheduledFor, createdAt
+- `TournamentParticipant`: tournamentId, userId, status (invited | accepted | declined), availability (now | later | null)
+
+**Matchmaking algorithm**
+- Vercel Cron job runs a few times daily (e.g. 10am, 2pm, 6pm UTC) to catch different timezones
+- Queries opt-in registered users who are online or recently active, groups by pp range (±15%)
+- Requires minimum 8 players; skips if insufficient
+- One active invite per user per day — skip users already in an active tournament
+- Creates Tournament + TournamentParticipant records, fires DM to each player
+
+**Voting — "right now or later today?"**
+- Simple two-option vote on `/tournament/[id]`:
+  - **"Right now"** — I can play in the next 30–60 min
+  - **"Later today"** — pick a time window (morning / afternoon / evening / night in their local timezone)
+- If majority votes "right now": tournament locks immediately, 30-min countdown starts
+- If split or majority picks later: locks on the most-voted time window
+- If < 6 players accept within 2 hours, tournament is cancelled and players are freed for next invite
+- Shows participant avatars, who voted, and countdown once time is locked
+
+**Server-side DM system** (Phase 1: Luke's account token)
+- Store `OSU_BOT_ACCESS_TOKEN` as Vercel env var — Luke's OAuth access token manually refreshed
+- `/api/bot/notify` route uses this token to send DMs via `POST /chat/new`
+- Fires on: tournament invite, time locked, 30-min reminder before start
+- Tournament invite message: `"osu!friends found a 4v4 group at your level! Ready to play? https://osufriends.com/tournament/[id]"`
+- Start reminder: `"Your osu!friends match starts in 30 minutes! Coordinate here: https://osufriends.com/tournament/[id]"`
+
+**"Ask to join" lobby DM — re-enabled via bot token**
+- Re-add the "Ask to join" button to lobby cards and friend cards
+- Button click → `/api/lobby/dm` → backend sends DM using `OSU_BOT_ACCESS_TOKEN`
+- DM attributes the request: `"[username] from osu!friends wants to join your lobby '[room name]' — reply to them directly!"`
+- User-initiated action, not unsolicited — compliant with osu! rules
+
+---
 
 ### Phase 2 — Official bot account (after user growth)
-- [ ] Apply to osu! account support for an official bot account
-- [ ] Store bot OAuth credentials in Vercel env vars (`OSU_BOT_TOKEN`)
-- [ ] Switch `/api/bot/notify` to use bot credentials instead of Luke's token
-- [ ] DMs then appear from the bot account — cleaner UX
+- Apply to osu! account support for an official bot account (apply when ~50+ opt-in users)
+- Store bot OAuth credentials in Vercel env vars — replace `OSU_BOT_ACCESS_TOKEN`
+- DMs appear from the bot account, no manual token refresh needed
+- Bot gets 300 msg/60 sec rate limit (vs personal 10/5 sec)
 
 ### Phase 3 — Discord bot (future sprint)
-- [ ] Mirror all tournament notifications to Discord via a Discord bot
-- [ ] Players can accept/vote from Discord as well as the site
+- Mirror all tournament notifications to Discord
+- Players can accept/vote from Discord as well as the site
+- Same bot logic, different delivery channel
 
 ---
 
 ### Key design decisions
-- **4v4 only for now** — simpler to match, creates clear group identity
-- **Opt-in required** — respects osu!'s "no unsolicited DMs" policy and prevents spam
-- **One invite per user per day** — prevents notification fatigue
-- **Fixed time slots** — reduces back-and-forth, creates urgency (play today or not at all)
-- **Bot does NOT create the lobby** — players handle that themselves; bot only coordinates timing
-- **osu!friends members only** — no random players, prevents abuse
+- **4v4 only** — simpler to match, creates clear group identity
+- **Opt-in required** — respects osu!'s "no unsolicited DMs" policy
+- **One active invite per user per day** — prevents notification fatigue
+- **"Right now" first** — targets players already online and in-game
+- **Bot does NOT create the lobby** — players coordinate it themselves; we just bring them together
+- **osu!friends members only** — no random players, keeps quality high
 
 ---
 
