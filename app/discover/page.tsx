@@ -77,7 +77,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
       <p className="text-gray-400 mb-8">
-        osufriends members near your skill level
+        osu!friends members near your skill level
         {displayUsers.length > 0 && (
           <span className="ml-2 text-gray-500 text-sm">— {displayUsers.length} players</span>
         )}
@@ -98,7 +98,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
           <p className="text-gray-600 text-sm mt-1">
             {userPp == null
               ? 'Sign in with osu! to find players near your level.'
-              : 'Share osufriends with players at your level to grow the community here.'}
+              : 'Share osu!friends with players at your level to grow the community here.'}
           </p>
         </div>
       ) : (

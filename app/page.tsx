@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-8 px-4">
       <div className="text-center">
-        <h1 className="text-5xl font-bold text-pink-400 mb-2">osufriends</h1>
+        <h1 className="text-5xl font-bold text-pink-400 mb-2">osu!friends</h1>
         <p className="text-gray-400 text-lg">find osu! players at your level who play when you do</p>
       </div>
 

@@ -11,7 +11,7 @@ export default function NavBar() {
     <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-10">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="text-pink-400 font-bold text-xl">
-          osufriends
+          osu!friends
         </Link>
 
         <div className="flex items-center gap-6">

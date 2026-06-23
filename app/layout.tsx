@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'osufriends — find your osu! crew',
+  title: 'osu!friends — find your osu! crew',
   description: 'Match with osu! players at your skill level who play when you do.',
 };
 
