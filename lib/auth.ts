@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
     },
   ],
   callbacks: {
-    async signIn({ account, profile }) {
+    async signIn({ profile }) {
       if (!profile) return false;
       const p = profile as unknown as OsuProfile;
 
