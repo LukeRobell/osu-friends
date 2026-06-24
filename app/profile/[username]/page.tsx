@@ -7,7 +7,12 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import SyncButton from '@/components/SyncButton';
 import TournamentOptIn from '@/components/TournamentOptIn';
+import TeamBadge from '@/components/TeamBadge';
 import OsuFriends from './OsuFriends';
+
+function countryFlag(code: string): string {
+  return String.fromCodePoint(...code.toUpperCase().split('').map(c => c.charCodeAt(0) + 127397));
+}
 
 interface Props {
   params: { username: string };
@@ -64,49 +69,35 @@ export default async function ProfilePage({ params }: Props) {
             <div>
               <h1 className="text-3xl font-bold">{user.username}</h1>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-gray-400">{user.countryCode}</p>
-                {user.teamTag && (
-                  <a
-                    href={`https://osu.ppy.sh/teams/${user.teamId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={user.teamName ?? undefined}
-                    className="flex items-center gap-1.5 text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full hover:bg-blue-500/30 transition-colors"
-                  >
-                    {user.teamAvatarUrl && (
-                      <Image
-                        src={user.teamAvatarUrl}
-                        alt={user.teamTag}
-                        width={14}
-                        height={14}
-                        className="rounded-sm"
-                      />
-                    )}
-                    [{user.teamTag}]
-                  </a>
+                <span className="text-lg leading-none" title={user.countryCode}>
+                  {countryFlag(user.countryCode)}
+                </span>
+                {user.teamId && user.teamTag && user.teamName && (
+                  <TeamBadge teamId={user.teamId} teamTag={user.teamTag} teamName={user.teamName} />
                 )}
               </div>
             </div>
           </div>
 
-          <div className={`grid gap-4 mb-8 ${user.globalRank != null ? 'grid-cols-3' : 'grid-cols-2'}`}>
-            {user.globalRank != null && (
-              <div className="bg-gray-800 rounded-xl p-4">
-                <p className="text-gray-400 text-sm mb-1">Global Rank</p>
-                <p className="text-2xl font-bold text-pink-400">
-                  #{user.globalRank.toLocaleString()}
-                </p>
-              </div>
-            )}
+          <div className="grid grid-cols-3 gap-4 mb-8">
             <div className="bg-gray-800 rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-1">Average play</p>
-              <p className="text-2xl font-bold text-purple-400">
-                {user.pp != null ? `${Math.round(user.pp).toLocaleString()}pp` : '—'}
+              <p className="text-gray-400 text-sm mb-1">Global Rank</p>
+              <p className="text-2xl font-bold text-pink-400">
+                {user.globalRank != null ? `#${user.globalRank.toLocaleString()}` : '—'}
               </p>
             </div>
             <div className="bg-gray-800 rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-1">Country</p>
-              <p className="text-2xl font-bold">{user.countryCode}</p>
+              <p className="text-gray-400 text-sm mb-1">Country Rank</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xl leading-none">{countryFlag(user.countryCode)}</span>
+                <span className="text-xl font-bold">{user.countryCode}</span>
+              </div>
+            </div>
+            <div className="bg-gray-800 rounded-xl p-4">
+              <p className="text-gray-400 text-sm mb-1">Average Play</p>
+              <p className="text-2xl font-bold text-purple-400">
+                {user.pp != null ? `${Math.round(user.pp).toLocaleString()}pp` : '—'}
+              </p>
             </div>
           </div>
 
