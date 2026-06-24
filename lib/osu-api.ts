@@ -162,6 +162,39 @@ export async function fetchUsersBatch(osuIds: number[]): Promise<{
   return (Array.isArray(data) ? data : data.users) ?? [];
 }
 
+export interface BestPlay {
+  id: string;
+  pp: number;
+  title: string;
+  version: string;
+  beatmapId: number;
+  beatmapsetId: number;
+  createdAt: Date;
+}
+
+export async function fetchUserBestPlays(osuId: number, mode = 'osu', limit = 20, revalidate?: number): Promise<BestPlay[]> {
+  const token = await getClientToken();
+  const cacheOpt = revalidate != null ? { next: { revalidate } } : { cache: 'no-store' as const };
+  const res = await fetch(
+    `https://osu.ppy.sh/api/v2/users/${osuId}/scores/best?mode=${mode}&limit=${limit}`,
+    { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }, ...cacheOpt }
+  );
+  if (!res.ok) return [];
+  const scores = await res.json();
+  if (!Array.isArray(scores)) return [];
+  return scores
+    .filter((s: any) => s.pp != null)
+    .map((s: any) => ({
+      id: String(s.id),
+      pp: s.pp as number,
+      title: (s.beatmapset?.title ?? 'Unknown') as string,
+      version: (s.beatmap?.version ?? '') as string,
+      beatmapId: (s.beatmap?.id ?? 0) as number,
+      beatmapsetId: (s.beatmap?.beatmapset_id ?? 0) as number,
+      createdAt: new Date(s.created_at as string),
+    }));
+}
+
 // Fetch the flag image URL for an osu! team.
 // The flag URL is content-addressed and can't be guessed from the team ID alone.
 export async function fetchTeamFlagUrl(teamId: string): Promise<string | null> {

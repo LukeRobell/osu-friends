@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import TeamBadge from './TeamBadge';
+import RivalButton from './RivalButton';
 import { countryFlagUrl } from '@/lib/osu-api';
 
 const modeLabels: Record<string, string> = {
@@ -114,6 +115,11 @@ export default function ProfileModal({ user, onClose }: { user: ModalUser; onClo
             ))}
           </div>
         )}
+
+        {/* Rival */}
+        <div className="mb-4 flex justify-center">
+          <RivalButton targetOsuId={user.osuId} />
+        </div>
 
         {/* Actions */}
         <div className="flex gap-2">

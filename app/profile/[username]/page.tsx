@@ -8,7 +8,9 @@ import { prisma } from '@/lib/prisma';
 import SyncButton from '@/components/SyncButton';
 import TournamentOptIn from '@/components/TournamentOptIn';
 import TeamBadge from '@/components/TeamBadge';
+import RivalButton from '@/components/RivalButton';
 import OsuFriends from './OsuFriends';
+import RivalSection from './RivalSection';
 import { countryFlagUrl } from '@/lib/osu-api';
 
 interface Props {
@@ -26,6 +28,7 @@ export default async function ProfilePage({ params }: Props) {
   if (!user) notFound();
 
   const isOwnProfile = session?.user?.osuId === user.osuId;
+  const isLoggedIn = !!session?.user;
 
   const modeLabels: Record<string, string> = {
     osu: 'osu!',
@@ -55,15 +58,15 @@ export default async function ProfilePage({ params }: Props) {
         </div>
 
         <div className="bg-gray-900 rounded-2xl p-8">
-          <div className="flex items-center gap-6 mb-8">
+          <div className="flex items-start gap-6 mb-8">
             <Image
               src={user.avatarUrl}
               alt={user.username}
               width={96}
               height={96}
-              className="rounded-full"
+              className="rounded-full flex-shrink-0"
             />
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-3xl font-bold">{user.username}</h1>
               <div className="flex items-center gap-3 mt-1">
                 <div className="flex items-center gap-1.5">
@@ -80,6 +83,11 @@ export default async function ProfilePage({ params }: Props) {
                   />
                 )}
               </div>
+              {!isOwnProfile && isLoggedIn && (
+                <div className="mt-3">
+                  <RivalButton targetOsuId={user.osuId} />
+                </div>
+              )}
             </div>
           </div>
 
@@ -127,6 +135,9 @@ export default async function ProfilePage({ params }: Props) {
           {isOwnProfile && (
             <>
               <TournamentOptIn initialValue={user.tournamentOptIn} />
+              <Suspense fallback={null}>
+                <RivalSection userId={user.id} />
+              </Suspense>
               <Suspense fallback={null}>
                 <OsuFriends />
               </Suspense>

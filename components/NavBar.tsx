@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import NotificationBell from './NotificationBell';
 
 export default function NavBar() {
   const { data: session } = useSession();
@@ -21,6 +22,7 @@ export default function NavBar() {
 
           {session ? (
             <div className="flex items-center gap-3">
+              <NotificationBell />
               <Link
                 href={`/profile/${encodeURIComponent(session.user.username)}`}
                 className="flex items-center gap-2 text-sm hover:text-pink-400 transition-colors"

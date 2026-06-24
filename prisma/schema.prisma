@@ -28,10 +28,18 @@ model User {
   lastSeen          DateTime?
   createdAt         DateTime @default(now())
 
+  rivalId           String?
+  rival             User?          @relation("UserRival", fields: [rivalId], references: [id])
+  rivalOf           User[]         @relation("UserRival")
+
   playSessions          PlaySession[]
   sentRequests          FriendRequest[]        @relation("SentRequests")
   receivedRequests      FriendRequest[]        @relation("ReceivedRequests")
   tournamentParticipants TournamentParticipant[]
+  sentRivalReqs         RivalRequest[]         @relation("SentRivalRequests")
+  receivedRivalReqs     RivalRequest[]         @relation("ReceivedRivalRequests")
+  rivalNotifiedPlays    RivalNotifiedPlay[]
+  notifications         Notification[]
 }
 
 model PlaySession {
@@ -50,6 +58,12 @@ enum FriendRequestStatus {
   DECLINED
 }
 
+enum RivalRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
 enum TournamentStatus {
   PENDING_VOTES
   SCHEDULED
@@ -62,6 +76,12 @@ enum ParticipantStatus {
   INVITED
   ACCEPTED
   DECLINED
+}
+
+enum NotificationType {
+  RIVAL_REQUEST
+  RIVAL_PLAY
+  TOURNAMENT_INVITE
 }
 
 model Tournament {
@@ -105,4 +125,41 @@ model FriendRequest {
 
   fromUser User @relation("SentRequests", fields: [fromUserId], references: [id])
   toUser   User @relation("ReceivedRequests", fields: [toUserId], references: [id])
+}
+
+model RivalRequest {
+  id         String             @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  status     RivalRequestStatus @default(PENDING)
+  createdAt  DateTime           @default(now())
+
+  fromUser User @relation("SentRivalRequests", fields: [fromUserId], references: [id])
+  toUser   User @relation("ReceivedRivalRequests", fields: [toUserId], references: [id])
+
+  @@unique([fromUserId, toUserId])
+}
+
+model RivalNotifiedPlay {
+  id         String   @id @default(cuid())
+  userId     String
+  osuScoreId String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, osuScoreId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  link      String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
