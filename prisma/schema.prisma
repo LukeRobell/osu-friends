@@ -17,6 +17,9 @@ model User {
   preferredModes    String[]
   timezone          String?
   tournamentOptIn   Boolean  @default(false)
+  teamId            String?
+  teamName          String?
+  teamTag           String?
   isRegistered      Boolean  @default(false)
   isOnline          Boolean  @default(false)
   pp                Float?
@@ -48,6 +51,7 @@ enum FriendRequestStatus {
 enum TournamentStatus {
   PENDING_VOTES
   SCHEDULED
+  IN_PROGRESS
   CANCELLED
   COMPLETED
 }
@@ -62,8 +66,9 @@ model Tournament {
   id           String           @id @default(cuid())
   status       TournamentStatus @default(PENDING_VOTES)
   gameMode     String           @default("osu")
-  scheduledFor DateTime?
-  createdAt    DateTime         @default(now())
+  scheduledFor  DateTime?
+  reminderSent  Boolean          @default(false)
+  createdAt     DateTime         @default(now())
 
   participants TournamentParticipant[]
 }

@@ -6,6 +6,7 @@ import { fetchUsersBatch, fetchFriends } from '@/lib/osu-api';
 import { getAccessToken } from '@/lib/auth-server';
 import UserCard from '@/components/UserCard';
 import DiscoverFilters from './DiscoverFilters';
+import LiveTournaments from './LiveTournaments';
 import LiveLobbies from './LiveLobbies';
 
 interface Props {
@@ -85,6 +86,11 @@ export default async function DiscoverPage({ searchParams }: Props) {
 
       <Suspense>
         <DiscoverFilters />
+      </Suspense>
+
+      {/* Live osu!friends matches — only shown when IN_PROGRESS tournaments exist */}
+      <Suspense fallback={null}>
+        <LiveTournaments />
       </Suspense>
 
       {/* Live lobbies stream in independently so they don't delay the player grid */}

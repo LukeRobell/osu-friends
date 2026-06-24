@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/matchmake",
       "schedule": "0 10,14,18,22 * * *"
+    },
+    {
+      "path": "/api/cron/remind",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

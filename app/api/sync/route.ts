@@ -33,6 +33,9 @@ export async function POST() {
         lastSeen: profile.lastSeen,
         username: profile.username,
         avatarUrl: profile.avatarUrl,
+        teamId:   profile.team?.id   ?? null,
+        teamName: profile.team?.name ?? null,
+        teamTag:  profile.team?.tag  ?? null,
       }),
     },
   });

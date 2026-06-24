@@ -63,7 +63,19 @@ export default async function ProfilePage({ params }: Props) {
             />
             <div>
               <h1 className="text-3xl font-bold">{user.username}</h1>
-              <p className="text-gray-400 mt-1">{user.countryCode}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-gray-400">{user.countryCode}</p>
+                {user.teamName && (
+                  <a
+                    href={`https://osu.ppy.sh/teams/${user.teamId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full hover:bg-blue-500/30 transition-colors"
+                  >
+                    [{user.teamTag}] {user.teamName}
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 

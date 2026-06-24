@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import VoteButtons from './VoteButtons';
+import StartButton from './StartButton';
 
 interface Props {
   params: { id: string };
@@ -38,6 +39,7 @@ export default async function TournamentPage({ params }: Props) {
   const statusLabel: Record<string, string> = {
     PENDING_VOTES: 'Waiting for votes',
     SCHEDULED: 'Locked in!',
+    IN_PROGRESS: 'Live now',
     CANCELLED: 'Cancelled',
     COMPLETED: 'Completed',
   };
@@ -56,11 +58,12 @@ export default async function TournamentPage({ params }: Props) {
             <div className="flex items-center justify-between mb-1">
               <h1 className="text-2xl font-bold">4v4 Match Found!</h1>
               <span className={`text-xs px-2 py-1 rounded-full ${
+                tournament.status === 'IN_PROGRESS' ? 'bg-pink-500/20 text-pink-300' :
                 tournament.status === 'SCHEDULED' ? 'bg-green-500/20 text-green-300' :
                 tournament.status === 'CANCELLED' ? 'bg-red-500/20 text-red-300' :
                 'bg-yellow-500/20 text-yellow-300'
               }`}>
-                {statusLabel[tournament.status]}
+                {statusLabel[tournament.status] ?? tournament.status}
               </span>
             </div>
             <p className="text-gray-400 text-sm">
@@ -115,24 +118,33 @@ export default async function TournamentPage({ params }: Props) {
             </div>
           )}
 
-          {/* Vote buttons (if in tournament and it's still pending) */}
           {me && tournament.status === 'PENDING_VOTES' && (
             <VoteButtons tournamentId={params.id} hasVoted={hasVoted} />
+          )}
+
+          {me?.status === 'ACCEPTED' && tournament.status === 'SCHEDULED' && (
+            <div className="space-y-3">
+              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center">
+                <p className="text-green-300 font-medium">Match is on!</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Create your lobby on osu! and invite the other players.
+                </p>
+              </div>
+              <StartButton tournamentId={params.id} />
+            </div>
+          )}
+
+          {tournament.status === 'IN_PROGRESS' && (
+            <div className="bg-pink-500/10 border border-pink-500/20 rounded-xl p-4 text-center">
+              <p className="text-pink-300 font-medium">Match in progress!</p>
+              <p className="text-gray-400 text-sm mt-1">Good luck!</p>
+            </div>
           )}
 
           {tournament.status === 'CANCELLED' && (
             <p className="text-gray-400 text-sm text-center">
               Not enough players responded. You&apos;ll be matched again tomorrow.
             </p>
-          )}
-
-          {tournament.status === 'SCHEDULED' && (
-            <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center">
-              <p className="text-green-300 font-medium">Match is on!</p>
-              <p className="text-gray-400 text-sm mt-1">
-                Create your lobby and share the invite link with the other players.
-              </p>
-            </div>
           )}
         </div>
       </div>
