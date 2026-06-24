@@ -36,8 +36,8 @@ export default function Home() {
       <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
         <iframe
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-          style={{ width: '177.78vh', height: '100vh', minWidth: '100vw', minHeight: '56.25vw' }}
-          src={`https://www.youtube.com/embed/${BG_VIDEO_ID}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&playlist=${BG_VIDEO_ID}`}
+          style={{ width: 'calc(177.78vh + 300px)', height: 'calc(100vh + 300px)', minWidth: 'calc(100vw + 300px)', minHeight: 'calc(56.25vw + 300px)' }}
+          src={`https://www.youtube.com/embed/${BG_VIDEO_ID}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&modestbranding=1&playlist=${BG_VIDEO_ID}`}
           allow="autoplay; encrypted-media"
           title="background"
         />
