@@ -116,10 +116,26 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
     };
   });
 
-  // Sort: account pp proximity first (when both user and participants have data), else star proximity
-  const hasPpData = userAccountPp != null && processed.some(r => r.avgAccountPp != null);
+  // Skill filter: require at least 2 participants with known pp to be within 0.5×–2.0× of the
+  // user's account pp. This catches lobbies where high-ranked players are farming easy maps —
+  // the star filter passes them but the participants would be way out of range.
+  // Fail open: if fewer than 2 participants have known pp data, don't exclude the room.
+  const skillFiltered = userAccountPp != null
+    ? processed.filter(room => {
+        const knownPps = room.recentParticipants
+          .map(p => participantPpMap.get(p.id) ?? null)
+          .filter((v): v is number => v != null);
+        if (knownPps.length < 2) return true;
+        const lo = userAccountPp * 0.5;
+        const hi = userAccountPp * 2.0;
+        return knownPps.filter(pp => pp >= lo && pp <= hi).length >= 2;
+      })
+    : processed;
 
-  processed.sort((a, b) => {
+  // Sort: account pp proximity first (when both user and participants have data), else star proximity
+  const hasPpData = userAccountPp != null && skillFiltered.some(r => r.avgAccountPp != null);
+
+  skillFiltered.sort((a, b) => {
     if (hasPpData && userAccountPp != null) {
       const aDiff = a.avgAccountPp != null ? Math.abs(a.avgAccountPp - userAccountPp) : Infinity;
       const bDiff = b.avgAccountPp != null ? Math.abs(b.avgAccountPp - userAccountPp) : Infinity;
@@ -130,7 +146,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
     return (b.participantCount ?? 0) - (a.participantCount ?? 0);
   });
 
-  const display = processed.slice(0, 9);
+  const display = skillFiltered.slice(0, 9);
 
   return (
     <div className="mb-10">
