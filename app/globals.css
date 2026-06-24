@@ -6,6 +6,11 @@ html {
   scroll-behavior: auto;
 }
 
+@keyframes volumeBar {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
 /* Hide scrollbars site-wide while keeping scroll functionality */
 * {
   scrollbar-width: none;

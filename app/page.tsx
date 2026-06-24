@@ -12,30 +12,24 @@ function MuteButton({ isMuted, onToggle }: { isMuted: boolean; onToggle: () => v
   return (
     <button
       onClick={onToggle}
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 bg-gray-900/70 hover:bg-gray-900/90 backdrop-blur-md border border-white/10 hover:border-pink-500/60 rounded-full text-sm font-medium transition-all duration-300 group"
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3 py-3 bg-gray-900/70 hover:bg-gray-900/90 backdrop-blur-md border border-white/10 hover:border-pink-500/50 rounded-full transition-all duration-300 group"
     >
-      <svg
-        viewBox="0 0 24 24"
-        className="w-4 h-4 text-gray-400 group-hover:text-pink-400 transition-colors duration-300 flex-shrink-0"
-        fill="currentColor"
-      >
-        {isMuted ? (
-          /* Speaker with X */
-          <>
-            <path d="M13 3.586L7.707 8H4a1 1 0 00-1 1v6a1 1 0 001 1h3.707L13 20.414V3.586z" />
-            <path d="M16.293 9.293a1 1 0 011.414 1.414L16.414 12l1.293 1.293a1 1 0 01-1.414 1.414L15 13.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 12l-1.293-1.293a1 1 0 011.414-1.414L15 10.586l1.293-1.293z" />
-          </>
-        ) : (
-          /* Speaker with waves */
-          <>
-            <path d="M13 3.586L7.707 8H4a1 1 0 00-1 1v6a1 1 0 001 1h3.707L13 20.414V3.586z" />
-            <path d="M16.5 7.5a6 6 0 010 9M19 5a9 9 0 010 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-          </>
+      {/* Speaker icon */}
+      <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0 text-gray-300 group-hover:text-pink-400 transition-colors duration-300" fill="currentColor">
+        <path d="M13 3.586L7.707 8H4a1 1 0 00-1 1v6a1 1 0 001 1h3.707L13 20.414V3.586z" />
+        {isMuted && (
+          <path d="M16.293 9.293a1 1 0 011.414 1.414L16.414 12l1.293 1.293a1 1 0 01-1.414 1.414L15 13.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 12l-1.293-1.293a1 1 0 011.414-1.414L15 10.586l1.293-1.293z" />
         )}
       </svg>
-      <span className="text-gray-300 group-hover:text-white transition-colors duration-300 tracking-wide text-xs uppercase">
-        {isMuted ? 'Unmute' : 'Mute'}
-      </span>
+
+      {/* Animated equalizer bars — shown when unmuted */}
+      {!isMuted && (
+        <div className="flex items-end gap-0.5 h-4 pr-0.5" style={{ transformOrigin: 'bottom' }}>
+          <span className="w-[3px] rounded-full bg-pink-400" style={{ height: '40%', animation: 'volumeBar 0.9s ease-in-out infinite 0s' }} />
+          <span className="w-[3px] rounded-full bg-pink-400" style={{ height: '70%', animation: 'volumeBar 0.9s ease-in-out infinite 0.2s' }} />
+          <span className="w-[3px] rounded-full bg-pink-400" style={{ height: '50%', animation: 'volumeBar 0.9s ease-in-out infinite 0.1s' }} />
+        </div>
+      )}
     </button>
   );
 }
