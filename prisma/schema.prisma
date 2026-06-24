@@ -20,6 +20,7 @@ model User {
   teamId            String?
   teamName          String?
   teamTag           String?
+  teamAvatarUrl     String?
   isRegistered      Boolean  @default(false)
   isOnline          Boolean  @default(false)
   pp                Float?

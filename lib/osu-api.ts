@@ -59,7 +59,12 @@ export async function fetchUserProfile(osuId: number, mode = 'osu', revalidate?:
     isOnline: (u.is_online ?? false) as boolean,
     lastSeen: u.last_visit ? new Date(u.last_visit as string) : null,
     team: u.team
-      ? { id: String(u.team.id), name: u.team.name as string, tag: u.team.short_name as string }
+      ? {
+          id: String(u.team.id),
+          name: u.team.name as string,
+          tag: u.team.short_name as string,
+          avatarUrl: (u.team.avatar_url as string | null) ?? null,
+        }
       : null,
   };
 }
