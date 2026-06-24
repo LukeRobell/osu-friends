@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { fetchActiveRooms, fetchUserAvgTopPp, fetchUserProfile, fetchParticipantAccountPp, ppToStars } from '@/lib/osu-api';
+import { fetchActiveRooms, fetchUserAvgTopPp, ppToStars } from '@/lib/osu-api';
 import LiveLobbyCard, { ProcessedRoom } from '@/components/LiveLobbyCard';
 
 interface Props {
@@ -12,8 +12,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
   const rooms = await fetchActiveRooms(50).catch(() => []);
   if (rooms.length === 0) return null;
 
-  // When a mode filter is active, fetch the user's top-play pp in that mode so the
-  // star target reflects their skill in the selected mode, not their primary mode.
+  // When a mode filter is active, fetch the user's avg top-play pp in that mode
   let effectivePp = userPp;
   if (mode && userOsuId) {
     const modePp = await fetchUserAvgTopPp(userOsuId, mode, 300).catch(() => null);
@@ -22,17 +21,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
 
   const targetStars = ppToStars(effectivePp ?? 0);
 
-  // Fetch the signed-in user's account pp — needed to compare against participant account pp.
-  // Account pp (weighted total) and avg-top-5 pp are different metrics, so we can only do
-  // apples-to-apples comparison using account pp from both sides.
-  let userAccountPp: number | null = null;
-  if (userOsuId) {
-    const activeMode = mode ?? 'osu';
-    const profile = await fetchUserProfile(userOsuId, activeMode, 300).catch(() => null);
-    userAccountPp = profile?.accountPp ?? null;
-  }
-
-  // Filter by game mode first so participant lookup only covers relevant rooms
+  // Filter by game mode first
   const modeFiltered = mode
     ? rooms.filter(room => room.current_playlist_item?.beatmap?.mode === mode)
     : rooms;
@@ -61,31 +50,29 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
 
   if (starFiltered.length === 0) return null;
 
-  // Batch-fetch account pp for participants in the star-filtered rooms only
-  const filteredParticipantIds = new Set<number>();
-  for (const room of starFiltered) {
-    for (const p of (room.recent_participants ?? [])) {
-      filteredParticipantIds.add(p.id as number);
-    }
-  }
-  const participantPpMap = await fetchParticipantAccountPp(Array.from(filteredParticipantIds)).catch(() => new Map<number, number | null>());
+  // Fetch each host's avg top-play pp in parallel — same metric as user.pp, apples-to-apples.
+  // 5-min cache: host skill doesn't change meaningfully within a session.
+  const activeMode = mode ?? 'osu';
+  const hostPpMap = new Map<number, number | null>();
+  await Promise.all(
+    starFiltered.map(async room => {
+      const hostId = room.host?.id as number | undefined;
+      if (hostId == null) return;
+      const pp = await fetchUserAvgTopPp(hostId, activeMode, 300).catch(() => null);
+      hostPpMap.set(hostId, pp);
+    })
+  );
 
   // Build processed rooms
   const processed: ProcessedRoom[] = starFiltered.map(room => {
     const beatmap = room.current_playlist_item?.beatmap;
     const beatmapset = beatmap?.beatmapset;
     const stars = (beatmap?.difficulty_rating as number | null) ?? null;
-    const starDiff = stars != null && targetStars != null ? Math.abs(stars - targetStars) : Infinity;
+    const starDiff = stars != null ? Math.abs(stars - targetStars) : Infinity;
 
     const participants: any[] = room.recent_participants ?? [];
-
-    // Compute avg account pp from participants where data is available
-    const ppValues = participants
-      .map((p: any) => participantPpMap.get(p.id as number) ?? null)
-      .filter((v): v is number => v != null);
-    const avgAccountPp = ppValues.length > 0
-      ? ppValues.reduce((a, b) => a + b, 0) / ppValues.length
-      : null;
+    const hostId = room.host?.id as number | undefined;
+    const hostAvgPp = hostId != null ? (hostPpMap.get(hostId) ?? null) : null;
 
     const host = room.host
       ? { id: room.host.id as number, username: room.host.username as string }
@@ -111,22 +98,18 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
             coverUrl: (beatmapset.covers?.cover ?? beatmapset.covers?.['cover@2x'] ?? '') as string,
           }
         : null,
-      avgAccountPp,
+      hostAvgPp,
       starDiff,
     };
   });
 
-  // Sort: account pp proximity first (when both user and participants have data), else star proximity.
-  // No hard pp filter — rooms are shown regardless, just ranked by how close participants are to you.
-  const hasPpData = userAccountPp != null && processed.some(r => r.avgAccountPp != null);
-
+  // Sort: host avg pp proximity to user's avg pp first, then star proximity, then player count
   processed.sort((a, b) => {
-    if (hasPpData && userAccountPp != null) {
-      const aDiff = a.avgAccountPp != null ? Math.abs(a.avgAccountPp - userAccountPp) : Infinity;
-      const bDiff = b.avgAccountPp != null ? Math.abs(b.avgAccountPp - userAccountPp) : Infinity;
+    if (effectivePp != null) {
+      const aDiff = a.hostAvgPp != null ? Math.abs(a.hostAvgPp - effectivePp) : Infinity;
+      const bDiff = b.hostAvgPp != null ? Math.abs(b.hostAvgPp - effectivePp) : Infinity;
       if (Math.abs(aDiff - bDiff) > 1) return aDiff - bDiff;
     }
-    // Tie-break (or primary sort if no pp data) by star proximity then player count
     if (Math.abs(a.starDiff - b.starDiff) > 0.05) return a.starDiff - b.starDiff;
     return (b.participantCount ?? 0) - (a.participantCount ?? 0);
   });

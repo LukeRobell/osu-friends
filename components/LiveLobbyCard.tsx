@@ -14,7 +14,7 @@ export interface ProcessedRoom {
     stars: number | null;
     coverUrl: string;
   } | null;
-  avgAccountPp: number | null;
+  hostAvgPp: number | null;
   starDiff: number;
 }
 
