@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
 
       await sendBotDm(
         watcher.osuId,
-        `⚔️ Your rival ${rival.username} just set a ${ppStr} play on ${play.title} [${play.version}]!\nWant to snipe their score? 🎯\n${mapUrl}`
+        `Your rival ${rival.username} just set a ${ppStr} play on ${play.title} [${play.version}]!\nWant to snipe their score?\n${mapUrl}`
       );
 
       await prisma.rivalNotifiedPlay.create({
