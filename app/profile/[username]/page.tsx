@@ -90,12 +90,12 @@ export default async function ProfilePage({ params }: Props) {
               <p className="text-gray-400 text-sm mb-1">Country Rank</p>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-xl leading-none">{countryFlag(user.countryCode)}</span>
-                <span className="text-xl font-bold">{user.countryCode}</span>
+                <span className="text-xl font-bold text-purple-400">{user.countryCode}</span>
               </div>
             </div>
             <div className="bg-gray-800 rounded-xl p-4">
               <p className="text-gray-400 text-sm mb-1">Average Play</p>
-              <p className="text-2xl font-bold text-purple-400">
+              <p className="text-2xl font-bold text-white">
                 {user.pp != null ? `${Math.round(user.pp).toLocaleString()}pp` : '—'}
               </p>
             </div>
