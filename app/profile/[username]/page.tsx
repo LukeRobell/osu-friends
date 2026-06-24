@@ -9,10 +9,7 @@ import SyncButton from '@/components/SyncButton';
 import TournamentOptIn from '@/components/TournamentOptIn';
 import TeamBadge from '@/components/TeamBadge';
 import OsuFriends from './OsuFriends';
-
-function countryFlag(code: string): string {
-  return String.fromCodePoint(...code.toUpperCase().split('').map(c => c.charCodeAt(0) + 127397));
-}
+import { countryFlagUrl } from '@/lib/osu-api';
 
 interface Props {
   params: { username: string };
@@ -68,12 +65,19 @@ export default async function ProfilePage({ params }: Props) {
             />
             <div>
               <h1 className="text-3xl font-bold">{user.username}</h1>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-lg leading-none" title={user.countryCode}>
-                  {countryFlag(user.countryCode)}
-                </span>
+              <div className="flex items-center gap-3 mt-1">
+                <div className="flex items-center gap-1.5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={countryFlagUrl(user.countryCode)} alt={user.countryCode} width={20} height={14} className="rounded-sm" />
+                  <span className="text-gray-400 text-sm">{user.countryCode}</span>
+                </div>
                 {user.teamId && user.teamTag && user.teamName && (
-                  <TeamBadge teamId={user.teamId} teamTag={user.teamTag} teamName={user.teamName} />
+                  <TeamBadge
+                    teamId={user.teamId}
+                    teamTag={user.teamTag}
+                    teamName={user.teamName}
+                    teamFlagUrl={user.teamFlagUrl ?? null}
+                  />
                 )}
               </div>
             </div>
@@ -89,7 +93,8 @@ export default async function ProfilePage({ params }: Props) {
             <div className="bg-gray-800 rounded-xl p-4">
               <p className="text-gray-400 text-sm mb-1">Country Rank</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xl leading-none">{countryFlag(user.countryCode)}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={countryFlagUrl(user.countryCode)} alt={user.countryCode} width={24} height={17} className="rounded-sm" />
                 <span className="text-xl font-bold text-purple-400">{user.countryCode}</span>
               </div>
             </div>

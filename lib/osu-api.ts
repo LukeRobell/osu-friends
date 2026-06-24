@@ -1,3 +1,10 @@
+// Converts a 2-letter country code to osu!'s flag SVG URL.
+// e.g. "US" → "https://osu.ppy.sh/assets/images/flags/1f1fa-1f1f8.svg"
+export function countryFlagUrl(code: string): string {
+  const pts = code.toUpperCase().split('').map(c => (c.charCodeAt(0) + 127397).toString(16));
+  return `https://osu.ppy.sh/assets/images/flags/${pts.join('-')}.svg`;
+}
+
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
 async function getClientToken(): Promise<string> {
@@ -152,4 +159,17 @@ export async function fetchUsersBatch(osuIds: number[]): Promise<{
   if (!res.ok) return [];
   const data = await res.json();
   return (Array.isArray(data) ? data : data.users) ?? [];
+}
+
+// Fetch the flag image URL for an osu! team.
+// The flag URL is content-addressed and can't be guessed from the team ID alone.
+export async function fetchTeamFlagUrl(teamId: string): Promise<string | null> {
+  const token = await getClientToken();
+  const res = await fetch(
+    `https://osu.ppy.sh/api/v2/teams/${teamId}`,
+    { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }, cache: 'no-store' }
+  );
+  if (!res.ok) return null;
+  const t = await res.json();
+  return (t.flag_url ?? t.banner_url ?? t.logo_url ?? null) as string | null;
 }

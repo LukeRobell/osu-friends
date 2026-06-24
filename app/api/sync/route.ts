@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { fetchUserAvgTopPp, fetchUserProfile } from '@/lib/osu-api';
+import { fetchUserAvgTopPp, fetchUserProfile, fetchTeamFlagUrl } from '@/lib/osu-api';
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -23,6 +23,11 @@ export async function POST() {
     fetchUserAvgTopPp(osuId, mode),
   ]);
 
+  // Fetch team flag URL separately since it requires a dedicated teams API call
+  const teamFlagUrl = profile?.team?.id
+    ? await fetchTeamFlagUrl(profile.team.id).catch(() => null)
+    : null;
+
   await prisma.user.update({
     where: { osuId },
     data: {
@@ -33,10 +38,10 @@ export async function POST() {
         lastSeen: profile.lastSeen,
         username: profile.username,
         avatarUrl: profile.avatarUrl,
-        teamId:        profile.team?.id        ?? null,
-        teamName:      profile.team?.name      ?? null,
-        teamTag:       profile.team?.tag       ?? null,
-        teamAvatarUrl: profile.team?.avatarUrl ?? null,
+        teamId:      profile.team?.id   ?? null,
+        teamName:    profile.team?.name ?? null,
+        teamTag:     profile.team?.tag  ?? null,
+        teamFlagUrl: teamFlagUrl         ?? null,
       }),
     },
   });
