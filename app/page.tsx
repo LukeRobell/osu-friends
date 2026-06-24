@@ -41,8 +41,8 @@ export default function Home() {
           allow="autoplay; encrypted-media"
           title="background"
         />
-        {/* Dim overlay */}
-        <div className="absolute inset-0 bg-black/65" />
+        {/* Dim overlay — matches app bg-gray-950 (#030712) */}
+        <div className="absolute inset-0 bg-gray-950/75" />
       </div>
 
       <main className="min-h-screen flex flex-col items-center justify-center gap-8 px-4">
