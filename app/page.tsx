@@ -3,14 +3,48 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Replace with your own video ID before going live
 const BG_VIDEO_ID = 'jeWhv-94J-k';
 
+function MuteButton({ isMuted, onToggle }: { isMuted: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 bg-gray-900/70 hover:bg-gray-900/90 backdrop-blur-md border border-white/10 hover:border-pink-500/60 rounded-full text-sm font-medium transition-all duration-300 group"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="w-4 h-4 text-gray-400 group-hover:text-pink-400 transition-colors duration-300 flex-shrink-0"
+        fill="currentColor"
+      >
+        {isMuted ? (
+          /* Speaker with X */
+          <>
+            <path d="M13 3.586L7.707 8H4a1 1 0 00-1 1v6a1 1 0 001 1h3.707L13 20.414V3.586z" />
+            <path d="M16.293 9.293a1 1 0 011.414 1.414L16.414 12l1.293 1.293a1 1 0 01-1.414 1.414L15 13.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 12l-1.293-1.293a1 1 0 011.414-1.414L15 10.586l1.293-1.293z" />
+          </>
+        ) : (
+          /* Speaker with waves */
+          <>
+            <path d="M13 3.586L7.707 8H4a1 1 0 00-1 1v6a1 1 0 001 1h3.707L13 20.414V3.586z" />
+            <path d="M16.5 7.5a6 6 0 010 9M19 5a9 9 0 010 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+          </>
+        )}
+      </svg>
+      <span className="text-gray-300 group-hover:text-white transition-colors duration-300 tracking-wide text-xs uppercase">
+        {isMuted ? 'Unmute' : 'Mute'}
+      </span>
+    </button>
+  );
+}
+
 export default function Home() {
   const { data: session, status } = useSession();
   const seeded = useRef(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
 
   useEffect(() => {
     if (session?.user?.globalRank && !seeded.current) {
@@ -21,6 +55,17 @@ export default function Home() {
         .catch(console.error);
     }
   }, [session]);
+
+  const toggleMute = () => {
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow) return;
+    const func = isMuted ? 'unMute' : 'mute';
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: 'command', func, args: [] }),
+      '*'
+    );
+    setIsMuted(!isMuted);
+  };
 
   if (status === 'loading') {
     return (
@@ -35,15 +80,18 @@ export default function Home() {
       {/* Full-screen background video */}
       <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
         <iframe
+          ref={iframeRef}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           style={{ width: '177.78vh', height: '100vh', minWidth: '100vw', minHeight: '56.25vw' }}
-          src={`https://www.youtube.com/embed/${BG_VIDEO_ID}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&playlist=${BG_VIDEO_ID}`}
+          src={`https://www.youtube.com/embed/${BG_VIDEO_ID}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&enablejsapi=1&playlist=${BG_VIDEO_ID}`}
           allow="autoplay; encrypted-media"
           title="background"
         />
         {/* Dim overlay — matches app bg-gray-950 (#030712) */}
         <div className="absolute inset-0 bg-gray-950/75" />
       </div>
+
+      <MuteButton isMuted={isMuted} onToggle={toggleMute} />
 
       <main className="min-h-screen flex flex-col items-center justify-center gap-8 px-4">
         <div className="text-center">
