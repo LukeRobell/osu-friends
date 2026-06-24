@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Providers from './providers';
 import NavBar from '@/components/NavBar';
+import SmoothScroll from '@/components/SmoothScroll';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-white`}>
         <Providers>
+          <SmoothScroll />
           <NavBar />
           {children}
         </Providers>
