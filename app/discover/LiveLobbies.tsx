@@ -103,8 +103,16 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
     };
   });
 
-  // Sort: host avg pp proximity to user's avg pp first, then star proximity, then player count
+  // Sort: hosts within ±15% of user's avg pp bubble to the top (same window as discover/tournaments).
+  // Within each bucket, sort by pp proximity then star proximity then player count.
+  const ppLo = effectivePp != null ? effectivePp * 0.85 : null;
+  const ppHi = effectivePp != null ? effectivePp * 1.15 : null;
+
   processed.sort((a, b) => {
+    const aIn = ppLo != null && a.hostAvgPp != null && a.hostAvgPp >= ppLo && a.hostAvgPp <= ppHi!;
+    const bIn = ppLo != null && b.hostAvgPp != null && b.hostAvgPp >= ppLo && b.hostAvgPp <= ppHi!;
+    if (aIn !== bIn) return aIn ? -1 : 1;
+
     if (effectivePp != null) {
       const aDiff = a.hostAvgPp != null ? Math.abs(a.hostAvgPp - effectivePp) : Infinity;
       const bDiff = b.hostAvgPp != null ? Math.abs(b.hostAvgPp - effectivePp) : Infinity;
