@@ -17,14 +17,24 @@ export default async function OsuFriends() {
   const friendIds = friends.map(f => f.id);
   const dbUsers = await prisma.user.findMany({
     where: { osuId: { in: friendIds }, isRegistered: true },
-    select: { osuId: true, pp: true, globalRank: true },
+    select: {
+      osuId: true,
+      pp: true,
+      globalRank: true,
+      countryRank: true,
+      countryCode: true,
+      preferredModes: true,
+      teamId: true,
+      teamName: true,
+      teamTag: true,
+      teamFlagUrl: true,
+    },
   });
 
   if (dbUsers.length === 0) return null;
 
   const dbMap = new Map(dbUsers.map(u => [u.osuId, u]));
 
-  // Map each participant to the room they're in (best-effort via recent_participants)
   const participantRoomMap = new Map<number, { id: number; name: string }>();
   for (const room of rooms) {
     for (const p of (room.recent_participants ?? [])) {
@@ -42,6 +52,13 @@ export default async function OsuFriends() {
         avatarUrl: f.avatarUrl,
         pp: db.pp,
         globalRank: db.globalRank,
+        countryRank: db.countryRank,
+        countryCode: db.countryCode,
+        preferredModes: db.preferredModes,
+        teamId: db.teamId,
+        teamName: db.teamName,
+        teamTag: db.teamTag,
+        teamFlagUrl: db.teamFlagUrl,
         inRoom: participantRoomMap.get(f.id) ?? null,
       };
     })

@@ -22,9 +22,9 @@ export default function TournamentOptIn({ initialValue }: { initialValue: boolea
     <div className="mt-8 pt-6 border-t border-gray-800">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium">Daily match invites</p>
+          <p className="text-sm font-medium">Tournaments</p>
           <p className="text-xs text-gray-500 mt-0.5">
-            Get matched with 7 players at your level for a 4v4 today
+            Get matched with 7 players at your level for a 4v4 tournament today.
           </p>
         </div>
         <button

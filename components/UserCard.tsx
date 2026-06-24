@@ -1,6 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { User } from '@prisma/client';
+import ProfileModal, { ModalUser } from './ProfileModal';
 
 const modeLabels: Record<string, string> = {
   osu: 'osu!',
@@ -18,9 +21,30 @@ function timeAgo(date: Date): string {
 }
 
 export default function UserCard({ user, isOsuFriend = false }: { user: User; isOsuFriend?: boolean }) {
+  const [showModal, setShowModal] = useState(false);
+
+  const modalUser: ModalUser = {
+    osuId: user.osuId,
+    username: user.username,
+    avatarUrl: user.avatarUrl,
+    countryCode: user.countryCode,
+    globalRank: user.globalRank,
+    countryRank: (user as any).countryRank ?? null,
+    pp: user.pp,
+    preferredModes: user.preferredModes,
+    teamId: (user as any).teamId ?? null,
+    teamName: (user as any).teamName ?? null,
+    teamTag: (user as any).teamTag ?? null,
+    teamFlagUrl: (user as any).teamFlagUrl ?? null,
+    isOnline: user.isOnline,
+  };
+
   return (
-    <Link href={`/profile/${encodeURIComponent(user.username)}`}>
-      <div className="bg-gray-900 hover:bg-gray-800 rounded-xl p-4 flex items-center gap-4 transition-colors cursor-pointer">
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="w-full text-left bg-gray-900 hover:bg-gray-800 rounded-xl p-4 flex items-center gap-4 transition-colors cursor-pointer"
+      >
         <div className="relative flex-shrink-0">
           <Image
             src={user.avatarUrl}
@@ -74,7 +98,9 @@ export default function UserCard({ user, isOsuFriend = false }: { user: User; is
             )}
           </div>
         </div>
-      </div>
-    </Link>
+      </button>
+
+      {showModal && <ProfileModal user={modalUser} onClose={() => setShowModal(false)} />}
+    </>
   );
 }
