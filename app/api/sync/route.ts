@@ -33,7 +33,8 @@ export async function POST() {
     data: {
       ...(avgPp != null && { pp: avgPp }),
       ...(profile && {
-        globalRank: profile.globalRank,
+        globalRank:  profile.globalRank,
+        countryRank: profile.countryRank,
         isOnline: profile.isOnline,
         lastSeen: profile.lastSeen,
         username: profile.username,

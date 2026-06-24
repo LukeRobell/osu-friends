@@ -26,7 +26,7 @@ export default function TeamBadge({ teamId, teamTag, teamName, teamFlagUrl }: Pr
           src={teamFlagUrl}
           alt={teamName}
           width={20}
-          height={20}
+          height={14}
           className="rounded-sm object-cover flex-shrink-0"
           onError={() => setImgFailed(true)}
         />

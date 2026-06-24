@@ -94,8 +94,10 @@ export default async function ProfilePage({ params }: Props) {
               <p className="text-gray-400 text-sm mb-1">Country Rank</p>
               <div className="flex items-center gap-2 mt-1">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={countryFlagUrl(user.countryCode)} alt={user.countryCode} width={24} height={17} className="rounded-sm" />
-                <span className="text-xl font-bold text-purple-400">{user.countryCode}</span>
+                <img src={countryFlagUrl(user.countryCode)} alt={user.countryCode} width={24} height={17} className="rounded-sm flex-shrink-0" />
+                <p className="text-2xl font-bold text-purple-400">
+                  {user.countryRank != null ? `#${user.countryRank.toLocaleString()}` : '—'}
+                </p>
               </div>
             </div>
             <div className="bg-gray-800 rounded-xl p-4">
