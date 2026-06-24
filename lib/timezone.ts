@@ -62,25 +62,13 @@ export function tonightAt8pm(tz: string): Date {
   const m = parts.find(p => p.type === 'month')!.value;
   const d = parts.find(p => p.type === 'day')!.value;
 
-  // Build 8pm in that timezone using the Temporal-style approach
   const localString = `${y}-${m}-${d}T20:00:00`;
-  // Parse it as if it's in the target timezone
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit',
-    hour12: false,
-  });
-
-  // Walk from midnight UTC and find when the tz clock reads 20:00
-  // Simpler: use the offset at the target datetime
-  const approx = new Date(`${localString}Z`); // treat as UTC first
+  const approx = new Date(`${localString}Z`);
   const offset = getTimezoneOffsetMs(tz, approx);
   return new Date(approx.getTime() - offset);
 }
 
 function getTimezoneOffsetMs(tz: string, date: Date): number {
-  // Returns how many ms to ADD to local-as-UTC to get actual UTC
   const utcStr = date.toLocaleString('en-US', { timeZone: 'UTC' });
   const tzStr  = date.toLocaleString('en-US', { timeZone: tz });
   return Date.parse(utcStr) - Date.parse(tzStr);
