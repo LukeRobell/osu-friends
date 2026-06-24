@@ -25,7 +25,27 @@ export default async function ProfilePage({ params }: Props) {
     getServerSession(authOptions),
   ]);
 
-  if (!user) notFound();
+  // Logged-in user visiting their own profile but not yet in the DB — show a recovery page
+  if (!user) {
+    const isOwn = session?.user?.username?.toLowerCase() === decodeURIComponent(params.username).toLowerCase();
+    if (isOwn) {
+      return (
+        <main className="min-h-screen flex items-center justify-center px-4">
+          <div className="text-center max-w-sm">
+            <p className="text-2xl font-bold mb-2">Setting up your profile...</p>
+            <p className="text-gray-400 text-sm mb-6">
+              Your account wasn&apos;t saved correctly on sign-in. Click below to fix it.
+            </p>
+            <SyncButton />
+            <p className="text-gray-600 text-xs mt-4">
+              If that doesn&apos;t work, sign out and sign back in.
+            </p>
+          </div>
+        </main>
+      );
+    }
+    notFound();
+  }
 
   const isOwnProfile = session?.user?.osuId === user.osuId;
   const isLoggedIn = !!session?.user;

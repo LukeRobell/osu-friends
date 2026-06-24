@@ -44,33 +44,37 @@ export const authOptions: NextAuthOptions = {
       if (!profile) return false;
       const p = profile as unknown as OsuProfile;
 
-      const rank = p.statistics?.global_rank ?? null;
-      // Average of top 5 plays — same metric used for seeded players and discover filtering
-      const pp = await fetchUserAvgTopPp(p.id, p.playmode ?? 'osu');
+      try {
+        const rank = p.statistics?.global_rank ?? null;
+        const pp = await fetchUserAvgTopPp(p.id, p.playmode ?? 'osu');
 
-      await prisma.user.upsert({
-        where: { osuId: p.id },
-        update: {
-          username: p.username,
-          avatarUrl: p.avatar_url,
-          globalRank: rank,
-          countryCode: p.country_code,
-          pp,
-          isRegistered: true,
-          lastSeen: new Date(),
-        },
-        create: {
-          osuId: p.id,
-          username: p.username,
-          avatarUrl: p.avatar_url,
-          globalRank: rank,
-          countryCode: p.country_code,
-          pp,
-          preferredModes: [p.playmode ?? 'osu'],
-          isRegistered: true,
-          lastSeen: new Date(),
-        },
-      });
+        await prisma.user.upsert({
+          where: { osuId: p.id },
+          update: {
+            username: p.username,
+            avatarUrl: p.avatar_url,
+            globalRank: rank,
+            countryCode: p.country_code,
+            pp,
+            isRegistered: true,
+            lastSeen: new Date(),
+          },
+          create: {
+            osuId: p.id,
+            username: p.username,
+            avatarUrl: p.avatar_url,
+            globalRank: rank,
+            countryCode: p.country_code,
+            pp,
+            preferredModes: [p.playmode ?? 'osu'],
+            isRegistered: true,
+            lastSeen: new Date(),
+          },
+        });
+      } catch (err) {
+        console.error('[auth] Failed to upsert user on sign-in:', err);
+        return false;
+      }
 
       return true;
     },

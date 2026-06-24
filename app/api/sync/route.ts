@@ -23,27 +23,39 @@ export async function POST() {
     fetchUserAvgTopPp(osuId, mode),
   ]);
 
-  // Fetch team flag URL separately since it requires a dedicated teams API call
   const teamFlagUrl = profile?.team?.id
     ? await fetchTeamFlagUrl(profile.team.id).catch(() => null)
     : null;
 
-  await prisma.user.update({
+  const data = {
+    ...(avgPp != null && { pp: avgPp }),
+    ...(profile && {
+      globalRank:  profile.globalRank,
+      countryRank: profile.countryRank,
+      isOnline:    profile.isOnline,
+      lastSeen:    profile.lastSeen,
+      username:    profile.username,
+      avatarUrl:   profile.avatarUrl,
+      teamId:      profile.team?.id   ?? null,
+      teamName:    profile.team?.name ?? null,
+      teamTag:     profile.team?.tag  ?? null,
+      teamFlagUrl: teamFlagUrl         ?? null,
+    }),
+  };
+
+  // upsert so users with a valid JWT but missing DB record get created here
+  await prisma.user.upsert({
     where: { osuId },
-    data: {
-      ...(avgPp != null && { pp: avgPp }),
-      ...(profile && {
-        globalRank:  profile.globalRank,
-        countryRank: profile.countryRank,
-        isOnline: profile.isOnline,
-        lastSeen: profile.lastSeen,
-        username: profile.username,
-        avatarUrl: profile.avatarUrl,
-        teamId:      profile.team?.id   ?? null,
-        teamName:    profile.team?.name ?? null,
-        teamTag:     profile.team?.tag  ?? null,
-        teamFlagUrl: teamFlagUrl         ?? null,
-      }),
+    update: data,
+    create: {
+      osuId,
+      username:      profile?.username    ?? session.user.username,
+      avatarUrl:     profile?.avatarUrl   ?? session.user.avatarUrl ?? '',
+      countryCode:   profile?.countryCode ?? session.user.countryCode ?? '',
+      preferredModes: ['osu'],
+      isRegistered:  true,
+      lastSeen:      new Date(),
+      ...data,
     },
   });
 
