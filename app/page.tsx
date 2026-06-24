@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
 // Replace with your own video ID before going live
-const BG_VIDEO_ID = 'dQw4w9WgXcQ';
+const BG_VIDEO_ID = 'jeWhv-94J-k';
 
 export default function Home() {
   const { data: session, status } = useSession();
