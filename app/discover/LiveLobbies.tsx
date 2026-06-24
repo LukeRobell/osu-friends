@@ -126,8 +126,8 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
           .map(p => participantPpMap.get(p.id) ?? null)
           .filter((v): v is number => v != null);
         if (knownPps.length < 2) return true;
-        const lo = userAccountPp * 0.5;
-        const hi = userAccountPp * 2.0;
+        const lo = userAccountPp * 0.80;
+        const hi = userAccountPp * 1.20;
         return knownPps.filter(pp => pp >= lo && pp <= hi).length >= 2;
       })
     : processed;
