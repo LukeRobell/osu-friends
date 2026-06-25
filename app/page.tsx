@@ -172,10 +172,10 @@ export default function Home() {
       {/* ── HERO ───────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center gap-8 px-4 text-center">
         <div>
-          <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">Where osu! friendships start</p>
+          <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">osu! is better with people</p>
           <h1 className="text-6xl sm:text-7xl font-bold text-white mb-5 tracking-tight">osu!friends</h1>
           <p className="text-xl text-gray-300 max-w-md mx-auto leading-relaxed">
-            Find players at your skill level. Build friendships that last.
+            Find your people. Build the community this game deserves.
           </p>
         </div>
 
@@ -222,9 +222,9 @@ export default function Home() {
       <section className="py-28 px-4 border-t border-white/5">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-4xl font-bold text-white mb-3">More than a player list</h2>
+            <h2 className="text-4xl font-bold text-white mb-3">The game looks simple. The community isn&apos;t.</h2>
             <p className="text-gray-400 text-lg max-w-xl mx-auto">
-              Built from the ground up for osu! — not a generic social app retrofitted for rhythm games.
+              osu! already has everything a great community needs. We built the infrastructure to make it happen.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -268,9 +268,6 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-4xl font-bold text-white mb-3">Meet the co-founders</h2>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
-              Built by two players who met in a lobby — and never stopped playing together.
-            </p>
           </div>
 
           {/* Founders photo */}
@@ -287,7 +284,11 @@ export default function Home() {
 
           {/* Story */}
           <p className="text-gray-300 text-lg text-center max-w-2xl mx-auto mb-12 leading-relaxed">
-            Luke and Melvin crossed paths in an osu! lobby in the summer of 2015. What started as a random match turned into years of late-night sessions, a circle of online best friends, and eventually — meeting in real life for the first time in 2021. osu!friends is built on the belief that the best friendships start in a game lobby, and that finding the right people to play with shouldn't be left to chance.
+            It sounds ridiculous from the outside. Two guys ended up in the same osu! lobby in the summer of 2015,
+            started hopping on Skype calls to play together, and somehow became best friends. They built a whole
+            circle of people they&apos;d never met in real life — and finally, in 2021, they did.
+            If you&apos;ve played osu!, you already know this story. The community runs deeper than anyone outside
+            it can believe. osu!friends exists to make that the rule, not the lucky exception.
           </p>
 
           {/* Founder cards */}
@@ -337,7 +338,7 @@ export default function Home() {
       <section className="py-32 px-4 border-t border-white/5 text-center">
         <div className="max-w-lg mx-auto">
           <h2 className="text-4xl font-bold text-white mb-4">Ready to find your people?</h2>
-          <p className="text-gray-400 text-lg mb-10">Join the community. It's free.</p>
+          <p className="text-gray-400 text-lg mb-10">The community is already here. Come play.</p>
           {status !== 'loading' && (
             session ? (
               <Link

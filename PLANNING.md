@@ -1,7 +1,13 @@
 # osufriends.com — sprint plan
 
+## Mission
+"We believe osu! is better with people. We're building that world."
+
 ## Vision
-A matchmaking site for osu! players. Users log in with their osu! account, we pull their skill data via osu! API v2, and match them with players at similar skill levels. Beyond discovery, the site creates active engagement: daily 4v4 tournaments, a rival system with bot notifications, and live tournament tracking.
+"To prove a simple rhythm game can build a community as deep and lasting as any MMO, any team sport, any game ever made."
+
+## Background
+osu! players already feel the tension this mission names: the game looks ridiculous from the outside ("clicking circles") but the community runs deeper than most people can believe. osu!friends validates that feeling and builds the infrastructure to make deep friendships the rule, not the lucky exception. This aligns with what BTMC's Roundtable, OWC, and other community-driven events are already proving — that osu! belongs in the same conversation as any serious gaming community.
 
 ---
 
