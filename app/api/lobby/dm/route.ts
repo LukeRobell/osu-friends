@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import { getBotToken } from '@/lib/bot-token';
 import { prisma } from '@/lib/prisma';
 
-const COOLDOWN_MS = 7 * 60 * 1000; // 7 minutes
+const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
 export async function POST(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

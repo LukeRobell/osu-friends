@@ -5,8 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
-// Replace with your own video ID before going live
-const BG_VIDEO_ID = 'jeWhv-94J-k';
+// Swap this path once the compressed file is in /public
+const VIDEO_SRC = '/osufriendshome.mp4';
 
 interface MuteButtonProps {
   isMuted: boolean;
@@ -21,9 +21,7 @@ function MuteButton({ isMuted, volume, onToggle, onVolumeChange }: MuteButtonPro
   };
 
   return (
-    // div instead of button so we can nest the range input (button>input is invalid HTML)
     <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-3 py-2.5 bg-gray-900/70 hover:bg-gray-900/90 backdrop-blur-md border border-white/10 hover:border-pink-500/50 rounded-full transition-all duration-300 group">
-      {/* Speaker toggle */}
       <button onClick={onToggle} className="flex-shrink-0 focus:outline-none">
         <svg viewBox="0 0 24 24" className="w-5 h-5 text-gray-300 group-hover:text-pink-400 transition-colors duration-300" fill="currentColor">
           <path d="M13 3.586L7.707 8H4a1 1 0 00-1 1v6a1 1 0 001 1h3.707L13 20.414V3.586z" />
@@ -33,7 +31,6 @@ function MuteButton({ isMuted, volume, onToggle, onVolumeChange }: MuteButtonPro
         </svg>
       </button>
 
-      {/* Volume slider + equalizer — shown when unmuted */}
       {!isMuted && (
         <>
           <input
@@ -59,7 +56,7 @@ function MuteButton({ isMuted, volume, onToggle, onVolumeChange }: MuteButtonPro
 export default function Home() {
   const { data: session, status } = useSession();
   const seeded = useRef(false);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(80);
 
@@ -73,25 +70,21 @@ export default function Home() {
     }
   }, [session]);
 
-  const postToPlayer = (func: string, args: unknown[] = []) => {
-    iframeRef.current?.contentWindow?.postMessage(
-      JSON.stringify({ event: 'command', func, args }), '*'
-    );
-  };
-
   const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
     if (isMuted) {
-      postToPlayer('unMute');
-      postToPlayer('setVolume', [volume]);
+      video.muted = false;
+      video.volume = volume / 100;
     } else {
-      postToPlayer('mute');
+      video.muted = true;
     }
     setIsMuted(!isMuted);
   };
 
   const handleVolumeChange = (v: number) => {
     setVolume(v);
-    postToPlayer('setVolume', [v]);
+    if (videoRef.current) videoRef.current.volume = v / 100;
   };
 
   if (status === 'loading') {
@@ -105,15 +98,17 @@ export default function Home() {
   return (
     <>
       {/* Full-screen background video */}
-      <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
-        <iframe
-          ref={iframeRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-          style={{ width: '177.78vh', height: '100vh', minWidth: '100vw', minHeight: '56.25vw' }}
-          src={`https://www.youtube.com/embed/${BG_VIDEO_ID}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&enablejsapi=1&playlist=${BG_VIDEO_ID}`}
-          allow="autoplay; encrypted-media"
-          title="background"
-        />
+      <div className="fixed inset-0 -z-10 overflow-hidden bg-gray-950">
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src={VIDEO_SRC} type="video/mp4" />
+        </video>
         {/* Dim overlay — matches app bg-gray-950 (#030712) */}
         <div className="absolute inset-0 bg-gray-950/75" />
       </div>
