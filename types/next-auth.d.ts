@@ -20,5 +20,8 @@ declare module 'next-auth/jwt' {
     avatarUrl: string;
     countryCode: string;
     accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: number; // unix seconds
+    error?: string;
   }
 }

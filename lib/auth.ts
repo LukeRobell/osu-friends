@@ -88,9 +88,52 @@ export const authOptions: NextAuthOptions = {
         token.avatarUrl = p.avatar_url;
         token.countryCode = p.country_code;
       }
-      if (account?.access_token) {
+
+      if (account) {
+        // Fresh sign-in — store access token, refresh token, and expiry
         token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.expiresAt =
+          account.expires_at ??
+          (account.expires_in
+            ? Math.floor(Date.now() / 1000) + (account.expires_in as number)
+            : undefined);
+        return token;
       }
+
+      // No expiry stored (pre-refresh-fix session) or still valid — return as-is
+      if (!token.expiresAt || Date.now() < token.expiresAt * 1000 - 60_000) {
+        return token;
+      }
+
+      // Access token expired — refresh it
+      if (!token.refreshToken) {
+        token.error = 'RefreshTokenError';
+        return token;
+      }
+
+      try {
+        const res = await fetch('https://osu.ppy.sh/oauth/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id: process.env.OSU_CLIENT_ID,
+            client_secret: process.env.OSU_CLIENT_SECRET,
+            grant_type: 'refresh_token',
+            refresh_token: token.refreshToken,
+          }),
+        });
+        if (!res.ok) throw new Error(`osu! token refresh ${res.status}`);
+        const refreshed = await res.json();
+        token.accessToken = refreshed.access_token;
+        token.refreshToken = refreshed.refresh_token ?? token.refreshToken;
+        token.expiresAt = Math.floor(Date.now() / 1000) + (refreshed.expires_in as number);
+        delete token.error;
+      } catch (err) {
+        console.error('[auth] Failed to refresh osu! access token:', err);
+        token.error = 'RefreshTokenError';
+      }
+
       return token;
     },
 
