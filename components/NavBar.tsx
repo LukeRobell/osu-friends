@@ -11,15 +11,16 @@ export default function NavBar() {
   return (
     <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-10">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="text-pink-400 font-bold text-xl">
-          osu!friends
-        </Link>
-
         <div className="flex items-center gap-6">
+          <Link href="/" className="text-pink-400 font-bold text-xl">
+            osu!friends
+          </Link>
           <Link href="/discover" className="text-gray-400 hover:text-white text-sm transition-colors">
             Discover
           </Link>
+        </div>
 
+        <div className="flex items-center gap-6">
           {session ? (
             <div className="flex items-center gap-3">
               <NotificationBell />

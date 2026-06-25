@@ -126,14 +126,17 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
 
   return (
     <div className="mb-10">
-      <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-        </span>
-        Live lobbies
-        <span className="text-sm font-normal text-gray-500">near {targetStars.toFixed(1)}★</span>
-      </h2>
+      <div className="mb-3">
+        <h2 className="text-lg font-semibold flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+          </span>
+          Live lobbies
+          <span className="text-sm font-normal text-gray-500">{(targetStars - 1.0).toFixed(1)}–{(targetStars + 1.0).toFixed(1)}★</span>
+        </h2>
+        <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {display.map(room => (
           <LiveLobbyCard key={room.id} room={room} canSendDm={userOsuId != null} />

@@ -10,12 +10,13 @@ import LiveTournaments from './LiveTournaments';
 import LiveLobbies from './LiveLobbies';
 
 interface Props {
-  searchParams: { mode?: string };
+  searchParams: { mode?: string; all?: string };
 }
 
 export default async function DiscoverPage({ searchParams }: Props) {
   const session = await getServerSession(authOptions);
   const mode = searchParams.mode;
+  const showAll = searchParams.all === '1';
 
   let userPp: number | null = null;
   if (session?.user?.osuId) {
@@ -35,7 +36,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
       isRegistered: true,
       ...(session?.user?.osuId ? { NOT: { osuId: session.user.osuId } } : {}),
       ...(mode ? { preferredModes: { has: mode } } : {}),
-      ...(ppMin != null && ppMax != null ? { pp: { gte: ppMin, lte: ppMax } } : {}),
+      ...(!showAll && ppMin != null && ppMax != null ? { pp: { gte: ppMin, lte: ppMax } } : {}),
     },
     orderBy: { lastSeen: 'desc' },
     take: 200,
@@ -78,7 +79,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
       <p className="text-gray-400 mb-8">
-        osu!friends members near your skill level
+        {showAll ? 'All osu!friends members' : 'osu!friends members near your skill level'}
         {displayUsers.length > 0 && (
           <span className="ml-2 text-gray-500 text-sm">— {displayUsers.length} players</span>
         )}

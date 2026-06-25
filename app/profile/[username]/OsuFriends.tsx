@@ -70,7 +70,7 @@ export default async function OsuFriends() {
   return (
     <div className="mt-8">
       <p className="text-gray-400 text-sm mb-3">
-        osu! friends on osu!friends
+        Friends on osu!friends
         <span className="ml-2 text-gray-500 text-xs">({friendsOnApp.length})</span>
       </p>
       <div className="flex flex-col gap-2">
