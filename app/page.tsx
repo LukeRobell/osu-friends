@@ -162,7 +162,7 @@ export default function Home() {
       <MuteButton isMuted={isMuted} volume={volume} onToggle={toggleMute} onVolumeChange={handleVolumeChange} />
 
       {/* ── HERO ───────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center gap-8 px-4 text-center overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center gap-8 px-4 text-center overflow-hidden pb-32">
         {/* Video background — scoped to hero only */}
         <div className="absolute inset-0 bg-gray-950">
           <video ref={videoRef} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
@@ -174,7 +174,7 @@ export default function Home() {
         <div className="relative z-10">
           <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">osu! is better with people</p>
           <h1 className="text-6xl sm:text-7xl font-bold text-pink-400 mb-5 tracking-tight">osu!friends</h1>
-          <p className="text-xl text-gray-300 max-w-md mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
             Find your people. Build the community this game deserves.
           </p>
         </div>
