@@ -159,26 +159,27 @@ export default function Home() {
 
   return (
     <>
-      {/* Fixed video background */}
-      <div className="fixed inset-0 -z-10 overflow-hidden bg-gray-950">
-        <video ref={videoRef} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src={VIDEO_SRC} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gray-950/75" />
-      </div>
-
       <MuteButton isMuted={isMuted} volume={volume} onToggle={toggleMute} onVolumeChange={handleVolumeChange} />
 
       {/* ── HERO ───────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center gap-8 px-4 text-center">
-        <div>
+      <section className="relative min-h-screen flex flex-col items-center justify-center gap-8 px-4 text-center overflow-hidden">
+        {/* Video background — scoped to hero only */}
+        <div className="absolute inset-0 bg-gray-950">
+          <video ref={videoRef} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
+            <source src={VIDEO_SRC} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gray-950/75" />
+        </div>
+
+        <div className="relative z-10">
           <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">osu! is better with people</p>
-          <h1 className="text-6xl sm:text-7xl font-bold text-white mb-5 tracking-tight">osu!friends</h1>
+          <h1 className="text-6xl sm:text-7xl font-bold text-pink-400 mb-5 tracking-tight">osu!friends</h1>
           <p className="text-xl text-gray-300 max-w-md mx-auto leading-relaxed">
             Find your people. Build the community this game deserves.
           </p>
         </div>
 
+        <div className="relative z-10">
         {status !== 'loading' && (
           session ? (
             <div className="flex flex-col items-center gap-4">
@@ -209,9 +210,10 @@ export default function Home() {
             </button>
           )
         )}
+        </div>
 
         {/* Scroll hint */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-gray-600 text-xs">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-gray-600 text-xs z-10">
           <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
           </svg>
@@ -219,7 +221,7 @@ export default function Home() {
       </section>
 
       {/* ── FEATURES ───────────────────────────────────── */}
-      <section className="py-28 px-4 border-t border-white/5">
+      <section className="bg-gray-950 py-28 px-4 border-t border-white/5">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-4xl font-bold text-white mb-3">The game looks simple. The community isn&apos;t.</h2>
@@ -243,7 +245,7 @@ export default function Home() {
       </section>
 
       {/* ── HOW IT WORKS ───────────────────────────────── */}
-      <section className="py-28 px-4 border-t border-white/5">
+      <section className="bg-gray-950 py-28 px-4 border-t border-white/5">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-3">Get started in 30 seconds</h2>
@@ -264,7 +266,7 @@ export default function Home() {
       </section>
 
       {/* ── FOUNDERS ───────────────────────────────────── */}
-      <section className="py-28 px-4 border-t border-white/5">
+      <section className="bg-gray-950 py-28 px-4 border-t border-white/5">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-4xl font-bold text-white mb-3">Meet the co-founders</h2>
@@ -335,7 +337,7 @@ export default function Home() {
       </section>
 
       {/* ── CTA ────────────────────────────────────────── */}
-      <section className="py-32 px-4 border-t border-white/5 text-center">
+      <section className="bg-gray-950 py-32 px-4 border-t border-white/5 text-center">
         <div className="max-w-lg mx-auto">
           <h2 className="text-4xl font-bold text-white mb-4">Ready to find your people?</h2>
           <p className="text-gray-400 text-lg mb-10">The community is already here. Come play.</p>
