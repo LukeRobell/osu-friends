@@ -179,7 +179,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 mt-6">
         {status !== 'loading' && (
           session ? (
             <div className="flex flex-col items-center gap-4">
@@ -190,7 +190,7 @@ export default function Home() {
                 <span className="text-gray-300 text-sm">{session.user.username}</span>
               </div>
               <div className="flex gap-3">
-                <Link href={`/profile/${encodeURIComponent(session.user.username)}`} className="px-6 py-2.5 bg-pink-500 hover:bg-pink-600 rounded-full font-medium transition-colors">
+                <Link href={`/profile/${encodeURIComponent(session.user.username)}`} className="px-6 py-2.5 border-2 border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-medium transition-colors">
                   My Profile
                 </Link>
                 <Link href="/discover" className="px-6 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full font-medium transition-colors">
@@ -204,7 +204,7 @@ export default function Home() {
           ) : (
             <button
               onClick={() => signIn('osu')}
-              className="px-10 py-3.5 bg-pink-500 hover:bg-pink-600 rounded-full font-semibold text-lg transition-colors shadow-lg shadow-pink-500/20"
+              className="px-10 py-3.5 border-2 border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-semibold text-lg transition-colors"
             >
               Sign in with osu!
             </button>
