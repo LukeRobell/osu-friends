@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-type State = 'idle' | 'sending' | 'sent' | 'bot_unavailable' | 'opened' | { error: string };
+type State = 'loading' | 'idle' | 'sending' | 'sent' | 'bot_unavailable' | 'opened' | { error: string };
 
 interface Props {
   targetId: number;
@@ -12,7 +12,39 @@ interface Props {
 }
 
 export default function AskToJoinButton({ targetId, targetUsername, roomName, variant = 'host' }: Props) {
-  const [state, setState] = useState<State>('idle');
+  const [state, setState] = useState<State>('loading');
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
+
+  // Check cooldown on mount so "Sent!" persists across page refreshes
+  useEffect(() => {
+    fetch(`/api/lobby/dm-status?targetId=${targetId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.onCooldown) {
+          setSecondsRemaining(data.secondsRemaining);
+          setState('sent');
+        } else {
+          setState('idle');
+        }
+      })
+      .catch(() => setState('idle'));
+  }, [targetId]);
+
+  // Count down the cooldown timer; reset to idle when it expires
+  useEffect(() => {
+    if (state !== 'sent' || secondsRemaining <= 0) return;
+    const id = setInterval(() => {
+      setSecondsRemaining(s => {
+        if (s <= 1) {
+          clearInterval(id);
+          setState('idle');
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [state, secondsRemaining]);
 
   async function handleClick() {
     setState('sending');
@@ -23,12 +55,19 @@ export default function AskToJoinButton({ targetId, targetUsername, roomName, va
         body: JSON.stringify({ targetId, roomName, variant }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (res.ok) {
+        setSecondsRemaining(data.secondsRemaining ?? 420);
         setState('sent');
         return;
       }
 
-      const data = await res.json().catch(() => ({}));
+      if (res.status === 429) {
+        setSecondsRemaining(data.secondsRemaining ?? 60);
+        setState('sent');
+        return;
+      }
 
       if (data.error === 'bot_unavailable') {
         setState('bot_unavailable');
@@ -51,8 +90,15 @@ export default function AskToJoinButton({ targetId, targetUsername, roomName, va
     }
   }
 
+  if (state === 'loading') return null;
+
   if (state === 'sent') {
-    return <span className="text-xs text-green-400">Sent!</span>;
+    const mins = Math.ceil(secondsRemaining / 60);
+    return (
+      <span className="text-xs text-green-400">
+        Sent!{secondsRemaining > 30 && <span className="text-gray-500"> · {mins}m</span>}
+      </span>
+    );
   }
 
   if (state === 'opened') {
