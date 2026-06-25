@@ -19,6 +19,7 @@ export default async function OsuFriends() {
     where: { osuId: { in: friendIds }, isRegistered: true },
     select: {
       osuId: true,
+      username: true,
       pp: true,
       globalRank: true,
       countryRank: true,
@@ -48,7 +49,7 @@ export default async function OsuFriends() {
       const db = dbMap.get(f.id)!;
       return {
         osuId: f.id,
-        username: f.username,
+        username: db.username, // use DB username so profile link always matches our lookup
         avatarUrl: f.avatarUrl,
         pp: db.pp,
         globalRank: db.globalRank,
