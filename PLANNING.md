@@ -244,7 +244,34 @@ Next.js 14 (App Router) · TypeScript · Tailwind CSS · Prisma · PostgreSQL (S
 
 ---
 
-## Sprint 7 — Ideas (not started)
+## Sprint 8 — Ideas (not started)
+- [ ] **Music taste matching** — cross-reference maps played / beatmapsets favorited to surface players with similar music taste. No other platform does this. Compelling differentiator beyond pp-based matching.
+- [ ] **Community infrastructure** — support for established osu! communities (e.g. BTMC's osu! Roundtable) to run their own events, recruit members, and organize within osu!friends
+- [ ] Tournament history page — past results, who won, pp improvements
+- [ ] Onboarding flow for new users (first-time experience, prompt to set preferred modes)
+- [ ] User search (find any osufriends user by username)
+- [ ] Rival leaderboard — who has the most active rivals? most snipes?
+- [ ] Tournament stats — win/loss, average pp of opponents
+- [ ] Official osu! bot account (apply when user base grows)
+- [ ] Discord bot integration (mirror tournament/rival notifications to Discord)
+
+---
+
+## Sprint 7 — In progress
+
+### Shipped this session
+- [x] Live lobby pp filter: replaced account pp with host avg top-play pp; ±15% bucket sort (apples-to-apples with rest of app)
+- [x] Smooth scroll site-wide via Lenis
+- [x] Background video on home page (self-hosted MP4 via Git LFS, 169MB 1080p with audio)
+- [x] Mute/unmute button with volume slider + equalizer animation (fixed bottom-right)
+- [x] OAuth token auto-refresh in JWT callback (fixes osu! friends section disappearing after 24h)
+- [x] osu! username space/underscore normalization on profile lookup
+- [x] 10-min DM cooldown per host, persisted in DB (`LobbyDm` model), status checked on mount
+- [x] NavBar: Discover link moved next to osu!friends logo
+- [x] Live lobbies heading shows star range (e.g. 3.2–5.2★) + "Hosts within your skill level towards top"
+- [x] Discover: "All members" toggle removes pp filter to show all registered users
+- [x] Profile: "Friends on osu!friends" label
+- [x] PgBouncer transaction mode (port 6543 + ?pgbouncer=true) — fixes EMAXCONNSESSION on Supabase free tier
 - [ ] Landing page redesign / marketing copy for new visitors
 - [ ] Tournament history page — past results, who won, pp improvements
 - [ ] Onboarding flow for new users (first-time experience, prompt to set preferred modes)
