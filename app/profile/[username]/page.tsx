@@ -18,16 +18,21 @@ interface Props {
 }
 
 export default async function ProfilePage({ params }: Props) {
+  // osu! treats spaces and underscores as equivalent in usernames.
+  // The /me and /friends APIs may return different formats, so try both.
+  const decoded = decodeURIComponent(params.username);
+  const alt = decoded.includes(' ') ? decoded.replace(/ /g, '_') : decoded.replace(/_/g, ' ');
+
   const [user, session] = await Promise.all([
     prisma.user.findFirst({
-      where: { username: { equals: params.username, mode: 'insensitive' } },
+      where: { username: { in: [decoded, alt], mode: 'insensitive' } },
     }),
     getServerSession(authOptions),
   ]);
 
   // Logged-in user visiting their own profile but not yet in the DB — show a recovery page
   if (!user) {
-    const isOwn = session?.user?.username?.toLowerCase() === decodeURIComponent(params.username).toLowerCase();
+    const isOwn = session?.user?.username?.toLowerCase() === decoded.toLowerCase();
     if (isOwn) {
       return (
         <main className="min-h-screen flex items-center justify-center px-4">
