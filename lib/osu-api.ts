@@ -61,6 +61,7 @@ export async function fetchUserProfile(osuId: number, mode = 'osu', revalidate?:
     username: u.username as string,
     avatarUrl: u.avatar_url as string,
     countryCode: u.country_code as string,
+    playmode: (u.playmode ?? 'osu') as string,
     globalRank: (u.statistics?.global_rank ?? null) as number | null,
     countryRank: (u.statistics?.country_rank ?? null) as number | null,
     accountPp: (u.statistics?.pp ?? null) as number | null,

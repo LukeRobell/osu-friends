@@ -29,14 +29,15 @@ async function main() {
       await prisma.user.update({
         where: { id: user.id },
         data: {
-          ...(osuPp != null          && { pp:              osuPp }),
-          ...(osuProfile?.globalRank  && { globalRank:      osuProfile.globalRank }),
-          ...(osuProfile?.countryRank && { countryRank:     osuProfile.countryRank }),
-          taikoPp:         taikoPp          ?? null,
+          ...(osuPp != null           && { pp:              osuPp }),
+          ...(osuProfile?.globalRank   && { globalRank:      osuProfile.globalRank }),
+          ...(osuProfile?.countryRank  && { countryRank:     osuProfile.countryRank }),
+          ...(osuProfile?.playmode     && { preferredModes:  [osuProfile.playmode] }),
+          taikoPp:         taikoPp              ?? null,
           taikoGlobalRank: taikoProfile?.globalRank ?? null,
-          catchPp:         catchPp           ?? null,
+          catchPp:         catchPp               ?? null,
           catchGlobalRank: catchProfile?.globalRank  ?? null,
-          maniaPp:         maniaPp           ?? null,
+          maniaPp:         maniaPp               ?? null,
           maniaGlobalRank: maniaProfile?.globalRank  ?? null,
         },
       });
