@@ -91,8 +91,8 @@ export default function LanguagePicker({ initial }: { initial: string[] }) {
           </button>
 
           {open && (
-            <div className="absolute left-0 top-full mt-1.5 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20 p-2">
-              <div className="grid grid-cols-1 gap-0.5 max-h-64 overflow-y-auto">
+            <div className="absolute left-0 top-full mt-1.5 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20 p-2 flex flex-col max-h-72">
+              <div className="grid grid-cols-1 gap-0.5 overflow-y-auto flex-1 min-h-0">
                 {LANGUAGES.map(l => (
                   <button
                     key={l.name}
