@@ -19,9 +19,10 @@ interface Props {
   users: User[];
   userPp: number | null;
   friendIds: number[];
+  lobbies: React.ReactNode;
 }
 
-export default function DiscoverClient({ users, userPp, friendIds }: Props) {
+export default function DiscoverClient({ users, userPp, friendIds, lobbies }: Props) {
   const [filters, setFilters] = useState<Filters>({
     q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', showAll: false,
   });
@@ -61,14 +62,16 @@ export default function DiscoverClient({ users, userPp, friendIds }: Props) {
 
   return (
     <>
-      <p className="text-gray-400 mb-8">
+      <DiscoverFilters filters={filters} onChange={setFilters} />
+
+      {lobbies}
+
+      <p className="text-gray-400 mb-6">
         {title}
         {filtered.length > 0 && (
           <span className="ml-2 text-gray-500 text-sm">— {filtered.length} players</span>
         )}
       </p>
-
-      <DiscoverFilters filters={filters} onChange={setFilters} />
 
       {filtered.length === 0 ? (
         <div className="text-center py-20">

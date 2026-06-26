@@ -69,18 +69,20 @@ export default async function DiscoverPage() {
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
 
-      {/* Live osu!friends matches */}
-      <Suspense fallback={null}>
-        <LiveTournaments />
-      </Suspense>
-
-      {/* Live lobbies — only re-fetched on manual refresh, not on filter changes */}
-      <Suspense fallback={null}>
-        <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={null} />
-      </Suspense>
-
-      {/* User grid with client-side filtering — no page reload on filter change */}
-      <DiscoverClient users={displayUsers} userPp={userPp} friendIds={friendIds} />
+      {/* Filters at top, lobbies slotted in below filters, user grid at bottom */}
+      <DiscoverClient
+        users={displayUsers}
+        userPp={userPp}
+        friendIds={friendIds}
+        lobbies={
+          <>
+            <Suspense fallback={null}><LiveTournaments /></Suspense>
+            <Suspense fallback={null}>
+              <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={null} />
+            </Suspense>
+          </>
+        }
+      />
     </main>
   );
 }
