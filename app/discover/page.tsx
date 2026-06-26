@@ -4,24 +4,14 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { fetchUsersBatch, fetchFriends } from '@/lib/osu-api';
 import { getAccessToken } from '@/lib/auth-server';
-import UserCard from '@/components/UserCard';
-import DiscoverFilters from './DiscoverFilters';
 import LiveTournaments from './LiveTournaments';
 import LiveLobbies from './LiveLobbies';
+import DiscoverClient from './DiscoverClient';
 
-interface Props {
-  searchParams: { mode?: string; all?: string; q?: string; country?: string; language?: string; rankMin?: string; rankMax?: string };
-}
+export const dynamic = 'force-dynamic';
 
-export default async function DiscoverPage({ searchParams }: Props) {
+export default async function DiscoverPage() {
   const session = await getServerSession(authOptions);
-  const mode = searchParams.mode;
-  const showAll = searchParams.all === '1';
-  const q = searchParams.q?.trim();
-  const country = searchParams.country?.toUpperCase();
-  const language = searchParams.language;
-  const rankMin = searchParams.rankMin ? Number(searchParams.rankMin) : null;
-  const rankMax = searchParams.rankMax ? Number(searchParams.rankMax) : null;
 
   let userPp: number | null = null;
   if (session?.user?.osuId) {
@@ -32,28 +22,17 @@ export default async function DiscoverPage({ searchParams }: Props) {
     userPp = dbUser?.pp ?? null;
   }
 
-  const ppWindow = userPp != null ? Math.max(20, Math.round(userPp * 0.15)) : null;
-  const ppMin = userPp != null ? userPp - ppWindow! : null;
-  const ppMax = userPp != null ? userPp + ppWindow! : null;
-
-  const hasExplicitFilters = !!(q || country || language || rankMin || rankMax);
-
+  // Fetch all registered users (excluding self) — filtering happens client-side
   const users = await prisma.user.findMany({
     where: {
       isRegistered: true,
       ...(session?.user?.osuId ? { NOT: { osuId: session.user.osuId } } : {}),
-      ...(q ? { username: { contains: q, mode: 'insensitive' } } : {}),
-      ...(mode ? { preferredModes: { has: mode } } : {}),
-      ...(country ? { countryCode: country } : {}),
-      ...(language ? { languages: { has: language } } : {}),
-      ...(rankMin || rankMax ? { globalRank: { ...(rankMin ? { gte: rankMin } : {}), ...(rankMax ? { lte: rankMax } : {}) } } : {}),
-      ...(!showAll && !hasExplicitFilters && ppMin != null && ppMax != null ? { pp: { gte: ppMin, lte: ppMax } } : {}),
     },
     orderBy: { lastSeen: 'desc' },
-    take: 200,
+    take: 500,
   });
 
-  // Fetch osu! friends and live status in parallel
+  // Fetch osu! friends and live status in parallel (once, on page load)
   const [friendsList, ...batchResults] = await Promise.all([
     session?.user?.osuId
       ? getAccessToken().then(t => t ? fetchFriends(t).catch(() => []) : [])
@@ -63,7 +42,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
     ),
   ]);
 
-  const friendIds = new Set((friendsList as { id: number }[]).map(f => f.id));
+  const friendIds = (friendsList as { id: number }[]).map(f => f.id);
 
   const liveMap = new Map<number, { isOnline: boolean; lastSeen: Date | null }>();
   for (const batch of batchResults) {
@@ -89,43 +68,19 @@ export default async function DiscoverPage({ searchParams }: Props) {
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
-      <p className="text-gray-400 mb-8">
-        {q ? `Results for "${q}"` : showAll || hasExplicitFilters ? 'All osu!friends members' : 'osu!friends members near your skill level'}
-        {displayUsers.length > 0 && (
-          <span className="ml-2 text-gray-500 text-sm">— {displayUsers.length} players</span>
-        )}
-      </p>
 
-      <Suspense>
-        <DiscoverFilters />
-      </Suspense>
-
-      {/* Live osu!friends matches — only shown when IN_PROGRESS tournaments exist */}
+      {/* Live osu!friends matches */}
       <Suspense fallback={null}>
         <LiveTournaments />
       </Suspense>
 
-      {/* Live lobbies stream in independently so they don't delay the player grid */}
+      {/* Live lobbies — only re-fetched on manual refresh, not on filter changes */}
       <Suspense fallback={null}>
-        <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={mode ?? null} />
+        <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={null} />
       </Suspense>
 
-      {displayUsers.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-500 text-lg mb-2">No players found at your skill level yet.</p>
-          <p className="text-gray-600 text-sm mt-1">
-            {userPp == null
-              ? 'Sign in with osu! to find players near your level.'
-              : 'Share osu!friends with players at your level to grow the community here.'}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {displayUsers.map((user) => (
-            <UserCard key={user.id} user={user} isOsuFriend={friendIds.has(user.osuId)} />
-          ))}
-        </div>
-      )}
+      {/* User grid with client-side filtering — no page reload on filter change */}
+      <DiscoverClient users={displayUsers} userPp={userPp} friendIds={friendIds} />
     </main>
   );
 }

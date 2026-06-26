@@ -1,8 +1,5 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useState } from 'react';
-
 const MODES = [
   { id: 'osu', label: 'osu!' },
   { id: 'taiko', label: 'Taiko' },
@@ -67,7 +64,6 @@ const COUNTRIES: { code: string; name: string; flag: string }[] = [
   { code: 'NO', name: 'Norway',         flag: '🇳🇴' },
   { code: 'FI', name: 'Finland',        flag: '🇫🇮' },
   { code: 'UA', name: 'Ukraine',        flag: '🇺🇦' },
-  { code: 'PL', name: 'Poland',         flag: '🇵🇱' },
   { code: 'CZ', name: 'Czech Republic', flag: '🇨🇿' },
   { code: 'RO', name: 'Romania',        flag: '🇷🇴' },
   { code: 'HU', name: 'Hungary',        flag: '🇭🇺' },
@@ -78,43 +74,27 @@ const COUNTRIES: { code: string; name: string; flag: string }[] = [
   { code: 'IN', name: 'India',          flag: '🇮🇳' },
 ];
 
-export default function DiscoverFilters() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export interface Filters {
+  q: string;
+  mode: string;
+  country: string;
+  language: string;
+  rankMin: string;
+  rankMax: string;
+  showAll: boolean;
+}
 
-  const activeMode = searchParams.get('mode') ?? '';
-  const showAll    = searchParams.get('all') === '1';
-  const country    = searchParams.get('country') ?? '';
-  const language   = searchParams.get('language') ?? '';
-  const rankMin    = searchParams.get('rankMin') ?? '';
-  const rankMax    = searchParams.get('rankMax') ?? '';
-  const q          = searchParams.get('q') ?? '';
+interface Props {
+  filters: Filters;
+  onChange: (f: Filters) => void;
+}
 
-  const [rankMinInput, setRankMinInput] = useState(rankMin);
-  const [rankMaxInput, setRankMaxInput] = useState(rankMax);
-
-  const push = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    for (const [k, v] of Object.entries(updates)) {
-      if (v) params.set(k, v);
-      else params.delete(k);
-    }
-    router.push(`/discover?${params.toString()}`);
-  }, [router, searchParams]);
-
-  function toggleMode(mode: string) {
-    push({ mode: activeMode === mode ? null : mode });
+export default function DiscoverFilters({ filters, onChange }: Props) {
+  function set(patch: Partial<Filters>) {
+    onChange({ ...filters, ...patch });
   }
 
-  function toggleAll() {
-    push({ all: showAll ? null : '1' });
-  }
-
-  function applyRank() {
-    push({ rankMin: rankMinInput || null, rankMax: rankMaxInput || null });
-  }
-
-  const activeFilters = [country, language, rankMin, rankMax].filter(Boolean).length;
+  const activeFilters = [filters.country, filters.language, filters.rankMin, filters.rankMax].filter(Boolean).length;
 
   return (
     <div className="space-y-3 mb-8">
@@ -126,23 +106,20 @@ export default function DiscoverFilters() {
         <input
           type="text"
           placeholder="Search by username..."
-          defaultValue={q}
-          onKeyDown={e => {
-            if (e.key === 'Enter') push({ q: (e.target as HTMLInputElement).value || null });
-          }}
-          onChange={e => { if (!e.target.value) push({ q: null }); }}
+          value={filters.q}
+          onChange={e => set({ q: e.target.value })}
           className="w-full bg-gray-900/60 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50"
         />
       </div>
 
       {/* Filter row */}
       <div className="flex flex-wrap items-center gap-2">
-        {MODES.map((m) => (
+        {MODES.map(m => (
           <button
             key={m.id}
-            onClick={() => toggleMode(m.id)}
+            onClick={() => set({ mode: filters.mode === m.id ? '' : m.id })}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              activeMode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+              filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
             }`}
           >
             {m.label}
@@ -151,12 +128,11 @@ export default function DiscoverFilters() {
 
         <div className="w-px h-5 bg-gray-700 mx-1" />
 
-        {/* Country dropdown */}
         <select
-          value={country}
-          onChange={e => push({ country: e.target.value || null })}
+          value={filters.country}
+          onChange={e => set({ country: e.target.value })}
           className={`bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none ${
-            country ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
+            filters.country ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
           }`}
         >
           <option value="">🌍 Any country</option>
@@ -165,12 +141,11 @@ export default function DiscoverFilters() {
           ))}
         </select>
 
-        {/* Language dropdown */}
         <select
-          value={language}
-          onChange={e => push({ language: e.target.value || null })}
+          value={filters.language}
+          onChange={e => set({ language: e.target.value })}
           className={`bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none ${
-            language ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
+            filters.language ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
           }`}
         >
           <option value="">💬 Any language</option>
@@ -179,29 +154,24 @@ export default function DiscoverFilters() {
           ))}
         </select>
 
-        {/* Rank range */}
         <div className="flex items-center gap-1">
           <input
             type="number"
             placeholder="Rank min"
-            value={rankMinInput}
-            onChange={e => setRankMinInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') applyRank(); }}
-            onBlur={applyRank}
+            value={filters.rankMin}
+            onChange={e => set({ rankMin: e.target.value })}
             className={`w-28 bg-gray-800 border rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none ${
-              rankMin ? 'border-pink-500/50' : 'border-transparent'
+              filters.rankMin ? 'border-pink-500/50' : 'border-transparent'
             }`}
           />
           <span className="text-gray-600 text-sm">–</span>
           <input
             type="number"
             placeholder="Rank max"
-            value={rankMaxInput}
-            onChange={e => setRankMaxInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') applyRank(); }}
-            onBlur={applyRank}
+            value={filters.rankMax}
+            onChange={e => set({ rankMax: e.target.value })}
             className={`w-28 bg-gray-800 border rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none ${
-              rankMax ? 'border-pink-500/50' : 'border-transparent'
+              filters.rankMax ? 'border-pink-500/50' : 'border-transparent'
             }`}
           />
         </div>
@@ -209,9 +179,9 @@ export default function DiscoverFilters() {
         <div className="w-px h-5 bg-gray-700 mx-1" />
 
         <button
-          onClick={toggleAll}
+          onClick={() => set({ showAll: !filters.showAll })}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            showAll ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+            filters.showAll ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
           }`}
         >
           All members
@@ -219,7 +189,7 @@ export default function DiscoverFilters() {
 
         {activeFilters > 0 && (
           <button
-            onClick={() => push({ country: null, language: null, rankMin: null, rankMax: null })}
+            onClick={() => set({ country: '', language: '', rankMin: '', rankMax: '' })}
             className="text-xs text-gray-500 hover:text-gray-300 transition-colors ml-1"
           >
             Clear filters ({activeFilters})
