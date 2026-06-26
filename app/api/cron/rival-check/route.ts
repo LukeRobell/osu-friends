@@ -120,7 +120,6 @@ export async function GET(req: NextRequest) {
     });
 
     const mapUrl = `https://osu.ppy.sh/beatmapsets/${challenge.beatmapsetId}#osu/${challenge.beatmapId}`;
-    const ppStr = `${Math.round(score.pp)}pp`;
 
     // Notify the watcher: snipe confirmed
     await createNotification({
