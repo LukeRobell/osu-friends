@@ -172,10 +172,10 @@ export default function Home() {
         </div>
 
         <div className="relative z-10">
-          <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">osu! is better with people</p>
+          <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">osu! is better with friends</p>
           <h1 className="text-6xl sm:text-7xl font-bold text-pink-400 mb-5 tracking-tight">osu!friends</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Find your people. Build the community this game deserves.
+            Find your people. Let&apos;s build the community this game deserves.
           </p>
         </div>
 
