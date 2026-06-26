@@ -24,6 +24,7 @@ function typeIcon(type: string): string {
   if (type === 'RIVAL_PLAY') return '⚔️';
   if (type === 'RIVAL_REQUEST') return '🤺';
   if (type === 'TOURNAMENT_INVITE') return '🏆';
+  if (type === 'SNIPE') return '🎯';
   return '🔔';
 }
 

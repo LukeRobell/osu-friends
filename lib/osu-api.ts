@@ -195,6 +195,20 @@ export async function fetchUserBestPlays(osuId: number, mode = 'osu', limit = 20
     }));
 }
 
+// Fetch a user's best score on a specific beatmap — used to detect snipes.
+// Returns null if the user has no score on that map (404) or API error.
+export async function fetchUserScoreOnBeatmap(osuUserId: number, beatmapId: string): Promise<{ pp: number } | null> {
+  const token = await getClientToken();
+  const res = await fetch(
+    `https://osu.ppy.sh/api/v2/beatmaps/${beatmapId}/scores/users/${osuUserId}?ruleset=osu`,
+    { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }, cache: 'no-store' }
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  const pp = data.score?.pp ?? null;
+  return pp != null ? { pp } : null;
+}
+
 // Fetch the flag image URL for an osu! team.
 // The flag URL is content-addressed and can't be guessed from the team ID alone.
 export async function fetchTeamFlagUrl(teamId: string): Promise<string | null> {

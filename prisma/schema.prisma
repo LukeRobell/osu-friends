@@ -41,6 +41,8 @@ model User {
   receivedRivalReqs     RivalRequest[]         @relation("ReceivedRivalRequests")
   rivalNotifiedPlays    RivalNotifiedPlay[]
   notifications         Notification[]
+  snipesAsWatcher       SnipeChallenge[]     @relation("WatcherChallenges")
+  snipesAsRival         SnipeChallenge[]     @relation("RivalChallenges")
 }
 
 model PlaySession {
@@ -83,6 +85,13 @@ enum NotificationType {
   RIVAL_REQUEST
   RIVAL_PLAY
   TOURNAMENT_INVITE
+  SNIPE
+}
+
+enum SnipeChallengeStatus {
+  OPEN
+  SNIPED
+  EXPIRED
 }
 
 model Tournament {
@@ -172,4 +181,24 @@ model Notification {
   createdAt DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model SnipeChallenge {
+  id           String               @id @default(cuid())
+  watcherId    String
+  rivalId      String
+  osuScoreId   String
+  beatmapId    String
+  beatmapsetId String
+  mapTitle     String
+  mapVersion   String
+  targetPp     Float
+  status       SnipeChallengeStatus @default(OPEN)
+  createdAt    DateTime             @default(now())
+  snipedAt     DateTime?
+
+  watcher User @relation("WatcherChallenges", fields: [watcherId], references: [id])
+  rival   User @relation("RivalChallenges",   fields: [rivalId],   references: [id])
+
+  @@unique([watcherId, osuScoreId])
 }

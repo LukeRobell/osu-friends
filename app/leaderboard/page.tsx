@@ -113,9 +113,9 @@ async function PlayersTab() {
 }
 
 async function RivalsTab() {
-  // Count rival-triggered play notifications per user (measures competitive activity)
-  const grouped = await prisma.rivalNotifiedPlay.groupBy({
-    by: ['userId'],
+  const grouped = await prisma.snipeChallenge.groupBy({
+    by: ['watcherId'],
+    where: { status: 'SNIPED' },
     _count: { id: true },
     orderBy: { _count: { id: 'desc' } },
     take: 100,
@@ -124,12 +124,13 @@ async function RivalsTab() {
   if (grouped.length === 0) {
     return (
       <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-12 text-center">
-        <p className="text-gray-500">No rival activity yet. Set a rival on your profile to get started.</p>
+        <p className="text-gray-500 mb-1">No snipes yet.</p>
+        <p className="text-gray-600 text-sm">Set a rival, get notified when they score, go beat it.</p>
       </div>
     );
   }
 
-  const userIds = grouped.map((g) => g.userId);
+  const userIds = grouped.map((g) => g.watcherId);
   const users = await prisma.user.findMany({
     where: { id: { in: userIds } },
     select: {
@@ -145,7 +146,7 @@ async function RivalsTab() {
   const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
 
   const rows = grouped
-    .map((g) => ({ ...userMap[g.userId], snipes: g._count.id }))
+    .map((g) => ({ ...userMap[g.watcherId], snipes: g._count.id }))
     .filter((r) => r.username);
 
   return (
@@ -153,7 +154,7 @@ async function RivalsTab() {
       <div className="grid grid-cols-[48px_1fr_120px_160px] text-xs text-gray-500 uppercase tracking-wider px-6 py-3 border-b border-white/5">
         <span>#</span>
         <span>Player</span>
-        <span className="text-right">Rival Plays</span>
+        <span className="text-right">Snipes 🎯</span>
         <span className="text-right">Current Rival</span>
       </div>
       {rows.map((r, i) => (
@@ -187,7 +188,7 @@ async function RivalsTab() {
             )}
           </div>
           <span className="text-right text-pink-400 text-sm font-semibold">
-            {r.snipes} ⚔️
+            {r.snipes} 🎯
           </span>
           <span className="text-right text-gray-500 text-sm">
             {r.rival?.username ?? '—'}
