@@ -17,6 +17,7 @@ model User {
   countryRank       Int?
   countryCode       String
   preferredModes    String[]
+  languages         String[]
   timezone          String?
   tournamentOptIn   Boolean  @default(false)
   teamId            String?

@@ -10,13 +10,18 @@ import LiveTournaments from './LiveTournaments';
 import LiveLobbies from './LiveLobbies';
 
 interface Props {
-  searchParams: { mode?: string; all?: string };
+  searchParams: { mode?: string; all?: string; q?: string; country?: string; language?: string; rankMin?: string; rankMax?: string };
 }
 
 export default async function DiscoverPage({ searchParams }: Props) {
   const session = await getServerSession(authOptions);
   const mode = searchParams.mode;
   const showAll = searchParams.all === '1';
+  const q = searchParams.q?.trim();
+  const country = searchParams.country?.toUpperCase();
+  const language = searchParams.language;
+  const rankMin = searchParams.rankMin ? Number(searchParams.rankMin) : null;
+  const rankMax = searchParams.rankMax ? Number(searchParams.rankMax) : null;
 
   let userPp: number | null = null;
   if (session?.user?.osuId) {
@@ -31,12 +36,18 @@ export default async function DiscoverPage({ searchParams }: Props) {
   const ppMin = userPp != null ? userPp - ppWindow! : null;
   const ppMax = userPp != null ? userPp + ppWindow! : null;
 
+  const hasExplicitFilters = !!(q || country || language || rankMin || rankMax);
+
   const users = await prisma.user.findMany({
     where: {
       isRegistered: true,
       ...(session?.user?.osuId ? { NOT: { osuId: session.user.osuId } } : {}),
+      ...(q ? { username: { contains: q, mode: 'insensitive' } } : {}),
       ...(mode ? { preferredModes: { has: mode } } : {}),
-      ...(!showAll && ppMin != null && ppMax != null ? { pp: { gte: ppMin, lte: ppMax } } : {}),
+      ...(country ? { countryCode: country } : {}),
+      ...(language ? { languages: { has: language } } : {}),
+      ...(rankMin || rankMax ? { globalRank: { ...(rankMin ? { gte: rankMin } : {}), ...(rankMax ? { lte: rankMax } : {}) } } : {}),
+      ...(!showAll && !hasExplicitFilters && ppMin != null && ppMax != null ? { pp: { gte: ppMin, lte: ppMax } } : {}),
     },
     orderBy: { lastSeen: 'desc' },
     take: 200,
@@ -79,7 +90,7 @@ export default async function DiscoverPage({ searchParams }: Props) {
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
       <p className="text-gray-400 mb-8">
-        {showAll ? 'All osu!friends members' : 'osu!friends members near your skill level'}
+        {q ? `Results for "${q}"` : showAll || hasExplicitFilters ? 'All osu!friends members' : 'osu!friends members near your skill level'}
         {displayUsers.length > 0 && (
           <span className="ml-2 text-gray-500 text-sm">— {displayUsers.length} players</span>
         )}

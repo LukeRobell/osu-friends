@@ -11,6 +11,7 @@ import TeamBadge from '@/components/TeamBadge';
 import RivalButton from '@/components/RivalButton';
 import OsuFriends from './OsuFriends';
 import RivalSection from './RivalSection';
+import LanguagePicker from './LanguagePicker';
 import { countryFlagUrl } from '@/lib/osu-api';
 
 interface Props {
@@ -157,8 +158,22 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           )}
 
+          {!isOwnProfile && user.languages?.length > 0 && (
+            <div className="mt-6">
+              <p className="text-gray-400 text-sm mb-3">Languages</p>
+              <div className="flex gap-2 flex-wrap">
+                {user.languages.map((lang: string) => (
+                  <span key={lang} className="px-3 py-1 border border-white/10 text-gray-300 rounded-full text-sm">
+                    {lang}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {isOwnProfile && (
             <>
+              <LanguagePicker initial={user.languages ?? []} />
               <TournamentOptIn initialValue={user.tournamentOptIn} />
               <Suspense fallback={null}>
                 <RivalSection userId={user.id} />
