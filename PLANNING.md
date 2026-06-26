@@ -273,17 +273,12 @@ Next.js 14 (App Router) · TypeScript · Tailwind CSS · Prisma · PostgreSQL (S
 
 ---
 
-## Sprint 8 — Leaderboards (next)
+## Sprint 8 — Leaderboards ✅
 
-**Goal:** Give the community a scoreboard — starts with rival activity, seeds into MMR later.
-
-### Phase 1 — `/leaderboard` page
-- [ ] **Players tab** — all registered osufriends members ranked by pp. Columns: rank, avatar, username, country flag, pp, global osu! rank. Paginated.
-- [ ] **Rivals tab** — ranked by total snipe count (`RivalNotifiedPlay` per user). Columns: rank, avatar, username, snipe count, current rival name. This is the MMR seed.
-- [ ] **Teams tab** — placeholder "coming soon" with teaser copy about the team finder
-
-### Phase 2 — Leaderboard in NavBar
-- [ ] Add "Leaderboard" link in NavBar (between Discover and notifications)
+- [x] `/leaderboard` page — Players tab (ranked by pp), Rivals tab (ranked by snipes), Teams tab (placeholder)
+- [x] Leaderboard link added to NavBar
+- [x] Snipe system — `SnipeChallenge` model tracks open challenges; cron detects when watcher beats rival's score; notifies both players; leaderboard counts confirmed snipes
+- [x] Tiered rival notification threshold by pp bracket (stops low-rank spam)
 
 ---
 

@@ -43,6 +43,8 @@ model User {
   notifications         Notification[]
   snipesAsWatcher       SnipeChallenge[]     @relation("WatcherChallenges")
   snipesAsRival         SnipeChallenge[]     @relation("RivalChallenges")
+  teamProfileOwned      TeamProfile?         @relation("TeamProfileOwner")
+  teamApplications      TeamApplication[]
 }
 
 model PlaySession {
@@ -86,6 +88,13 @@ enum NotificationType {
   RIVAL_PLAY
   TOURNAMENT_INVITE
   SNIPE
+  TEAM_APPLICATION
+}
+
+enum TeamApplicationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }
 
 enum SnipeChallengeStatus {
@@ -181,6 +190,40 @@ model Notification {
   createdAt DateTime         @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model TeamProfile {
+  id              String   @id @default(cuid())
+  teamOsuId       String   @unique
+  name            String
+  tag             String   @unique
+  flagUrl         String?
+  description     String
+  isRecruiting    Boolean  @default(true)
+  ppMin           Float?
+  ppMax           Float?
+  modes           String[]
+  discordUrl      String?
+  claimedByUserId String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  claimedBy    User              @relation("TeamProfileOwner", fields: [claimedByUserId], references: [id])
+  applications TeamApplication[]
+}
+
+model TeamApplication {
+  id          String                @id @default(cuid())
+  teamOsuId   String
+  userId      String
+  message     String
+  status      TeamApplicationStatus @default(PENDING)
+  createdAt   DateTime              @default(now())
+
+  team TeamProfile @relation(fields: [teamOsuId], references: [teamOsuId])
+  user User        @relation(fields: [userId], references: [id])
+
+  @@unique([teamOsuId, userId])
 }
 
 model SnipeChallenge {
