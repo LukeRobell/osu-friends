@@ -52,7 +52,7 @@ export async function fetchUserProfile(osuId: number, mode = 'osu', revalidate?:
     ? { next: { revalidate } }
     : { cache: 'no-store' as const };
   const res = await fetch(
-    `https://osu.ppy.sh/api/v2/users/${osuId}?mode=${mode}`,
+    `https://osu.ppy.sh/api/v2/users/${osuId}/${mode}`,
     { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }, ...cacheOpt }
   );
   if (!res.ok) return null;
