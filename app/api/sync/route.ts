@@ -12,46 +12,55 @@ export async function POST() {
 
   const { osuId } = session.user;
 
-  const dbUser = await prisma.user.findFirst({
-    where: { osuId },
-    select: { preferredModes: true },
-  });
-  const mode = dbUser?.preferredModes[0] ?? 'osu';
-
-  const [profile, avgPp] = await Promise.all([
-    fetchUserProfile(osuId, mode),
-    fetchUserAvgTopPp(osuId, mode),
+  // Fetch osu! standard profile + all 4 mode stats in parallel
+  const [osuProfile, taikoProfile, catchProfile, maniaProfile,
+         osuPp, taikoPp, catchPp, maniaPp] = await Promise.all([
+    fetchUserProfile(osuId, 'osu'),
+    fetchUserProfile(osuId, 'taiko').catch(() => null),
+    fetchUserProfile(osuId, 'fruits').catch(() => null),
+    fetchUserProfile(osuId, 'mania').catch(() => null),
+    fetchUserAvgTopPp(osuId, 'osu').catch(() => null),
+    fetchUserAvgTopPp(osuId, 'taiko').catch(() => null),
+    fetchUserAvgTopPp(osuId, 'fruits').catch(() => null),
+    fetchUserAvgTopPp(osuId, 'mania').catch(() => null),
   ]);
 
-  const teamFlagUrl = profile?.team?.id
-    ? await fetchTeamFlagUrl(profile.team.id).catch(() => null)
+  const teamFlagUrl = osuProfile?.team?.id
+    ? await fetchTeamFlagUrl(osuProfile.team.id).catch(() => null)
     : null;
 
   const data = {
-    ...(avgPp != null && { pp: avgPp }),
-    ...(profile && {
-      globalRank:  profile.globalRank,
-      countryRank: profile.countryRank,
-      isOnline:    profile.isOnline,
-      lastSeen:    profile.lastSeen,
-      username:    profile.username,
-      avatarUrl:   profile.avatarUrl,
-      teamId:      profile.team?.id   ?? null,
-      teamName:    profile.team?.name ?? null,
-      teamTag:     profile.team?.tag  ?? null,
-      teamFlagUrl: teamFlagUrl         ?? null,
+    // osu! standard — primary stats
+    ...(osuPp != null && { pp: osuPp }),
+    ...(osuProfile && {
+      globalRank:  osuProfile.globalRank,
+      countryRank: osuProfile.countryRank,
+      isOnline:    osuProfile.isOnline,
+      lastSeen:    osuProfile.lastSeen,
+      username:    osuProfile.username,
+      avatarUrl:   osuProfile.avatarUrl,
+      teamId:      osuProfile.team?.id   ?? null,
+      teamName:    osuProfile.team?.name ?? null,
+      teamTag:     osuProfile.team?.tag  ?? null,
+      teamFlagUrl: teamFlagUrl            ?? null,
     }),
+    // mode-specific stats
+    taikoPp:         taikoPp ?? null,
+    taikoGlobalRank: taikoProfile?.globalRank ?? null,
+    catchPp:         catchPp ?? null,
+    catchGlobalRank: catchProfile?.globalRank ?? null,
+    maniaPp:         maniaPp ?? null,
+    maniaGlobalRank: maniaProfile?.globalRank ?? null,
   };
 
-  // upsert so users with a valid JWT but missing DB record get created here
   await prisma.user.upsert({
     where: { osuId },
     update: data,
     create: {
       osuId,
-      username:      profile?.username    ?? session.user.username,
-      avatarUrl:     profile?.avatarUrl   ?? session.user.avatarUrl ?? '',
-      countryCode:   profile?.countryCode ?? session.user.countryCode ?? '',
+      username:      osuProfile?.username    ?? session.user.username,
+      avatarUrl:     osuProfile?.avatarUrl   ?? session.user.avatarUrl ?? '',
+      countryCode:   osuProfile?.countryCode ?? session.user.countryCode ?? '',
       preferredModes: ['osu'],
       isRegistered:  true,
       lastSeen:      new Date(),
@@ -59,5 +68,5 @@ export async function POST() {
     },
   });
 
-  return NextResponse.json({ ok: true, pp: avgPp });
+  return NextResponse.json({ ok: true, pp: osuPp });
 }

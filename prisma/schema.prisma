@@ -19,6 +19,12 @@ model User {
   preferredModes    String[]
   languages         String[]
   timezone          String?
+  taikoPp           Float?
+  taikoGlobalRank   Int?
+  catchPp           Float?
+  catchGlobalRank   Int?
+  maniaPp           Float?
+  maniaGlobalRank   Int?
   tournamentOptIn   Boolean  @default(false)
   teamId            String?
   teamName          String?
