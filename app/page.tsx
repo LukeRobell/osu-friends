@@ -185,9 +185,15 @@ export default function Home() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-3">
                 {session.user.avatarUrl && (
-                  <Image src={session.user.avatarUrl} alt={session.user.username} width={40} height={40} className="rounded-full" />
+                  <Image src={session.user.avatarUrl} alt={session.user.username} width={44} height={44} className="rounded-full" />
                 )}
-                <span className="text-gray-300 text-sm">{session.user.username}</span>
+                <div className="text-left">
+                  <p className="text-white font-semibold">{session.user.username}</p>
+                  <p className="text-gray-400 text-sm">
+                    {session.user.globalRank ? `#${session.user.globalRank.toLocaleString()}` : 'Unranked'}
+                    {session.user.countryCode ? ` · ${session.user.countryCode}` : ''}
+                  </p>
+                </div>
               </div>
               <div className="flex gap-3">
                 <Link href={`/profile/${encodeURIComponent(session.user.username)}`} className="px-6 py-2.5 border-2 border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-medium transition-colors">
@@ -196,9 +202,6 @@ export default function Home() {
                 <Link href="/discover" className="px-6 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full font-medium transition-colors">
                   Discover
                 </Link>
-                <button onClick={() => signOut({ callbackUrl: '/' })} className="px-6 py-2.5 text-gray-400 hover:text-white text-sm transition-colors">
-                  Sign out
-                </button>
               </div>
             </div>
           ) : (
