@@ -23,6 +23,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'You must be a member of this team' }, { status: 403 });
   }
 
+  // On update, only the original creator may edit
+  const existing = await prisma.teamProfile.findUnique({ where: { teamOsuId }, select: { claimedByUserId: true } });
+  if (existing && existing.claimedByUserId !== dbUser.id) {
+    return NextResponse.json({ error: 'Only the listing owner can edit this' }, { status: 403 });
+  }
+
   const profile = await prisma.teamProfile.upsert({
     where: { teamOsuId },
     create: {
