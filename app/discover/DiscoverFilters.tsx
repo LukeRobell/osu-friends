@@ -10,10 +10,72 @@ const MODES = [
   { id: 'mania', label: 'Mania' },
 ];
 
-const LANGUAGES = [
-  'English', 'Japanese', 'Korean', 'Chinese', 'Portuguese', 'Russian',
-  'Spanish', 'French', 'German', 'Polish', 'Indonesian', 'Thai',
-  'Vietnamese', 'Turkish', 'Arabic', 'Italian', 'Dutch', 'Filipino',
+export const LANGUAGES: { name: string; flag: string }[] = [
+  { name: 'English',    flag: '🇬🇧' },
+  { name: 'Japanese',   flag: '🇯🇵' },
+  { name: 'Korean',     flag: '🇰🇷' },
+  { name: 'Chinese',    flag: '🇨🇳' },
+  { name: 'Portuguese', flag: '🇧🇷' },
+  { name: 'Russian',    flag: '🇷🇺' },
+  { name: 'Spanish',    flag: '🇪🇸' },
+  { name: 'French',     flag: '🇫🇷' },
+  { name: 'German',     flag: '🇩🇪' },
+  { name: 'Polish',     flag: '🇵🇱' },
+  { name: 'Indonesian', flag: '🇮🇩' },
+  { name: 'Thai',       flag: '🇹🇭' },
+  { name: 'Vietnamese', flag: '🇻🇳' },
+  { name: 'Turkish',    flag: '🇹🇷' },
+  { name: 'Arabic',     flag: '🇸🇦' },
+  { name: 'Italian',    flag: '🇮🇹' },
+  { name: 'Dutch',      flag: '🇳🇱' },
+  { name: 'Swedish',    flag: '🇸🇪' },
+  { name: 'Finnish',    flag: '🇫🇮' },
+  { name: 'Norwegian',  flag: '🇳🇴' },
+  { name: 'Filipino',   flag: '🇵🇭' },
+  { name: 'Malay',      flag: '🇲🇾' },
+];
+
+const COUNTRIES: { code: string; name: string; flag: string }[] = [
+  { code: 'US', name: 'United States',  flag: '🇺🇸' },
+  { code: 'JP', name: 'Japan',          flag: '🇯🇵' },
+  { code: 'KR', name: 'South Korea',    flag: '🇰🇷' },
+  { code: 'CN', name: 'China',          flag: '🇨🇳' },
+  { code: 'TW', name: 'Taiwan',         flag: '🇹🇼' },
+  { code: 'HK', name: 'Hong Kong',      flag: '🇭🇰' },
+  { code: 'BR', name: 'Brazil',         flag: '🇧🇷' },
+  { code: 'RU', name: 'Russia',         flag: '🇷🇺' },
+  { code: 'DE', name: 'Germany',        flag: '🇩🇪' },
+  { code: 'FR', name: 'France',         flag: '🇫🇷' },
+  { code: 'PL', name: 'Poland',         flag: '🇵🇱' },
+  { code: 'ID', name: 'Indonesia',      flag: '🇮🇩' },
+  { code: 'TH', name: 'Thailand',       flag: '🇹🇭' },
+  { code: 'VN', name: 'Vietnam',        flag: '🇻🇳' },
+  { code: 'TR', name: 'Turkey',         flag: '🇹🇷' },
+  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+  { code: 'AU', name: 'Australia',      flag: '🇦🇺' },
+  { code: 'CA', name: 'Canada',         flag: '🇨🇦' },
+  { code: 'MX', name: 'Mexico',         flag: '🇲🇽' },
+  { code: 'AR', name: 'Argentina',      flag: '🇦🇷' },
+  { code: 'PH', name: 'Philippines',    flag: '🇵🇭' },
+  { code: 'MY', name: 'Malaysia',       flag: '🇲🇾' },
+  { code: 'SG', name: 'Singapore',      flag: '🇸🇬' },
+  { code: 'CL', name: 'Chile',          flag: '🇨🇱' },
+  { code: 'IT', name: 'Italy',          flag: '🇮🇹' },
+  { code: 'ES', name: 'Spain',          flag: '🇪🇸' },
+  { code: 'NL', name: 'Netherlands',    flag: '🇳🇱' },
+  { code: 'SE', name: 'Sweden',         flag: '🇸🇪' },
+  { code: 'NO', name: 'Norway',         flag: '🇳🇴' },
+  { code: 'FI', name: 'Finland',        flag: '🇫🇮' },
+  { code: 'UA', name: 'Ukraine',        flag: '🇺🇦' },
+  { code: 'PL', name: 'Poland',         flag: '🇵🇱' },
+  { code: 'CZ', name: 'Czech Republic', flag: '🇨🇿' },
+  { code: 'RO', name: 'Romania',        flag: '🇷🇴' },
+  { code: 'HU', name: 'Hungary',        flag: '🇭🇺' },
+  { code: 'PT', name: 'Portugal',       flag: '🇵🇹' },
+  { code: 'NZ', name: 'New Zealand',    flag: '🇳🇿' },
+  { code: 'SA', name: 'Saudi Arabia',   flag: '🇸🇦' },
+  { code: 'EG', name: 'Egypt',          flag: '🇪🇬' },
+  { code: 'IN', name: 'India',          flag: '🇮🇳' },
 ];
 
 export default function DiscoverFilters() {
@@ -21,16 +83,15 @@ export default function DiscoverFilters() {
   const searchParams = useSearchParams();
 
   const activeMode = searchParams.get('mode') ?? '';
-  const showAll = searchParams.get('all') === '1';
-  const country = searchParams.get('country') ?? '';
-  const language = searchParams.get('language') ?? '';
-  const rankMin = searchParams.get('rankMin') ?? '';
-  const rankMax = searchParams.get('rankMax') ?? '';
-  const q = searchParams.get('q') ?? '';
+  const showAll    = searchParams.get('all') === '1';
+  const country    = searchParams.get('country') ?? '';
+  const language   = searchParams.get('language') ?? '';
+  const rankMin    = searchParams.get('rankMin') ?? '';
+  const rankMax    = searchParams.get('rankMax') ?? '';
+  const q          = searchParams.get('q') ?? '';
 
   const [rankMinInput, setRankMinInput] = useState(rankMin);
   const [rankMaxInput, setRankMaxInput] = useState(rankMax);
-  const [countryInput, setCountryInput] = useState(country);
 
   const push = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -53,10 +114,6 @@ export default function DiscoverFilters() {
     push({ rankMin: rankMinInput || null, rankMax: rankMaxInput || null });
   }
 
-  function applyCountry() {
-    push({ country: countryInput.toUpperCase().slice(0, 2) || null });
-  }
-
   const activeFilters = [country, language, rankMin, rankMax].filter(Boolean).length;
 
   return (
@@ -73,16 +130,13 @@ export default function DiscoverFilters() {
           onKeyDown={e => {
             if (e.key === 'Enter') push({ q: (e.target as HTMLInputElement).value || null });
           }}
-          onChange={e => {
-            if (!e.target.value) push({ q: null });
-          }}
+          onChange={e => { if (!e.target.value) push({ q: null }); }}
           className="w-full bg-gray-900/60 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50"
         />
       </div>
 
       {/* Filter row */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* Mode buttons */}
         {MODES.map((m) => (
           <button
             key={m.id}
@@ -97,21 +151,19 @@ export default function DiscoverFilters() {
 
         <div className="w-px h-5 bg-gray-700 mx-1" />
 
-        {/* Country */}
-        <div className="flex items-center gap-1">
-          <input
-            type="text"
-            placeholder="Country (e.g. US)"
-            maxLength={2}
-            value={countryInput}
-            onChange={e => setCountryInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') applyCountry(); }}
-            onBlur={applyCountry}
-            className={`w-32 bg-gray-800 border rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none uppercase ${
-              country ? 'border-pink-500/50 text-pink-400' : 'border-transparent'
-            }`}
-          />
-        </div>
+        {/* Country dropdown */}
+        <select
+          value={country}
+          onChange={e => push({ country: e.target.value || null })}
+          className={`bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none ${
+            country ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
+          }`}
+        >
+          <option value="">🌍 Any country</option>
+          {COUNTRIES.map(c => (
+            <option key={c.code} value={c.code}>{c.flag} {c.name}</option>
+          ))}
+        </select>
 
         {/* Language dropdown */}
         <select
@@ -121,9 +173,9 @@ export default function DiscoverFilters() {
             language ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
           }`}
         >
-          <option value="">Any language</option>
+          <option value="">💬 Any language</option>
           {LANGUAGES.map(l => (
-            <option key={l} value={l}>{l}</option>
+            <option key={l.name} value={l.name}>{l.flag} {l.name}</option>
           ))}
         </select>
 

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { fetchActiveRooms, fetchUserAvgTopPp, ppToStars } from '@/lib/osu-api';
 import LiveLobbyCard, { ProcessedRoom } from '@/components/LiveLobbyCard';
+import RefreshButton from '@/components/RefreshButton';
 
 interface Props {
   userPp: number | null;
@@ -134,6 +135,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
           </span>
           Live lobbies
           <span className="text-sm font-normal text-gray-500">{(targetStars - 1.0).toFixed(1)}–{(targetStars + 1.0).toFixed(1)}★</span>
+          <RefreshButton />
         </h2>
         <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
       </div>
