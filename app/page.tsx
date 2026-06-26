@@ -47,7 +47,7 @@ const FEATURES = [
   },
   {
     title: 'Rival system',
-    body: 'Challenge another player as your rival. Get a DM notification the moment they set a new play — and go snipe it.',
+    body: 'Challenge another player as your rival. Get notified when they set a meaningful play at your skill level — then go snipe it.',
     icon: (
       <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />

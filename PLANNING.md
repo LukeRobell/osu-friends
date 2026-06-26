@@ -188,7 +188,12 @@ Goal: surface the real osu! social graph rather than building a parallel one.
 
 **Rival play cron** (`/api/cron/rival-check` — runs every 30 min)
 - [x] Checks all users who have a rival set
-- [x] Fetches rival's top 50 plays; filters to ≥75% of avg pp AND created within last 48h
+- [x] Fetches rival's top 50 plays; filters to recent plays above a **tiered pp threshold** (scaled by rival's avg pp to prevent spamming low-ranked players):
+  - < 100pp avg → ≥97% of avg (near personal best only)
+  - 100–300pp avg → ≥92%
+  - 300–500pp avg → ≥85%
+  - 500–1000pp avg → ≥80%
+  - 1000pp+ avg → ≥75% (original threshold)
 - [x] Skips plays already recorded in `RivalNotifiedPlay`
 - [x] Creates in-app `Notification` record
 - [x] Sends bot DM: "Your rival {username} just set a {pp}pp play on {title} [{version}]!\nWant to snipe their score?\n{beatmapUrl}"

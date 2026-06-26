@@ -4,6 +4,16 @@ import { fetchUserBestPlays } from '@/lib/osu-api';
 import { createNotification } from '@/lib/notifications';
 import { sendBotDm } from '@/lib/bot-dm';
 
+// Scale notification threshold by rival's avg pp to avoid spamming low-ranked players.
+// Lower-ranked players hit "significant" plays on almost every map, so we raise the bar.
+function rivalThresholdMultiplier(avgPp: number): number {
+  if (avgPp < 100)  return 0.97; // must be near their personal best
+  if (avgPp < 300)  return 0.92;
+  if (avgPp < 500)  return 0.85;
+  if (avgPp < 1000) return 0.80;
+  return 0.75;                   // 500pp+ players: original threshold
+}
+
 export async function GET(req: NextRequest) {
   const auth = req.headers.get('authorization');
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -32,7 +42,7 @@ export async function GET(req: NextRequest) {
     const plays = await fetchUserBestPlays(rival.osuId, 'osu', 50).catch(() => []);
     if (!plays.length) continue;
 
-    const threshold = rival.pp != null ? rival.pp * 0.75 : 0;
+    const threshold = rival.pp != null ? rival.pp * rivalThresholdMultiplier(rival.pp) : 0;
     const recentSignificant = plays.filter(p => p.pp >= threshold && p.createdAt > cutoff);
     if (!recentSignificant.length) continue;
 
