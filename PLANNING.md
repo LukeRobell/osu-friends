@@ -250,39 +250,98 @@ Next.js 14 (App Router) · TypeScript · Tailwind CSS · Prisma · PostgreSQL (S
 
 ---
 
-## Sprint 8 — Ideas (not started)
-- [ ] **Music taste matching** — cross-reference maps played / beatmapsets favorited to surface players with similar music taste. No other platform does this. Compelling differentiator beyond pp-based matching.
-- [ ] **Community infrastructure** — support for established osu! communities (e.g. BTMC's osu! Roundtable) to run their own events, recruit members, and organize within osu!friends
-- [ ] Tournament history page — past results, who won, pp improvements
-- [ ] Onboarding flow for new users (first-time experience, prompt to set preferred modes)
-- [ ] User search (find any osufriends user by username)
-- [ ] Rival leaderboard — who has the most active rivals? most snipes?
-- [ ] Tournament stats — win/loss, average pp of opponents
-- [ ] Official osu! bot account (apply when user base grows)
-- [ ] Discord bot integration (mirror tournament/rival notifications to Discord)
+## Sprint 7 — Shipped ✅
 
----
-
-## Sprint 7 — In progress
-
-### Shipped this session
-- [x] Live lobby pp filter: replaced account pp with host avg top-play pp; ±15% bucket sort (apples-to-apples with rest of app)
+- [x] Live lobby pp filter: replaced account pp with host avg top-play pp; ±15% bucket sort
 - [x] Smooth scroll site-wide via Lenis
 - [x] Background video on home page (self-hosted MP4 via Git LFS, 169MB 1080p with audio)
 - [x] Mute/unmute button with volume slider + equalizer animation (fixed bottom-right)
-- [x] OAuth token auto-refresh in JWT callback (fixes osu! friends section disappearing after 24h)
+- [x] OAuth token auto-refresh in JWT callback
 - [x] osu! username space/underscore normalization on profile lookup
-- [x] 10-min DM cooldown per host, persisted in DB (`LobbyDm` model), status checked on mount
-- [x] NavBar: Discover link moved next to osu!friends logo
-- [x] Live lobbies heading shows star range (e.g. 3.2–5.2★) + "Hosts within your skill level towards top"
-- [x] Discover: "All members" toggle removes pp filter to show all registered users
+- [x] 10-min DM cooldown per host (`LobbyDm` model)
+- [x] NavBar: Discover link moved next to logo
+- [x] Live lobbies heading shows star range + skill subtitle
+- [x] Discover: "All members" toggle
 - [x] Profile: "Friends on osu!friends" label
-- [x] PgBouncer transaction mode (port 6543 + ?pgbouncer=true) — fixes EMAXCONNSESSION on Supabase free tier
-- [ ] Landing page redesign / marketing copy for new visitors
-- [ ] Tournament history page — past results, who won, pp improvements
-- [ ] Onboarding flow for new users (first-time experience, prompt to set preferred modes)
-- [ ] User search (find any osufriends user by username)
-- [ ] Rival leaderboard — who has the most active rivals? most snipes?
+- [x] PgBouncer transaction mode — fixes EMAXCONNSESSION
+- [x] Landing page redesign — multi-section, mission/vision copy, founders section, video hero
+
+---
+
+## Sprint 8 — Leaderboards (next)
+
+**Goal:** Give the community a scoreboard — starts with rival activity, seeds into MMR later.
+
+### Phase 1 — `/leaderboard` page
+- [ ] **Players tab** — all registered osufriends members ranked by pp. Columns: rank, avatar, username, country flag, pp, global osu! rank. Paginated.
+- [ ] **Rivals tab** — ranked by total snipe count (`RivalNotifiedPlay` per user). Columns: rank, avatar, username, snipe count, current rival name. This is the MMR seed.
+- [ ] **Teams tab** — placeholder "coming soon" with teaser copy about the team finder
+
+### Phase 2 — Leaderboard in NavBar
+- [ ] Add "Leaderboard" link in NavBar (between Discover and notifications)
+
+---
+
+## Sprint 9 — Team Finder
+
+**Goal:** osu! teams can create recruitment listings on osu!friends. Players browse and apply. Think guildsofwow.com but for osu! teams.
+
+### Data models
+- [ ] `TeamProfile` — osu! team listing created by a verified team member:
+  - `teamOsuId` (unique, from osu! API), `name`, `tag`, `flagUrl`
+  - `description` (free text — their pitch to recruits)
+  - `isRecruiting` (bool)
+  - `ppMin`, `ppMax` (skill requirement)
+  - `modes` (String[] — which game modes they play)
+  - `timezone` (IANA string)
+  - `discordUrl` (optional)
+  - `claimedByUserId` — the member who created the listing (must have matching `teamId` in DB)
+- [ ] `TeamApplication` — player applies to a team:
+  - `userId`, `teamOsuId`, `message`, `status` (PENDING | ACCEPTED | DECLINED)
+
+### Pages
+- [ ] `/teams` — browse recruiting teams. Filter by: mode, pp range, timezone, isRecruiting. Cards show team flag, name, tag, pp range, modes, member count (users in DB with matching teamId), "Recruiting" badge.
+- [ ] `/teams/[tag]` — team profile page:
+  - Header: team flag, name, tag, description
+  - Requirements: pp range, modes, timezone, Discord link
+  - Members on osu!friends: avatars of registered users with matching `teamId`
+  - Apply button (opens modal with message field) — disabled if already applied or already in a team
+- [ ] Own profile: "Manage team listing" button if your `teamId` is set — lets you create/edit your team's profile
+
+### Claiming flow
+- No extra API call needed — `teamId` is already synced to DB on login/sync
+- Any user with a `teamId` can create the listing for their team
+- Only the `claimedByUserId` can edit/delete the listing
+
+### Notifications
+- [ ] Team owner gets a `Notification` (type: `TEAM_APPLICATION`) when someone applies
+- [ ] Applicant gets notified when accepted/declined
+
+---
+
+## Sprint 10 — MMR
+
+**Goal:** Real competitive ratings — rival score + tournament outcomes feed into a unified MMR.
+
+### Rival MMR (player-level)
+- [ ] Score = snipe count × 2 + rival win streak (future) — visible on Rivals leaderboard tab
+- [ ] `rivalMmr Int?` on User model, updated by cron
+
+### Team MMR (team-level)
+- [ ] `TournamentResult` model: `tournamentId`, `winnerTeamId`, `loserTeamId`, margin
+- [ ] Track when a tournament with team-vs-team format completes
+- [ ] MMR formula: 1000 base ± Elo-style adjustment based on opponent team MMR
+- [ ] `teamMmr Int?` on `TeamProfile`, updated after each tournament result
+- [ ] Teams leaderboard tab goes live with real MMR column
+
+---
+
+## Backlog (future sprints)
+- [ ] Music taste matching — cross-reference maps/favorites for similar taste discovery
+- [ ] Community infrastructure — BTMC Roundtable / organized community events
+- [ ] Tournament history page — past results, who won
+- [ ] Onboarding flow for new users
+- [ ] User search (find any osufriends member by username)
 - [ ] Tournament stats — win/loss, average pp of opponents
-- [ ] Official osu! bot account (Phase 2 — apply when user base grows)
-- [ ] Discord bot integration (Phase 3 — mirror tournament/rival notifications to Discord)
+- [ ] Official osu! bot account (apply when user base grows)
+- [ ] Discord bot integration
