@@ -18,6 +18,9 @@ export default function NavBar() {
           <Link href="/discover" className="text-gray-400 hover:text-white text-sm transition-colors">
             Discover
           </Link>
+          <Link href="/leaderboard" className="text-gray-400 hover:text-white text-sm transition-colors">
+            Leaderboard
+          </Link>
         </div>
 
         <div className="flex items-center gap-6">
