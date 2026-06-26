@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TeamsPage() {
   const teams = await prisma.teamProfile.findMany({
     orderBy: [{ isRecruiting: 'desc' }, { createdAt: 'desc' }],
