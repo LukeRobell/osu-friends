@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { aboutMe, playSchedule, mapStyles, discordUsername, twitchUsername } = body;
+  const { aboutMe, playSchedule, mapStyles, discordUsername, twitchUsername, timezone } = body;
 
   const update: Record<string, unknown> = {};
 
@@ -28,6 +28,9 @@ export async function PATCH(req: NextRequest) {
   }
   if (twitchUsername !== undefined) {
     update.twitchUsername = typeof twitchUsername === 'string' ? twitchUsername.trim().toLowerCase().slice(0, 64) || null : null;
+  }
+  if (timezone !== undefined) {
+    update.timezone = typeof timezone === 'string' ? timezone.slice(0, 64) || null : null;
   }
 
   await prisma.user.update({
