@@ -13,13 +13,14 @@ interface Props {
   mode: string;
   userPp: number | null;
   canSendDm: boolean;
+  anyDifficulty?: boolean;
 }
 
-export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Props) {
+export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm, anyDifficulty = false }: Props) {
   const [page, setPage] = useState(1);
 
-  // Reset to page 1 whenever the mode filter changes
-  useEffect(() => { setPage(1); }, [mode]);
+  // Reset to page 1 whenever the mode or difficulty filter changes
+  useEffect(() => { setPage(1); }, [mode, anyDifficulty]);
 
   const { sorted, noSkillMatch, noRoomsAtAll } = useMemo(() => {
     const targetStars = ppToStars(userPp ?? 0);
@@ -28,6 +29,14 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
 
     if (modeFiltered.length === 0) {
       return { sorted: [], noSkillMatch: false, noRoomsAtAll: !!mode };
+    }
+
+    // Skip star filtering when "Any difficulty" is active
+    if (anyDifficulty) {
+      const result = [...modeFiltered].sort((a, b) =>
+        (b.participantCount ?? 0) - (a.participantCount ?? 0)
+      );
+      return { sorted: result, noSkillMatch: false, noRoomsAtAll: false };
     }
 
     const starFiltered = modeFiltered.filter(r =>

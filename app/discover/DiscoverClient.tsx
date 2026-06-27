@@ -45,6 +45,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
     q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', accountAge: '', showAll: false,
   });
   const [page, setPage] = useState(1);
+  const [anyDifficulty, setAnyDifficulty] = useState(false);
 
   function setFiltersAndReset(f: Filters) {
     setFilters(f);
@@ -123,7 +124,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
         <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
       </div>
 
-      {/* Mode filter — instant client-side, no page reload */}
+      {/* Mode filter + any-difficulty toggle */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {MODES.map(m => (
           <button
@@ -136,6 +137,17 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
             {m.label}
           </button>
         ))}
+
+        <div className="w-px h-5 bg-gray-700 mx-1" />
+
+        <button
+          onClick={() => setAnyDifficulty(v => !v)}
+          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            anyDifficulty ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+          }`}
+        >
+          Any difficulty
+        </button>
       </div>
 
       {lobbyExtras}
@@ -144,6 +156,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
         mode={filters.mode}
         userPp={effectivePp}
         canSendDm={canSendDm}
+        anyDifficulty={anyDifficulty}
       />
 
       {/* Members section */}
