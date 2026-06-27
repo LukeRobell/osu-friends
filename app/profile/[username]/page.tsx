@@ -12,6 +12,10 @@ import RivalButton from '@/components/RivalButton';
 import OsuFriends from './OsuFriends';
 import RivalSection from './RivalSection';
 import LanguagePicker from './LanguagePicker';
+import AboutMeSection from './AboutMeSection';
+import MapStylePicker from './MapStylePicker';
+import PlaySchedulePicker from './PlaySchedulePicker';
+import SocialLinks from './SocialLinks';
 
 const LANG_CODE: Record<string, string> = {
   English: 'GB', Japanese: 'JP', Korean: 'KR', Chinese: 'CN',
@@ -178,8 +182,17 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           )}
 
+          <AboutMeSection initial={(user as any).aboutMe ?? null} isOwn={isOwnProfile} />
+          <MapStylePicker initial={(user as any).mapStyles ?? []} isOwn={isOwnProfile} />
+          <PlaySchedulePicker initial={(user as any).playSchedule ?? []} isOwn={isOwnProfile} />
+          <SocialLinks
+            initialDiscord={(user as any).discordUsername ?? null}
+            initialTwitch={(user as any).twitchUsername ?? null}
+            isOwn={isOwnProfile}
+          />
+
           {!isOwnProfile && user.languages?.length > 0 && (
-            <div className="mt-5">
+            <div className="mt-6">
               <p className="text-gray-400 text-sm mb-2">Languages</p>
               <div className="flex gap-1.5 flex-wrap">
                 {user.languages.map((lang: string) => {

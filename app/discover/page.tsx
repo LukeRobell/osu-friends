@@ -7,6 +7,7 @@ import { starRange } from '@/lib/stars';
 import { getAccessToken } from '@/lib/auth-server';
 import { ProcessedRoom } from '@/components/LiveLobbyCard';
 import LiveTournaments from './LiveTournaments';
+import StreamsSection from './StreamsSection';
 import DiscoverClient from './DiscoverClient';
 
 export const dynamic = 'force-dynamic';
@@ -132,6 +133,9 @@ export default async function DiscoverPage() {
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
 
+      <Suspense fallback={null}>
+        <StreamsSection />
+      </Suspense>
       <DiscoverClient
         users={displayUsers}
         userPp={userPp}

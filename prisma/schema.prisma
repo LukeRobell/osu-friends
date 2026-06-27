@@ -35,6 +35,11 @@ model User {
   pp                Float?
   lastSeen          DateTime?
   osuJoinDate       DateTime?
+  aboutMe           String?
+  playSchedule      String[]
+  mapStyles         String[]
+  discordUsername   String?
+  twitchUsername    String?
   createdAt         DateTime @default(now())
 
   rivalId           String?
