@@ -1,31 +1,8 @@
 'use client';
 
 import CountrySelect from './CountrySelect';
+import LanguageSelect from './LanguageSelect';
 
-export const LANGUAGES: { name: string; flag: string }[] = [
-  { name: 'English',    flag: '🇬🇧' },
-  { name: 'Japanese',   flag: '🇯🇵' },
-  { name: 'Korean',     flag: '🇰🇷' },
-  { name: 'Chinese',    flag: '🇨🇳' },
-  { name: 'Portuguese', flag: '🇧🇷' },
-  { name: 'Russian',    flag: '🇷🇺' },
-  { name: 'Spanish',    flag: '🇪🇸' },
-  { name: 'French',     flag: '🇫🇷' },
-  { name: 'German',     flag: '🇩🇪' },
-  { name: 'Polish',     flag: '🇵🇱' },
-  { name: 'Indonesian', flag: '🇮🇩' },
-  { name: 'Thai',       flag: '🇹🇭' },
-  { name: 'Vietnamese', flag: '🇻🇳' },
-  { name: 'Turkish',    flag: '🇹🇷' },
-  { name: 'Arabic',     flag: '🇸🇦' },
-  { name: 'Italian',    flag: '🇮🇹' },
-  { name: 'Dutch',      flag: '🇳🇱' },
-  { name: 'Swedish',    flag: '🇸🇪' },
-  { name: 'Finnish',    flag: '🇫🇮' },
-  { name: 'Norwegian',  flag: '🇳🇴' },
-  { name: 'Filipino',   flag: '🇵🇭' },
-  { name: 'Malay',      flag: '🇲🇾' },
-];
 
 
 export interface Filters {
@@ -70,18 +47,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
       <div className="flex flex-wrap items-center gap-2">
         <CountrySelect value={filters.country} onChange={country => set({ country })} />
 
-        <select
-          value={filters.language}
-          onChange={e => set({ language: e.target.value })}
-          className={`bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none ${
-            filters.language ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
-          }`}
-        >
-          <option value="">💬 Any language</option>
-          {LANGUAGES.map(l => (
-            <option key={l.name} value={l.name}>{l.flag} {l.name}</option>
-          ))}
-        </select>
+        <LanguageSelect value={filters.language} onChange={language => set({ language })} />
 
         <div className="flex items-center gap-1">
           <input

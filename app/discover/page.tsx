@@ -2,7 +2,8 @@ import { Suspense } from 'react';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { fetchUsersBatch, fetchFriends } from '@/lib/osu-api';
+import { fetchUsersBatch, fetchFriends, ppToStars } from '@/lib/osu-api';
+import RefreshButton from '@/components/RefreshButton';
 import { getAccessToken } from '@/lib/auth-server';
 import LiveTournaments from './LiveTournaments';
 import LiveLobbies from './LiveLobbies';
@@ -69,20 +70,39 @@ export default async function DiscoverPage() {
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
 
-      {/* Filters at top, lobbies slotted in below filters, user grid at bottom */}
-      <DiscoverClient
-        users={displayUsers}
-        userPp={userPp}
-        friendIds={friendIds}
-        lobbies={
-          <>
-            <Suspense fallback={null}><LiveTournaments /></Suspense>
-            <Suspense fallback={null}>
-              <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={null} />
-            </Suspense>
-          </>
-        }
-      />
+      {(() => {
+        const targetStars = ppToStars(userPp ?? 0);
+        const starRange = `${(targetStars - 1.0).toFixed(1)}–${(targetStars + 1.0).toFixed(1)}★`;
+        return (
+          <DiscoverClient
+            users={displayUsers}
+            userPp={userPp}
+            friendIds={friendIds}
+            lobbiesHeading={
+              <div className="mb-3">
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+                  </span>
+                  Live lobbies
+                  <span className="text-sm font-normal text-gray-500">{starRange}</span>
+                  <RefreshButton />
+                </h2>
+                <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
+              </div>
+            }
+            lobbies={
+              <>
+                <Suspense fallback={null}><LiveTournaments /></Suspense>
+                <Suspense fallback={null}>
+                  <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={null} />
+                </Suspense>
+              </>
+            }
+          />
+        );
+      })()}
     </main>
   );
 }

@@ -20,9 +20,10 @@ interface Props {
   userPp: number | null;
   friendIds: number[];
   lobbies: React.ReactNode;
+  lobbiesHeading: React.ReactNode;
 }
 
-export default function DiscoverClient({ users, userPp, friendIds, lobbies }: Props) {
+export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobbiesHeading }: Props) {
   const [filters, setFilters] = useState<Filters>({
     q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', showAll: false,
   });
@@ -69,10 +70,10 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies }: Pr
 
   return (
     <>
-      {lobbies}
+      {lobbiesHeading}
 
-      {/* Mode filter — below live lobbies */}
-      <div className="flex flex-wrap items-center gap-2 mt-4 mb-8">
+      {/* Mode filter — between heading and lobby cards */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         {MODES.map(m => (
           <button
             key={m.id}
@@ -85,6 +86,8 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies }: Pr
           </button>
         ))}
       </div>
+
+      {lobbies}
 
       {/* Members section */}
       <p className="text-gray-400 mb-4">

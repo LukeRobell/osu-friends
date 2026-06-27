@@ -126,19 +126,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
   const display = processed.slice(0, 9);
 
   return (
-    <div className="mb-10">
-      <div className="mb-3">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-          </span>
-          Live lobbies
-          <span className="text-sm font-normal text-gray-500">{(targetStars - 1.0).toFixed(1)}–{(targetStars + 1.0).toFixed(1)}★</span>
-          <RefreshButton />
-        </h2>
-        <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
-      </div>
+    <div className="mb-10" data-star-range={`${(targetStars - 1.0).toFixed(1)}–${(targetStars + 1.0).toFixed(1)}`}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {display.map(room => (
           <LiveLobbyCard key={room.id} room={room} canSendDm={userOsuId != null} />
