@@ -48,14 +48,16 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
     return Math.abs(stars - targetStars) <= 1.0;
   });
 
-  if (starFiltered.length === 0) return null;
+  const noSkillMatch = starFiltered.length === 0;
+  const candidates = noSkillMatch ? modeFiltered : starFiltered;
+  if (candidates.length === 0) return null;
 
   // Fetch each host's avg top-play pp in parallel — same metric as user.pp, apples-to-apples.
   // 5-min cache: host skill doesn't change meaningfully within a session.
   const activeMode = mode ?? 'osu';
   const hostPpMap = new Map<number, number | null>();
   await Promise.all(
-    starFiltered.map(async room => {
+    candidates.map(async room => {
       const hostId = room.host?.id as number | undefined;
       if (hostId == null) return;
       const pp = await fetchUserAvgTopPp(hostId, activeMode, 300).catch(() => null);
@@ -64,7 +66,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
   );
 
   // Build processed rooms
-  const processed: ProcessedRoom[] = starFiltered.map(room => {
+  const processed: ProcessedRoom[] = candidates.map(room => {
     const beatmap = room.current_playlist_item?.beatmap;
     const beatmapset = beatmap?.beatmapset;
     const stars = (beatmap?.difficulty_rating as number | null) ?? null;
@@ -125,7 +127,15 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
   const display = processed.slice(0, 9);
 
   return (
-    <div className="mb-10" data-star-range={`${(targetStars - 1.0).toFixed(1)}–${(targetStars + 1.0).toFixed(1)}`}>
+    <div className="mb-10">
+      {noSkillMatch && (
+        <div className="flex items-center gap-2.5 mb-3 px-3.5 py-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300/80 text-sm">
+          <svg className="w-4 h-4 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          No lobbies found near your skill level — showing all active lobbies instead.
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {display.map(room => (
           <LiveLobbyCard key={room.id} room={room} canSendDm={userOsuId != null} />
