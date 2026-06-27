@@ -38,10 +38,18 @@ interface Props {
   defaultStarRange: string;
 }
 
+const PAGE_SIZE = 12;
+
 export default function DiscoverClient({ users, userPp, modePp, friendIds, allRooms, lobbyExtras, canSendDm, defaultStarRange }: Props) {
   const [filters, setFilters] = useState<Filters>({
     q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', accountAge: '', showAll: false,
   });
+  const [page, setPage] = useState(1);
+
+  function setFiltersAndReset(f: Filters) {
+    setFilters(f);
+    setPage(1);
+  }
 
   const friendSet = useMemo(() => new Set(friendIds), [friendIds]);
 
@@ -120,7 +128,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
         {MODES.map(m => (
           <button
             key={m.id}
-            onClick={() => setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id }))}
+            onClick={() => { setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id })); setPage(1); }}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
             }`}
@@ -146,7 +154,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
         )}
       </p>
 
-      <DiscoverFilters filters={filters} onChange={setFilters} />
+      <DiscoverFilters filters={filters} onChange={setFiltersAndReset} />
 
       {filtered.length === 0 ? (
         <div className="text-center py-20">
@@ -157,13 +165,49 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
               : 'Try adjusting your filters or browse all members.'}
           </p>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filtered.map(user => (
-            <UserCard key={user.id} user={user} isOsuFriend={friendSet.has(user.osuId)} activeMode={filters.mode || null} />
-          ))}
-        </div>
-      )}
+      ) : (() => {
+        const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+        const pageUsers = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+        return (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {pageUsers.map(user => (
+                <UserCard key={user.id} user={user} isOsuFriend={friendSet.has(user.osuId)} activeMode={filters.mode || null} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-1.5 mt-8">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  ←
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setPage(n)}
+                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                      n === page ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  →
+                </button>
+              </div>
+            )}
+          </>
+        );
+      })()}
     </>
   );
 }
