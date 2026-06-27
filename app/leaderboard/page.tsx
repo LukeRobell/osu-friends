@@ -114,7 +114,7 @@ async function PlayersTab({ mode }: { mode: string }) {
       <div className="grid grid-cols-[48px_1fr_120px_120px] text-xs text-gray-500 uppercase tracking-wider px-6 py-3 border-b border-white/5">
         <span>#</span>
         <span>Player</span>
-        <span className="text-right">{MODE_LABELS[m] ?? m} PP</span>
+        <span className="text-right">Avg PP</span>
         <span className="text-right">Global Rank</span>
       </div>
       {players.map((p, i) => {
