@@ -82,7 +82,7 @@ export default function LiveLobbyCard({ room, canSendDm }: { room: ProcessedRoom
           </div>
           {friendsInRoom.length > 0 && (
             <span className="text-xs text-pink-300">
-              {friendsInRoom.length} friend{friendsInRoom.length !== 1 ? 's' : ''} here
+              {friendsInRoom.length} osu!friend{friendsInRoom.length !== 1 ? 's' : ''} here
             </span>
           )}
         </div>
