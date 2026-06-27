@@ -4,6 +4,7 @@ import AskToJoinButton from './AskToJoinButton';
 export interface ProcessedRoom {
   id: number;
   name: string;
+  mode: string;
   participantCount: number;
   host: { id: number; username: string } | null;
   recentParticipants: { id: number; username: string; avatarUrl: string; isOsufriend: boolean }[];

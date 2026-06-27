@@ -1,9 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { User } from '@prisma/client';
 import UserCard from '@/components/UserCard';
+import LiveLobbiesClient from '@/components/LiveLobbiesClient';
+import { ProcessedRoom } from '@/components/LiveLobbyCard';
 import DiscoverFilters from './DiscoverFilters';
 
 interface Filters {
@@ -21,27 +22,16 @@ interface Props {
   users: User[];
   userPp: number | null;
   friendIds: number[];
-  lobbies: React.ReactNode;
+  allRooms: ProcessedRoom[];
   lobbiesHeading: React.ReactNode;
-  initialMode: string;
+  lobbyExtras: React.ReactNode;
+  canSendDm: boolean;
 }
 
-export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobbiesHeading, initialMode }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
+export default function DiscoverClient({ users, userPp, friendIds, allRooms, lobbiesHeading, lobbyExtras, canSendDm }: Props) {
   const [filters, setFilters] = useState<Filters>({
-    q: '', mode: initialMode, country: '', language: '', rankMin: '', rankMax: '', accountAge: '', showAll: false,
+    q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', accountAge: '', showAll: false,
   });
-
-  function setMode(mode: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (mode) params.set('mode', mode);
-    else params.delete('mode');
-    router.replace(`${pathname}?${params.toString()}`);
-    setFilters(f => ({ ...f, mode }));
-  }
 
   const friendSet = useMemo(() => new Set(friendIds), [friendIds]);
 
@@ -96,12 +86,12 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
     <>
       {lobbiesHeading}
 
-      {/* Mode filter — between heading and lobby cards */}
+      {/* Mode filter — instant client-side, no page reload */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {MODES.map(m => (
           <button
             key={m.id}
-            onClick={() => setMode(filters.mode === m.id ? '' : m.id)}
+            onClick={() => setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id }))}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
             }`}
@@ -111,7 +101,13 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
         ))}
       </div>
 
-      {lobbies}
+      {lobbyExtras}
+      <LiveLobbiesClient
+        rooms={allRooms}
+        mode={filters.mode}
+        userPp={userPp}
+        canSendDm={canSendDm}
+      />
 
       {/* Members section */}
       <p className="text-gray-400 mb-4">

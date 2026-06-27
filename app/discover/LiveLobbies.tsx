@@ -74,6 +74,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
     const beatmap = room.current_playlist_item?.beatmap;
     const beatmapset = beatmap?.beatmapset;
     const stars = (beatmap?.difficulty_rating as number | null) ?? null;
+    const roomMode = (beatmap?.mode as string | null) ?? activeMode;
     const starDiff = stars != null ? Math.abs(stars - targetStars) : Infinity;
 
     const participants: any[] = room.recent_participants ?? [];
@@ -87,6 +88,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
     return {
       id: room.id as number,
       name: room.name as string,
+      mode: roomMode,
       participantCount: (room.participant_count as number) ?? participants.length,
       host,
       recentParticipants: participants.map((p: any) => ({
