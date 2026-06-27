@@ -2,13 +2,6 @@
 
 import CountrySelect from './CountrySelect';
 
-const MODES = [
-  { id: 'osu', label: 'osu!' },
-  { id: 'taiko', label: 'Taiko' },
-  { id: 'fruits', label: 'Catch' },
-  { id: 'mania', label: 'Mania' },
-];
-
 export const LANGUAGES: { name: string; flag: string }[] = [
   { name: 'English',    flag: '🇬🇧' },
   { name: 'Japanese',   flag: '🇯🇵' },
@@ -75,20 +68,6 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
 
       {/* Filter row */}
       <div className="flex flex-wrap items-center gap-2">
-        {MODES.map(m => (
-          <button
-            key={m.id}
-            onClick={() => set({ mode: filters.mode === m.id ? '' : m.id })}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-            }`}
-          >
-            {m.label}
-          </button>
-        ))}
-
-        <div className="w-px h-5 bg-gray-700 mx-1" />
-
         <CountrySelect value={filters.country} onChange={country => set({ country })} />
 
         <select

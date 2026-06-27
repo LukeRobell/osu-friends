@@ -60,18 +60,41 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies }: Pr
       ? 'All osu!friends members'
       : 'osu!friends members near your skill level';
 
+  const MODES = [
+    { id: 'osu', label: 'osu!' },
+    { id: 'taiko', label: 'Taiko' },
+    { id: 'fruits', label: 'Catch' },
+    { id: 'mania', label: 'Mania' },
+  ];
+
   return (
     <>
-      <DiscoverFilters filters={filters} onChange={setFilters} />
-
       {lobbies}
 
-      <p className="text-gray-400 mb-6">
+      {/* Mode filter — below live lobbies */}
+      <div className="flex flex-wrap items-center gap-2 mt-4 mb-8">
+        {MODES.map(m => (
+          <button
+            key={m.id}
+            onClick={() => setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id }))}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+            }`}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Members section */}
+      <p className="text-gray-400 mb-4">
         {title}
         {filtered.length > 0 && (
           <span className="ml-2 text-gray-500 text-sm">— {filtered.length} players</span>
         )}
       </p>
+
+      <DiscoverFilters filters={filters} onChange={setFilters} />
 
       {filtered.length === 0 ? (
         <div className="text-center py-20">

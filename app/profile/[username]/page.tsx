@@ -126,11 +126,21 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           </div>
 
+          {(() => {
+            const prefMode = user.preferredModes?.[0] ?? 'osu';
+            const modeRank: number | null = (
+              prefMode === 'taiko'  ? user.taikoGlobalRank  :
+              prefMode === 'fruits' ? user.catchGlobalRank  :
+              prefMode === 'mania'  ? user.maniaGlobalRank  :
+              user.globalRank
+            ) ?? user.globalRank;
+            const modeLabel: Record<string,string> = { osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania' };
+            return (
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div className="bg-gray-800 rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-1">Global Rank</p>
+              <p className="text-gray-400 text-sm mb-1">Global Rank <span className="text-gray-600 text-xs">({modeLabel[prefMode] ?? prefMode})</span></p>
               <p className="text-2xl font-bold text-pink-400">
-                {user.globalRank != null ? `#${user.globalRank.toLocaleString()}` : '—'}
+                {modeRank != null ? `#${modeRank.toLocaleString()}` : '—'}
               </p>
             </div>
             <div className="bg-gray-800 rounded-xl p-4">
@@ -150,6 +160,7 @@ export default async function ProfilePage({ params }: Props) {
               </p>
             </div>
           </div>
+            ); })()}
 
           {user.preferredModes.length > 0 && (
             <div>
