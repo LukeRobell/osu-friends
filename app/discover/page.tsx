@@ -99,6 +99,7 @@ export default async function DiscoverPage() {
       name: room.name as string,
       mode,
       participantCount: (room.participant_count as number) ?? participants.length,
+      isPrivate: !!(room.has_password as boolean | null),
       host,
       recentParticipants: participants.map((p: any) => ({
         id: p.id as number,

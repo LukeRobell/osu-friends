@@ -90,6 +90,7 @@ export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
       name: room.name as string,
       mode: roomMode,
       participantCount: (room.participant_count as number) ?? participants.length,
+      isPrivate: !!(room.has_password as boolean | null),
       host,
       recentParticipants: participants.map((p: any) => ({
         id: p.id as number,

@@ -33,9 +33,12 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm, anyD
 
     // Skip star filtering when "Any difficulty" is active
     if (anyDifficulty) {
-      const result = [...modeFiltered].sort((a, b) =>
-        (b.participantCount ?? 0) - (a.participantCount ?? 0)
-      );
+      const result = [...modeFiltered].sort((a, b) => {
+        // Public rooms always before private
+        const privDiff = Number(a.isPrivate) - Number(b.isPrivate);
+        if (privDiff !== 0) return privDiff;
+        return (b.participantCount ?? 0) - (a.participantCount ?? 0);
+      });
       return { sorted: result, noSkillMatch: false, noRoomsAtAll: false };
     }
 
@@ -48,6 +51,9 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm, anyD
     const candidates = noSkillMatch ? modeFiltered : starFiltered;
 
     const result = [...candidates].sort((a, b) => {
+      // Public rooms always before private
+      const privDiff = Number(a.isPrivate) - Number(b.isPrivate);
+      if (privDiff !== 0) return privDiff;
       const aStars = a.currentBeatmap?.stars ?? 0;
       const bStars = b.currentBeatmap?.stars ?? 0;
       const aDiff = Math.abs(aStars - targetStars);

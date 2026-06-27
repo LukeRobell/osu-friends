@@ -6,6 +6,7 @@ export interface ProcessedRoom {
   name: string;
   mode: string;
   participantCount: number;
+  isPrivate: boolean;
   host: { id: number; username: string } | null;
   recentParticipants: { id: number; username: string; avatarUrl: string; isOsufriend: boolean }[];
   currentBeatmap: {
@@ -57,9 +58,16 @@ export default function LiveLobbyCard({ room, canSendDm }: { room: ProcessedRoom
       </div>
 
       <div className="p-3">
-        <p className="font-medium text-sm truncate mb-2" title={room.name}>
-          {room.name}
-        </p>
+        <div className="flex items-center gap-1.5 mb-2 min-w-0">
+          <p className="font-medium text-sm truncate" title={room.name}>
+            {room.name}
+          </p>
+          {room.isPrivate && (
+            <svg className="w-3 h-3 shrink-0 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+          )}
+        </div>
 
         {/* Participant avatars — osufriends get pink ring */}
         <div className="flex items-center gap-2 mb-2.5">
