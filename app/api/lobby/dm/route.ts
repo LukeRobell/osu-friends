@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
 
   // Message to the HOST — no /invite (doesn't work in lazer), just a profile link to click
   const hostMessage = variant === 'friend'
-    ? `Hey! ${senderUsername} from osu!friends wants to join you in "${roomName}"!\nOpen their profile to message them an invite: https://osu.ppy.sh/users/${senderOsuId}`
-    : `${senderUsername} from osu!friends wants to join your lobby "${roomName}"!\nOpen their profile to message them an invite: https://osu.ppy.sh/users/${senderOsuId}`;
+    ? `Hey! ${senderUsername} from osufriends.com wants to join you in "${roomName}"!\nOpen their profile to message them an invite: https://osu.ppy.sh/users/${senderOsuId}`
+    : `${senderUsername} from osufriends.com wants to join your lobby "${roomName}"!\nOpen their profile to message them an invite: https://osu.ppy.sh/users/${senderOsuId}`;
 
   const hostOk = await sendBotDm(botToken, targetId, hostMessage);
   if (!hostOk) {
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
   // Message to the REQUESTER — confirmation + host profile + room link if public
   const hostName = targetUsername ?? 'the host';
   let requesterMessage =
-    `Your join request was sent to ${hostName}! They may reach out soon.\n` +
+    `[osufriends.com] Your join request was sent to ${hostName}! They may reach out soon.\n` +
     `You can also message them first: https://osu.ppy.sh/users/${targetId}`;
 
   if (!isPrivate && roomId) {
