@@ -78,11 +78,18 @@ export default function UserCard({ user, isOsuFriend = false, activeMode = null 
                 modeForRank === 'fruits' ? (user as any).catchGlobalRank :
                 modeForRank === 'mania'  ? (user as any).maniaGlobalRank :
                 user.globalRank;
-              return rank != null ? <span> · #{rank.toLocaleString()}</span> : null;
+              const pp =
+                modeForRank === 'taiko'  ? (user as any).taikoPp :
+                modeForRank === 'fruits' ? (user as any).catchPp  :
+                modeForRank === 'mania'  ? (user as any).maniaPp  :
+                user.pp;
+              return (
+                <>
+                  {rank != null && <span> · #{rank.toLocaleString()}</span>}
+                  {pp != null && <span> · {Math.round(pp).toLocaleString()}pp</span>}
+                </>
+              );
             })()}
-            {user.pp != null && (
-              <span> · {Math.round(user.pp).toLocaleString()}pp</span>
-            )}
           </p>
           <div className="flex items-center justify-between mt-1.5">
             {user.preferredModes.length > 0 && (
