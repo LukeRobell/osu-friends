@@ -13,13 +13,13 @@ import OsuFriends from './OsuFriends';
 import RivalSection from './RivalSection';
 import LanguagePicker from './LanguagePicker';
 
-const LANG_FLAGS: Record<string, string> = {
-  English: '🇬🇧', Japanese: '🇯🇵', Korean: '🇰🇷', Chinese: '🇨🇳',
-  Portuguese: '🇧🇷', Russian: '🇷🇺', Spanish: '🇪🇸', French: '🇫🇷',
-  German: '🇩🇪', Polish: '🇵🇱', Indonesian: '🇮🇩', Thai: '🇹🇭',
-  Vietnamese: '🇻🇳', Turkish: '🇹🇷', Arabic: '🇸🇦', Italian: '🇮🇹',
-  Dutch: '🇳🇱', Swedish: '🇸🇪', Finnish: '🇫🇮', Norwegian: '🇳🇴',
-  Filipino: '🇵🇭', Malay: '🇲🇾',
+const LANG_CODE: Record<string, string> = {
+  English: 'GB', Japanese: 'JP', Korean: 'KR', Chinese: 'CN',
+  Portuguese: 'BR', Russian: 'RU', Spanish: 'ES', French: 'FR',
+  German: 'DE', Polish: 'PL', Indonesian: 'ID', Thai: 'TH',
+  Vietnamese: 'VN', Turkish: 'TR', Arabic: 'SA', Italian: 'IT',
+  Dutch: 'NL', Swedish: 'SE', Finnish: 'FI', Norwegian: 'NO',
+  Filipino: 'PH', Malay: 'MY',
 };
 import { countryFlagUrl } from '@/lib/osu-api';
 
@@ -171,12 +171,15 @@ export default async function ProfilePage({ params }: Props) {
             <div className="mt-5">
               <p className="text-gray-400 text-sm mb-2">Languages</p>
               <div className="flex gap-1.5 flex-wrap">
-                {user.languages.map((lang: string) => (
-                  <span key={lang} className="flex items-center gap-1 px-2 py-0.5 border border-white/10 text-gray-300 rounded-full text-xs">
-                    <span>{LANG_FLAGS[lang] ?? ''}</span>
-                    <span>{lang}</span>
-                  </span>
-                ))}
+                {user.languages.map((lang: string) => {
+                  const code = LANG_CODE[lang];
+                  return (
+                    <span key={lang} className="flex items-center gap-1.5 px-2 py-0.5 border border-white/10 text-gray-300 rounded-full text-xs">
+                      {code && <Image src={countryFlagUrl(code)} alt={code} width={14} height={10} className="rounded-sm" unoptimized />}
+                      <span>{lang}</span>
+                    </span>
+                  );
+                })}
               </div>
             </div>
           )}

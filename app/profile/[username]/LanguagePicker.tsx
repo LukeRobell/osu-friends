@@ -1,39 +1,41 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import { countryFlagUrl } from '@/lib/osu-api';
 
-const LANGUAGES: { name: string; flag: string }[] = [
-  { name: 'English',    flag: '🇬🇧' },
-  { name: 'Japanese',   flag: '🇯🇵' },
-  { name: 'Korean',     flag: '🇰🇷' },
-  { name: 'Chinese',    flag: '🇨🇳' },
-  { name: 'Portuguese', flag: '🇧🇷' },
-  { name: 'Russian',    flag: '🇷🇺' },
-  { name: 'Spanish',    flag: '🇪🇸' },
-  { name: 'French',     flag: '🇫🇷' },
-  { name: 'German',     flag: '🇩🇪' },
-  { name: 'Polish',     flag: '🇵🇱' },
-  { name: 'Indonesian', flag: '🇮🇩' },
-  { name: 'Thai',       flag: '🇹🇭' },
-  { name: 'Vietnamese', flag: '🇻🇳' },
-  { name: 'Turkish',    flag: '🇹🇷' },
-  { name: 'Arabic',     flag: '🇸🇦' },
-  { name: 'Italian',    flag: '🇮🇹' },
-  { name: 'Dutch',      flag: '🇳🇱' },
-  { name: 'Swedish',    flag: '🇸🇪' },
-  { name: 'Finnish',    flag: '🇫🇮' },
-  { name: 'Norwegian',  flag: '🇳🇴' },
-  { name: 'Filipino',   flag: '🇵🇭' },
-  { name: 'Malay',      flag: '🇲🇾' },
+const LANGUAGES: { name: string; code: string }[] = [
+  { name: 'English',    code: 'GB' },
+  { name: 'Japanese',   code: 'JP' },
+  { name: 'Korean',     code: 'KR' },
+  { name: 'Chinese',    code: 'CN' },
+  { name: 'Portuguese', code: 'BR' },
+  { name: 'Russian',    code: 'RU' },
+  { name: 'Spanish',    code: 'ES' },
+  { name: 'French',     code: 'FR' },
+  { name: 'German',     code: 'DE' },
+  { name: 'Polish',     code: 'PL' },
+  { name: 'Indonesian', code: 'ID' },
+  { name: 'Thai',       code: 'TH' },
+  { name: 'Vietnamese', code: 'VN' },
+  { name: 'Turkish',    code: 'TR' },
+  { name: 'Arabic',     code: 'SA' },
+  { name: 'Italian',    code: 'IT' },
+  { name: 'Dutch',      code: 'NL' },
+  { name: 'Swedish',    code: 'SE' },
+  { name: 'Finnish',    code: 'FI' },
+  { name: 'Norwegian',  code: 'NO' },
+  { name: 'Filipino',   code: 'PH' },
+  { name: 'Malay',      code: 'MY' },
 ];
 
-const flagMap = Object.fromEntries(LANGUAGES.map(l => [l.name, l.flag]));
+const codeMap = Object.fromEntries(LANGUAGES.map(l => [l.name, l.code]));
 
 export default function LanguagePicker({ initial }: { initial: string[] }) {
   const [selected, setSelected] = useState<string[]>(initial);
-  const [open, setOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [open, setOpen]         = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [saved, setSaved]       = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,20 +69,25 @@ export default function LanguagePicker({ initial }: { initial: string[] }) {
         <p className="text-gray-400 text-sm shrink-0">Languages</p>
 
         {/* Selected chips */}
-        {selected.map(lang => (
-          <button
-            key={lang}
-            onClick={() => toggle(lang)}
-            title="Click to remove"
-            className="flex items-center gap-1 px-2 py-0.5 bg-pink-500/15 border border-pink-500/30 text-pink-300 rounded-full text-xs hover:bg-pink-500/25 transition-colors"
-          >
-            <span>{flagMap[lang] ?? ''}</span>
-            <span>{lang}</span>
-            <span className="text-pink-400/60 ml-0.5">×</span>
-          </button>
-        ))}
+        {selected.map(lang => {
+          const code = codeMap[lang];
+          return (
+            <button
+              key={lang}
+              onClick={() => toggle(lang)}
+              title="Click to remove"
+              className="flex items-center gap-1.5 px-2 py-0.5 bg-pink-500/15 border border-pink-500/30 text-pink-300 rounded-full text-xs hover:bg-pink-500/25 transition-colors"
+            >
+              {code && (
+                <Image src={countryFlagUrl(code)} alt={code} width={14} height={10} className="rounded-sm" unoptimized />
+              )}
+              <span>{lang}</span>
+              <span className="text-pink-400/60 ml-0.5">×</span>
+            </button>
+          );
+        })}
 
-        {/* Add button */}
+        {/* Add / Edit button */}
         <div className="relative">
           <button
             onClick={() => setOpen(o => !o)}
@@ -91,25 +98,26 @@ export default function LanguagePicker({ initial }: { initial: string[] }) {
           </button>
 
           {open && (
-            <div className="absolute left-0 top-full mt-1.5 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20 p-2 flex flex-col max-h-72">
-              <div className="flex flex-col gap-0.5 overflow-y-scroll flex-1 min-h-0">
+            <div className="absolute left-0 top-full mt-1.5 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden">
+              {/* Scrollable list with explicit height */}
+              <div className="overflow-y-scroll p-1.5" style={{ maxHeight: '240px' }}>
                 {LANGUAGES.map(l => (
                   <button
                     key={l.name}
                     onClick={() => toggle(l.name)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-left transition-colors ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-left transition-colors ${
                       selected.includes(l.name)
                         ? 'bg-pink-500/20 text-pink-300'
                         : 'text-gray-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
-                    <span className="text-base">{l.flag}</span>
+                    <Image src={countryFlagUrl(l.code)} alt={l.code} width={18} height={13} className="rounded-sm shrink-0" unoptimized />
                     <span>{l.name}</span>
                     {selected.includes(l.name) && <span className="ml-auto text-pink-400 text-xs">✓</span>}
                   </button>
                 ))}
               </div>
-              <div className="border-t border-white/10 mt-2 pt-2">
+              <div className="border-t border-white/10 p-2">
                 <button
                   onClick={save}
                   disabled={saving}
