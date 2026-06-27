@@ -9,7 +9,11 @@ interface Props {
 }
 
 export default async function LiveLobbies({ userPp, userOsuId, mode }: Props) {
-  const rooms = await fetchActiveRooms(50).catch(() => []);
+  // Fetch more rooms for specific modes — dead modes like taiko/catch have far fewer lobbies
+  // and can easily fall outside a 50-room fetch dominated by osu! standard.
+  // Pass the mode so the API can filter by ruleset server-side.
+  const fetchLimit = mode ? 100 : 50;
+  const rooms = await fetchActiveRooms(fetchLimit, mode).catch(() => []);
   if (rooms.length === 0) return null;
 
   // When a mode filter is active, fetch the user's avg top-play pp in that mode

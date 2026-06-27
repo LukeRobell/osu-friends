@@ -88,13 +88,17 @@ export function ppToStars(pp: number): number {
 }
 
 // Active real-time multiplayer rooms — used for the Live Lobbies section in discover
-export async function fetchActiveRooms(limit = 50): Promise<any[]> {
+const RULESET_ID: Record<string, number> = { osu: 0, taiko: 1, fruits: 2, mania: 3 };
+
+export async function fetchActiveRooms(limit = 50, mode?: string | null): Promise<any[]> {
   const token = await getClientToken();
+  const params = new URLSearchParams({ type_group: 'realtime', mode: 'active', limit: String(limit) });
+  if (mode && RULESET_ID[mode] != null) params.set('ruleset', String(RULESET_ID[mode]));
   const res = await fetch(
-    `https://osu.ppy.sh/api/v2/rooms?type_group=realtime&mode=active&limit=${limit}`,
+    `https://osu.ppy.sh/api/v2/rooms?${params}`,
     {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      next: { revalidate: 30 }, // rooms change slowly; 30s cache avoids hammering the API
+      cache: 'no-store',
     }
   );
   if (!res.ok) return [];
