@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 function DiscordIcon({ className }: { className?: string }) {
   return (
@@ -25,22 +26,37 @@ interface Props {
 }
 
 export default function SocialLinks({ initialDiscord, initialTwitch, isOwn }: Props) {
-  const [discord, setDiscord] = useState(initialDiscord ?? '');
-  const [twitch,  setTwitch]  = useState(initialTwitch  ?? '');
-  const [editing, setEditing] = useState(false);
-  const [saving,  setSaving]  = useState(false);
-  const [saved,   setSaved]   = useState(false);
+  const [discord, setDiscord] = useState(initialDiscord);
+  const [twitch,  setTwitch]  = useState(initialTwitch);
+  const [toast,   setToast]   = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  async function save() {
-    setSaving(true);
+  // Show success toast when returning from OAuth and clean up URL
+  useEffect(() => {
+    const linked = searchParams.get('linked');
+    const error  = searchParams.get('error');
+    if (linked === 'discord') { setToast('Discord connected ✓'); }
+    if (linked === 'twitch')  { setToast('Twitch connected ✓'); }
+    if (error  === 'discord') { setToast('Discord connection failed — try again'); }
+    if (error  === 'twitch')  { setToast('Twitch connection failed — try again'); }
+    if (linked || error) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('linked');
+      url.searchParams.delete('error');
+      router.replace(url.pathname, { scroll: false });
+      setTimeout(() => setToast(null), 4000);
+    }
+  }, [searchParams, router]);
+
+  async function disconnect(platform: 'discord' | 'twitch') {
     await fetch('/api/user/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ discordUsername: discord, twitchUsername: twitch }),
+      body: JSON.stringify(platform === 'discord' ? { discordUsername: null } : { twitchUsername: null }),
     });
-    setSaving(false);
-    setSaved(true);
-    setEditing(false);
+    if (platform === 'discord') setDiscord(null);
+    else setTwitch(null);
   }
 
   const hasAny = discord || twitch;
@@ -48,83 +64,71 @@ export default function SocialLinks({ initialDiscord, initialTwitch, isOwn }: Pr
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-gray-400 text-sm">Socials</p>
-        {isOwn && !editing && (
-          <button
-            onClick={() => { setEditing(true); setSaved(false); }}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-          >
-            {hasAny ? 'Edit' : '+ Add'}
-          </button>
-        )}
-      </div>
+      <p className="text-gray-400 text-sm mb-3">Socials</p>
 
-      {editing ? (
-        <div className="space-y-2 max-w-xs">
-          <div className="flex items-center gap-2 bg-gray-800 border border-white/10 rounded-lg px-3 py-2">
-            <DiscordIcon className="w-4 h-4 text-indigo-400 shrink-0" />
-            <input
-              type="text"
-              value={discord}
-              onChange={e => setDiscord(e.target.value)}
-              placeholder="Discord username"
-              className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 focus:outline-none min-w-0"
-            />
-          </div>
-          <div className="flex items-center gap-2 bg-gray-800 border border-white/10 rounded-lg px-3 py-2">
-            <TwitchIcon className="w-4 h-4 text-purple-400 shrink-0" />
-            <input
-              type="text"
-              value={twitch}
-              onChange={e => setTwitch(e.target.value)}
-              placeholder="Twitch username"
-              className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 focus:outline-none min-w-0"
-            />
-          </div>
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              onClick={() => { setEditing(false); setDiscord(initialDiscord ?? ''); setTwitch(initialTwitch ?? ''); }}
-              className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={save}
-              disabled={saving}
-              className="px-4 py-1.5 bg-pink-500 hover:bg-pink-600 disabled:opacity-40 rounded-lg text-sm font-medium transition-colors"
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          {discord && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-sm">
+      <div className="space-y-2">
+        {/* Discord row */}
+        {discord ? (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-sm">
               <DiscordIcon className="w-3.5 h-3.5 text-indigo-400" />
               <span className="text-gray-300 text-xs">{discord}</span>
             </div>
-          )}
-          {twitch && (
+            {isOwn && (
+              <button
+                onClick={() => disconnect('discord')}
+                className="text-xs text-gray-600 hover:text-red-400 transition-colors"
+              >
+                Disconnect
+              </button>
+            )}
+          </div>
+        ) : isOwn && (
+          <a
+            href="/api/auth/discord/connect"
+            className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-lg text-sm text-indigo-300 transition-colors"
+          >
+            <DiscordIcon className="w-4 h-4" />
+            Connect Discord
+          </a>
+        )}
+
+        {/* Twitch row */}
+        {twitch ? (
+          <div className="flex items-center gap-2">
             <a
               href={`https://twitch.tv/${twitch}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-2.5 py-1 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 rounded-lg text-sm transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 rounded-lg text-sm transition-colors"
             >
               <TwitchIcon className="w-3.5 h-3.5 text-purple-400" />
               <span className="text-purple-300 text-xs">{twitch}</span>
             </a>
-          )}
-          {!hasAny && isOwn && (
-            <p className="text-gray-600 text-sm italic">No socials added — click Edit to link Discord or Twitch.</p>
-          )}
-        </div>
-      )}
+            {isOwn && (
+              <button
+                onClick={() => disconnect('twitch')}
+                className="text-xs text-gray-600 hover:text-red-400 transition-colors"
+              >
+                Disconnect
+              </button>
+            )}
+          </div>
+        ) : isOwn && (
+          <a
+            href="/api/auth/twitch/connect"
+            className="inline-flex items-center gap-2 px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-lg text-sm text-purple-300 transition-colors"
+          >
+            <TwitchIcon className="w-4 h-4" />
+            Connect Twitch
+          </a>
+        )}
+      </div>
 
-      {saved && !editing && (
-        <p className="text-xs text-green-400 mt-1">Saved ✓</p>
+      {toast && (
+        <p className={`text-xs mt-2 ${toast.includes('failed') ? 'text-red-400' : 'text-green-400'}`}>
+          {toast}
+        </p>
       )}
     </div>
   );

@@ -217,11 +217,13 @@ export default async function ProfilePage({ params }: Props) {
             isOwn={isOwnProfile}
             ownerTimezone={(user as any).timezone ?? null}
           />
-          <SocialLinks
-            initialDiscord={(user as any).discordUsername ?? null}
-            initialTwitch={(user as any).twitchUsername ?? null}
-            isOwn={isOwnProfile}
-          />
+          <Suspense fallback={null}>
+            <SocialLinks
+              initialDiscord={(user as any).discordUsername ?? null}
+              initialTwitch={(user as any).twitchUsername ?? null}
+              isOwn={isOwnProfile}
+            />
+          </Suspense>
 
           {!isOwnProfile && user.languages?.length > 0 && (
             <div className="mt-6">
