@@ -26,14 +26,6 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
     onChange({ ...filters, ...patch });
   }
 
-  const JOINED_OPTIONS = [
-    { label: 'Any era', value: '' },
-    { label: 'Before 2013 (OG)', value: '2013' },
-    { label: 'Before 2016', value: '2016' },
-    { label: 'Before 2019', value: '2019' },
-    { label: 'Before 2022', value: '2022' },
-  ];
-
   const activeFilters = [filters.country, filters.language, filters.rankMin, filters.rankMax, filters.joinedBefore].filter(Boolean).length;
 
   return (
@@ -58,21 +50,19 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
 
         <LanguageSelect value={filters.language} onChange={language => set({ language })} />
 
-        <div className="flex items-center gap-1">
-          {JOINED_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => set({ joinedBefore: opt.value })}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                filters.joinedBefore === opt.value
-                  ? 'bg-pink-500 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:text-white'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+        <select
+          value={filters.joinedBefore}
+          onChange={e => set({ joinedBefore: e.target.value })}
+          className={`bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none cursor-pointer ${
+            filters.joinedBefore ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
+          }`}
+        >
+          <option value="">📅 Any era</option>
+          <option value="2013">OG (before 2013)</option>
+          <option value="2016">Veteran (before 2016)</option>
+          <option value="2019">Before 2019</option>
+          <option value="2022">Before 2022</option>
+        </select>
 
         <div className="flex items-center gap-1">
           <input
