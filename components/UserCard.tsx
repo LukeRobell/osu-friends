@@ -20,7 +20,7 @@ function timeAgo(date: Date): string {
   return `${Math.floor(seconds / (86400 * 30))}mo ago`;
 }
 
-export default function UserCard({ user, isOsuFriend = false }: { user: User; isOsuFriend?: boolean }) {
+export default function UserCard({ user, isOsuFriend = false, activeMode = null }: { user: User; isOsuFriend?: boolean; activeMode?: string | null }) {
   const [showModal, setShowModal] = useState(false);
 
   const modalUser: ModalUser = {
@@ -72,11 +72,11 @@ export default function UserCard({ user, isOsuFriend = false }: { user: User; is
           <p className="text-gray-400 text-sm">
             {user.countryCode}
             {(() => {
-              const prefMode = user.preferredModes?.[0] ?? 'osu';
+              const modeForRank = activeMode || user.preferredModes?.[0] || 'osu';
               const rank =
-                prefMode === 'taiko'  ? (user as any).taikoGlobalRank :
-                prefMode === 'fruits' ? (user as any).catchGlobalRank :
-                prefMode === 'mania'  ? (user as any).maniaGlobalRank :
+                modeForRank === 'taiko'  ? (user as any).taikoGlobalRank :
+                modeForRank === 'fruits' ? (user as any).catchGlobalRank :
+                modeForRank === 'mania'  ? (user as any).maniaGlobalRank :
                 user.globalRank;
               return rank != null ? <span> · #{rank.toLocaleString()}</span> : null;
             })()}
