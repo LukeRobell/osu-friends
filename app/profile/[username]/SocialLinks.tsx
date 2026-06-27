@@ -86,10 +86,10 @@ export default function SocialLinks({ initialDiscord, initialTwitch, isOwn }: Pr
         ) : isOwn && (
           <a
             href="/api/auth/discord/connect"
-            className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-lg text-sm text-indigo-300 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-lg text-indigo-300 transition-colors"
           >
-            <DiscordIcon className="w-4 h-4" />
-            Connect Discord
+            <DiscordIcon className="w-3.5 h-3.5" />
+            <span className="text-xs">Connect Discord</span>
           </a>
         )}
 
@@ -117,10 +117,10 @@ export default function SocialLinks({ initialDiscord, initialTwitch, isOwn }: Pr
         ) : isOwn && (
           <a
             href="/api/auth/twitch/connect"
-            className="inline-flex items-center gap-2 px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-lg text-sm text-purple-300 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-lg text-purple-300 transition-colors"
           >
-            <TwitchIcon className="w-4 h-4" />
-            Connect Twitch
+            <TwitchIcon className="w-3.5 h-3.5" />
+            <span className="text-xs">Connect Twitch</span>
           </a>
         )}
       </div>
