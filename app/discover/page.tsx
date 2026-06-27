@@ -19,9 +19,14 @@ export default async function DiscoverPage({ searchParams }: { searchParams: { m
   if (session?.user?.osuId) {
     const dbUser = await prisma.user.findFirst({
       where: { osuId: session.user.osuId },
-      select: { pp: true },
+      select: { pp: true, taikoPp: true, catchPp: true, maniaPp: true },
     });
-    userPp = dbUser?.pp ?? null;
+    const modePp =
+      activeMode === 'taiko'  ? dbUser?.taikoPp :
+      activeMode === 'fruits' ? dbUser?.catchPp  :
+      activeMode === 'mania'  ? dbUser?.maniaPp  :
+      dbUser?.pp;
+    userPp = modePp ?? dbUser?.pp ?? null;
   }
 
   // Fetch all registered users (excluding self) — filtering happens client-side
