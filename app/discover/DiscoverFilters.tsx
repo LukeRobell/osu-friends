@@ -31,7 +31,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
   return (
     <div className="space-y-3 mb-8">
       {/* Search bar */}
-      <div className="relative">
+      <div className="relative max-w-xs">
         <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
         </svg>

@@ -44,11 +44,11 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
   return (
     <div className="mb-10">
       {noSkillMatch && (
-        <div className="flex items-center gap-2.5 mb-3 px-3.5 py-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300/80 text-sm">
-          <svg className="w-4 h-4 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="inline-flex items-center gap-2 mb-3 px-3 py-1.5 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300/80 text-xs">
+          <svg className="w-3.5 h-3.5 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
           </svg>
-          No lobbies found near your skill level — showing all active lobbies instead.
+          No lobbies near your skill level — showing all instead
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
