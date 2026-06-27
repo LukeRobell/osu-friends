@@ -71,9 +71,15 @@ export default function UserCard({ user, isOsuFriend = false }: { user: User; is
           </div>
           <p className="text-gray-400 text-sm">
             {user.countryCode}
-            {user.globalRank != null && (
-              <span> · #{user.globalRank.toLocaleString()}</span>
-            )}
+            {(() => {
+              const prefMode = user.preferredModes?.[0] ?? 'osu';
+              const rank =
+                prefMode === 'taiko'  ? (user as any).taikoGlobalRank :
+                prefMode === 'fruits' ? (user as any).catchGlobalRank :
+                prefMode === 'mania'  ? (user as any).maniaGlobalRank :
+                user.globalRank;
+              return rank != null ? <span> · #{rank.toLocaleString()}</span> : null;
+            })()}
             {user.pp != null && (
               <span> · {Math.round(user.pp).toLocaleString()}pp</span>
             )}
