@@ -6,9 +6,9 @@ import { ppToStars } from '@/lib/stars';
 
 const MODE_LABELS: Record<string, string> = { osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania' };
 
-// Fixed height matching a full 3-row × 3-col lobby grid so the members
-// section never jumps up when fewer lobbies are shown.
-const SECTION_HEIGHT = 'min-h-[580px]';
+// Fixed height for empty/notification states so the members section
+// doesn't jump when there are no lobbies for the selected mode.
+const EMPTY_HEIGHT = 'min-h-[160px]';
 
 interface Props {
   rooms: ProcessedRoom[];
@@ -52,7 +52,7 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
   if (noRoomsAtAll) {
     const modeLabel = MODE_LABELS[mode] ?? mode;
     return (
-      <div className={`mb-10 flex items-center justify-center ${SECTION_HEIGHT}`}>
+      <div className={`mb-6 flex items-center justify-center ${EMPTY_HEIGHT}`}>
         <div className="inline-flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300/80 text-sm whitespace-nowrap">
           <svg className="w-4 h-4 shrink-0 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -64,11 +64,11 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
   }
 
   if (display.length === 0) {
-    return <div className={`mb-10 ${SECTION_HEIGHT}`} />;
+    return <div className={`mb-6 ${EMPTY_HEIGHT}`} />;
   }
 
   return (
-    <div className={`mb-10 ${SECTION_HEIGHT}`}>
+    <div className="mb-6">
       {noSkillMatch && (
         <div className="flex justify-center mb-3">
           <div className="inline-flex items-center gap-2.5 px-4 py-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300/80 text-sm whitespace-nowrap">

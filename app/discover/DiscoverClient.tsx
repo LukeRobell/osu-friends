@@ -147,12 +147,26 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
       />
 
       {/* Members section */}
-      <p className="text-gray-400 mb-4">
-        {title}
-        {filtered.length > 0 && (
-          <span className="ml-2 text-gray-500 text-sm">— {filtered.length} players</span>
-        )}
-      </p>
+      <div className="border-t border-white/5 pt-8 mb-4">
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <svg className="w-4 h-4 text-pink-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {title}
+            {filtered.length > 0 && (
+              <span className="text-sm font-normal text-gray-500">— {filtered.length} players</span>
+            )}
+          </h2>
+          <p className="text-xs text-gray-600 mt-0.5 ml-6">
+            {filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge)
+              ? 'Filtered from all registered members'
+              : userPp != null
+                ? 'Sorted by online status · filtered to your pp range'
+                : 'All registered osu!friends members'}
+          </p>
+        </div>
+      </div>
 
       <DiscoverFilters filters={filters} onChange={setFiltersAndReset} />
 
