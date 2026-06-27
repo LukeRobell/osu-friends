@@ -68,8 +68,8 @@ export default function LanguageSelect({ value, onChange }: Props) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1.5 w-48 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden">
-          <div className="overflow-y-scroll p-1.5" style={{ maxHeight: '280px' }}>
+        <div className="absolute left-0 top-full mt-1.5 w-48 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20">
+          <div className="p-1.5" style={{ maxHeight: '280px', overflowY: 'auto' }}>
             <button
               onClick={() => { onChange(''); setOpen(false); }}
               className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-left transition-colors ${

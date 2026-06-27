@@ -98,9 +98,8 @@ export default function LanguagePicker({ initial }: { initial: string[] }) {
           </button>
 
           {open && (
-            <div className="absolute left-0 top-full mt-1.5 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden">
-              {/* Scrollable list with explicit height */}
-              <div className="overflow-y-scroll p-1.5" style={{ maxHeight: '240px' }}>
+            <div className="absolute left-0 top-full mt-1.5 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20">
+              <div className="p-1.5" style={{ maxHeight: '240px', overflowY: 'auto' }}>
                 {LANGUAGES.map(l => (
                   <button
                     key={l.name}
