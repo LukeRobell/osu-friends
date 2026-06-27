@@ -4,6 +4,7 @@ import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import RecentMembersFeed from '@/components/RecentMembersFeed';
 
 const VIDEO_SRC = '/osufriendshome.mp4';
 
@@ -160,6 +161,7 @@ export default function Home() {
   return (
     <>
       <MuteButton isMuted={isMuted} volume={volume} onToggle={toggleMute} onVolumeChange={handleVolumeChange} />
+      <RecentMembersFeed />
 
       {/* ── HERO ───────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center gap-8 px-4 text-center overflow-hidden pb-32">
