@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { fetchActiveRooms, fetchUserAvgTopPp, ppToStars } from '@/lib/osu-api';
 import LiveLobbyCard, { ProcessedRoom } from '@/components/LiveLobbyCard';
-import RefreshButton from '@/components/RefreshButton';
 
 interface Props {
   userPp: number | null;
