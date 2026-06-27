@@ -1,5 +1,7 @@
 'use client';
 
+import CountrySelect from './CountrySelect';
+
 const MODES = [
   { id: 'osu', label: 'osu!' },
   { id: 'taiko', label: 'Taiko' },
@@ -128,18 +130,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
 
         <div className="w-px h-5 bg-gray-700 mx-1" />
 
-        <select
-          value={filters.country}
-          onChange={e => set({ country: e.target.value })}
-          className={`bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none ${
-            filters.country ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
-          }`}
-        >
-          <option value="">🌍 Any country</option>
-          {COUNTRIES.map(c => (
-            <option key={c.code} value={c.code}>{c.flag} {c.name}</option>
-          ))}
-        </select>
+        <CountrySelect value={filters.country} onChange={country => set({ country })} />
 
         <select
           value={filters.language}
