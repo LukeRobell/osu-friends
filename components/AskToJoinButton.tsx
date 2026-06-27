@@ -8,10 +8,12 @@ interface Props {
   targetId: number;
   targetUsername: string;
   roomName: string;
+  roomId?: number;
+  isPrivate?: boolean;
   variant?: 'host' | 'friend';
 }
 
-export default function AskToJoinButton({ targetId, targetUsername, roomName, variant = 'host' }: Props) {
+export default function AskToJoinButton({ targetId, targetUsername, roomName, roomId, isPrivate, variant = 'host' }: Props) {
   const [state, setState] = useState<State>('loading');
   const [secondsRemaining, setSecondsRemaining] = useState(0);
 
@@ -52,7 +54,7 @@ export default function AskToJoinButton({ targetId, targetUsername, roomName, va
       const res = await fetch('/api/lobby/dm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetId, roomName, variant }),
+        body: JSON.stringify({ targetId, targetUsername, roomName, roomId, isPrivate, variant }),
       });
 
       const data = await res.json().catch(() => ({}));

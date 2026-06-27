@@ -103,6 +103,8 @@ export default function LiveLobbyCard({ room, canSendDm }: { room: ProcessedRoom
                 targetId={room.host.id}
                 targetUsername={room.host.username}
                 roomName={room.name}
+                roomId={room.id}
+                isPrivate={room.isPrivate}
                 variant="host"
               />
             )}
