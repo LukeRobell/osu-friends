@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { fetchUsersBatch, fetchFriends, fetchActiveRooms, ppToStars } from '@/lib/osu-api';
-import RefreshButton from '@/components/RefreshButton';
+import { fetchUsersBatch, fetchFriends, fetchActiveRooms } from '@/lib/osu-api';
+import { starRange } from '@/lib/stars';
 import { getAccessToken } from '@/lib/auth-server';
 import { ProcessedRoom } from '@/components/LiveLobbyCard';
 import LiveTournaments from './LiveTournaments';
@@ -15,12 +15,19 @@ export default async function DiscoverPage() {
   const session = await getServerSession(authOptions);
 
   let userPp: number | null = null;
+  let modePp = { osu: null as number|null, taiko: null as number|null, fruits: null as number|null, mania: null as number|null };
   if (session?.user?.osuId) {
     const dbUser = await prisma.user.findFirst({
       where: { osuId: session.user.osuId },
-      select: { pp: true },
+      select: { pp: true, taikoPp: true, catchPp: true, maniaPp: true },
     });
     userPp = dbUser?.pp ?? null;
+    modePp = {
+      osu:    dbUser?.pp      ?? null,
+      taiko:  dbUser?.taikoPp ?? null,
+      fruits: dbUser?.catchPp ?? null,
+      mania:  dbUser?.maniaPp ?? null,
+    };
   }
 
   // Fetch all registered users + all rooms in parallel
@@ -121,9 +128,6 @@ export default async function DiscoverPage() {
       return (b.lastSeen?.getTime() ?? 0) - (a.lastSeen?.getTime() ?? 0);
     });
 
-  const targetStars = ppToStars(userPp ?? 0);
-  const starRange = `${(targetStars - 1.0).toFixed(1)}–${(targetStars + 1.0).toFixed(1)}★`;
-
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">Discover</h1>
@@ -131,26 +135,14 @@ export default async function DiscoverPage() {
       <DiscoverClient
         users={displayUsers}
         userPp={userPp}
+        modePp={modePp}
         friendIds={friendIds}
         allRooms={allRooms}
-        lobbiesHeading={
-          <div className="mb-3">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-              </span>
-              Live lobbies
-              <span className="text-sm font-normal text-gray-500">{starRange}</span>
-              <RefreshButton />
-            </h2>
-            <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
-          </div>
-        }
         lobbyExtras={
           <Suspense fallback={null}><LiveTournaments /></Suspense>
         }
         canSendDm={!!session?.user?.osuId}
+        defaultStarRange={starRange(userPp ?? 0)}
       />
     </main>
   );

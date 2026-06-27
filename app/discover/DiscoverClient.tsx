@@ -5,6 +5,8 @@ import { User } from '@prisma/client';
 import UserCard from '@/components/UserCard';
 import LiveLobbiesClient from '@/components/LiveLobbiesClient';
 import { ProcessedRoom } from '@/components/LiveLobbyCard';
+import RefreshButton from '@/components/RefreshButton';
+import { starRange } from '@/lib/stars';
 import DiscoverFilters from './DiscoverFilters';
 
 interface Filters {
@@ -18,22 +20,39 @@ interface Filters {
   showAll: boolean;
 }
 
+interface ModePp {
+  osu: number | null;
+  taiko: number | null;
+  fruits: number | null;
+  mania: number | null;
+}
+
 interface Props {
   users: User[];
   userPp: number | null;
+  modePp: ModePp;
   friendIds: number[];
   allRooms: ProcessedRoom[];
-  lobbiesHeading: React.ReactNode;
   lobbyExtras: React.ReactNode;
   canSendDm: boolean;
+  defaultStarRange: string;
 }
 
-export default function DiscoverClient({ users, userPp, friendIds, allRooms, lobbiesHeading, lobbyExtras, canSendDm }: Props) {
+export default function DiscoverClient({ users, userPp, modePp, friendIds, allRooms, lobbyExtras, canSendDm, defaultStarRange }: Props) {
   const [filters, setFilters] = useState<Filters>({
     q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', accountAge: '', showAll: false,
   });
 
   const friendSet = useMemo(() => new Set(friendIds), [friendIds]);
+
+  const effectivePp = (
+    filters.mode === 'taiko'  ? modePp.taiko  :
+    filters.mode === 'fruits' ? modePp.fruits :
+    filters.mode === 'mania'  ? modePp.mania  :
+    modePp.osu
+  ) ?? userPp;
+
+  const currentStarRange = effectivePp != null ? starRange(effectivePp) : defaultStarRange;
 
   const ppWindow = userPp != null ? Math.max(20, Math.round(userPp * 0.15)) : null;
   const ppMin = userPp != null && ppWindow != null ? userPp - ppWindow : null;
@@ -84,7 +103,18 @@ export default function DiscoverClient({ users, userPp, friendIds, allRooms, lob
 
   return (
     <>
-      {lobbiesHeading}
+      <div className="mb-3">
+        <h2 className="text-lg font-semibold flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+          </span>
+          Live lobbies
+          <span className="text-sm font-normal text-gray-500">{currentStarRange}</span>
+          <RefreshButton />
+        </h2>
+        <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
+      </div>
 
       {/* Mode filter — instant client-side, no page reload */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -105,7 +135,7 @@ export default function DiscoverClient({ users, userPp, friendIds, allRooms, lob
       <LiveLobbiesClient
         rooms={allRooms}
         mode={filters.mode}
-        userPp={userPp}
+        userPp={effectivePp}
         canSendDm={canSendDm}
       />
 

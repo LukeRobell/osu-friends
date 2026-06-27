@@ -79,13 +79,7 @@ export async function fetchUserProfile(osuId: number, mode = 'osu', revalidate?:
   };
 }
 
-// Converts avg top-5 pp to an approximate star rating for lobby difficulty matching.
-// Calibrated: ~30pp→2.8★  ~100pp→3.7★  ~200pp→4.3★  ~332pp→5.0★  ~500pp→5.7★
-export function ppToStars(pp: number): number {
-  if (pp < 100) return 2.5 + pp * 0.012;
-  if (pp < 200) return 3.7 + (pp - 100) * 0.008;
-  return 4.5 + (pp - 200) * 0.004;
-}
+export { ppToStars } from './stars';
 
 // Active real-time multiplayer rooms — used for the Live Lobbies section in discover
 const RULESET_ID: Record<string, number> = { osu: 0, taiko: 1, fruits: 2, mania: 3 };
