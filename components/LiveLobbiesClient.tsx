@@ -45,7 +45,7 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
     return { display: sorted.slice(0, 9), noSkillMatch, noRoomsAtAll: false };
   }, [rooms, mode, userPp]);
 
-  const bannerBase = 'flex items-center gap-2.5 mb-3 px-3.5 py-2.5 rounded-xl border text-sm max-w-xs';
+  const bannerBase = 'inline-flex items-center gap-2.5 mb-3 px-3.5 py-2.5 rounded-xl border text-sm whitespace-nowrap';
 
   if (noRoomsAtAll) {
     const modeLabel = MODE_LABELS[mode] ?? mode;
