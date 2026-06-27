@@ -1,13 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import LiveLobbyCard, { ProcessedRoom } from './LiveLobbyCard';
 import { ppToStars } from '@/lib/stars';
 
 const MODE_LABELS: Record<string, string> = { osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania' };
-
-// Fixed height for empty/notification states so the members section
-// doesn't jump when there are no lobbies for the selected mode.
+const PAGE_SIZE = 9;
 const EMPTY_HEIGHT = 'min-h-[160px]';
 
 interface Props {
@@ -18,15 +16,18 @@ interface Props {
 }
 
 export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Props) {
-  const { display, noSkillMatch, noRoomsAtAll } = useMemo(() => {
+  const [page, setPage] = useState(1);
+
+  // Reset to page 1 whenever the mode filter changes
+  useEffect(() => { setPage(1); }, [mode]);
+
+  const { sorted, noSkillMatch, noRoomsAtAll } = useMemo(() => {
     const targetStars = ppToStars(userPp ?? 0);
 
-    const modeFiltered = mode
-      ? rooms.filter(r => r.mode === mode)
-      : rooms;
+    const modeFiltered = mode ? rooms.filter(r => r.mode === mode) : rooms;
 
     if (modeFiltered.length === 0) {
-      return { display: [], noSkillMatch: false, noRoomsAtAll: !!mode };
+      return { sorted: [], noSkillMatch: false, noRoomsAtAll: !!mode };
     }
 
     const starFiltered = modeFiltered.filter(r =>
@@ -37,7 +38,7 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
     const noSkillMatch = starFiltered.length === 0;
     const candidates = noSkillMatch ? modeFiltered : starFiltered;
 
-    const sorted = [...candidates].sort((a, b) => {
+    const result = [...candidates].sort((a, b) => {
       const aStars = a.currentBeatmap?.stars ?? 0;
       const bStars = b.currentBeatmap?.stars ?? 0;
       const aDiff = Math.abs(aStars - targetStars);
@@ -46,7 +47,7 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
       return (b.participantCount ?? 0) - (a.participantCount ?? 0);
     });
 
-    return { display: sorted.slice(0, 9), noSkillMatch, noRoomsAtAll: false };
+    return { sorted: result, noSkillMatch, noRoomsAtAll: false };
   }, [rooms, mode, userPp]);
 
   if (noRoomsAtAll) {
@@ -63,9 +64,12 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
     );
   }
 
-  if (display.length === 0) {
+  if (sorted.length === 0) {
     return <div className={`mb-6 ${EMPTY_HEIGHT}`} />;
   }
+
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
+  const pageRooms  = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="mb-6">
@@ -79,11 +83,44 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
           </div>
         </div>
       )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {display.map(room => (
+        {pageRooms.map(room => (
           <LiveLobbyCard key={room.id} room={room} canSendDm={canSendDm} />
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-1.5 mt-6">
+          <button
+            onClick={() => setPage(p => p - 1)}
+            disabled={page === 1}
+            className="px-2.5 py-1.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            ←
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+            <button
+              key={n}
+              onClick={() => setPage(n)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                n === page
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+          <button
+            onClick={() => setPage(p => p + 1)}
+            disabled={page === totalPages}
+            className="px-2.5 py-1.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
