@@ -86,7 +86,7 @@ export default function CountrySelect({ value, onChange }: Props) {
 
       {open && (
         <div className="absolute left-0 top-full mt-1.5 w-52 bg-gray-900 border border-white/10 rounded-xl shadow-2xl z-20">
-          <div className="p-1.5" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+          <div className="p-1.5" style={{ maxHeight: '280px', overflowY: 'scroll', overscrollBehavior: 'contain' }}>
             {/* Any country option */}
             <button
               onClick={() => { onChange(''); setOpen(false); }}
