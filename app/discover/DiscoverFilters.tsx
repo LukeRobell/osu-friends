@@ -12,6 +12,7 @@ export interface Filters {
   language: string;
   rankMin: string;
   rankMax: string;
+  joinedBefore: string;
   showAll: boolean;
 }
 
@@ -25,7 +26,15 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
     onChange({ ...filters, ...patch });
   }
 
-  const activeFilters = [filters.country, filters.language, filters.rankMin, filters.rankMax].filter(Boolean).length;
+  const JOINED_OPTIONS = [
+    { label: 'Any era', value: '' },
+    { label: 'Before 2013 (OG)', value: '2013' },
+    { label: 'Before 2016', value: '2016' },
+    { label: 'Before 2019', value: '2019' },
+    { label: 'Before 2022', value: '2022' },
+  ];
+
+  const activeFilters = [filters.country, filters.language, filters.rankMin, filters.rankMax, filters.joinedBefore].filter(Boolean).length;
 
   return (
     <div className="space-y-3 mb-8">
@@ -48,6 +57,22 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
         <CountrySelect value={filters.country} onChange={country => set({ country })} />
 
         <LanguageSelect value={filters.language} onChange={language => set({ language })} />
+
+        <div className="flex items-center gap-1">
+          {JOINED_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => set({ joinedBefore: opt.value })}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                filters.joinedBefore === opt.value
+                  ? 'bg-pink-500 text-white'
+                  : 'bg-gray-800 text-gray-400 hover:text-white'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
 
         <div className="flex items-center gap-1">
           <input
@@ -84,7 +109,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
 
         {activeFilters > 0 && (
           <button
-            onClick={() => set({ country: '', language: '', rankMin: '', rankMax: '' })}
+            onClick={() => set({ country: '', language: '', rankMin: '', rankMax: '', joinedBefore: '' })}
             className="text-xs text-gray-500 hover:text-gray-300 transition-colors ml-1"
           >
             Clear filters ({activeFilters})

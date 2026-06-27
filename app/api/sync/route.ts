@@ -37,6 +37,7 @@ export async function POST() {
       countryRank:    osuProfile.countryRank,
       isOnline:       osuProfile.isOnline,
       lastSeen:       osuProfile.lastSeen,
+      osuJoinDate:    osuProfile.joinDate,
       username:       osuProfile.username,
       avatarUrl:      osuProfile.avatarUrl,
       preferredModes: [osuProfile.playmode],

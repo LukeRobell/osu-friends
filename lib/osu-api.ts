@@ -67,6 +67,7 @@ export async function fetchUserProfile(osuId: number, mode = 'osu', revalidate?:
     accountPp: (u.statistics?.pp ?? null) as number | null,
     isOnline: (u.is_online ?? false) as boolean,
     lastSeen: u.last_visit ? new Date(u.last_visit as string) : null,
+    joinDate: u.join_date ? new Date(u.join_date as string) : null,
     team: u.team
       ? {
           id: String(u.team.id),

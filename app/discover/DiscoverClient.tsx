@@ -12,6 +12,7 @@ interface Filters {
   language: string;
   rankMin: string;
   rankMax: string;
+  joinedBefore: string;
   showAll: boolean;
 }
 
@@ -25,7 +26,7 @@ interface Props {
 
 export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobbiesHeading }: Props) {
   const [filters, setFilters] = useState<Filters>({
-    q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', showAll: false,
+    q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', joinedBefore: '', showAll: false,
   });
 
   const friendSet = useMemo(() => new Set(friendIds), [friendIds]);
@@ -35,7 +36,7 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
   const ppMax = userPp != null && ppWindow != null ? userPp + ppWindow : null;
 
   const filtered = useMemo(() => {
-    const hasExplicit = !!(filters.q || filters.country || filters.language || filters.rankMin || filters.rankMax);
+    const hasExplicit = !!(filters.q || filters.country || filters.language || filters.rankMin || filters.rankMax || filters.joinedBefore);
 
     return users.filter(u => {
       if (filters.q && !u.username.toLowerCase().includes(filters.q.toLowerCase())) return false;
@@ -48,6 +49,10 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
       if (filters.rankMax) {
         if (u.globalRank == null || u.globalRank > Number(filters.rankMax)) return false;
       }
+      if (filters.joinedBefore) {
+        const cutoff = new Date(`${filters.joinedBefore}-01-01`);
+        if (!u.osuJoinDate || new Date(u.osuJoinDate) >= cutoff) return false;
+      }
       if (!filters.showAll && !hasExplicit && ppMin != null && ppMax != null) {
         if (u.pp == null || u.pp < ppMin || u.pp > ppMax) return false;
       }
@@ -57,7 +62,7 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
 
   const title = filters.q
     ? `Results for "${filters.q}"`
-    : filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax)
+    : filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.joinedBefore)
       ? 'All osu!friends members'
       : 'osu!friends members near your skill level';
 
