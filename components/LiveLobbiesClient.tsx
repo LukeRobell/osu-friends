@@ -6,6 +6,10 @@ import { ppToStars } from '@/lib/stars';
 
 const MODE_LABELS: Record<string, string> = { osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania' };
 
+// Fixed height matching a full 3-row × 3-col lobby grid so the members
+// section never jumps up when fewer lobbies are shown.
+const SECTION_HEIGHT = 'min-h-[580px]';
+
 interface Props {
   rooms: ProcessedRoom[];
   mode: string;
@@ -45,13 +49,11 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
     return { display: sorted.slice(0, 9), noSkillMatch, noRoomsAtAll: false };
   }, [rooms, mode, userPp]);
 
-  const bannerBase = 'inline-flex items-center gap-2.5 mb-3 px-3.5 py-2.5 rounded-xl border text-sm whitespace-nowrap';
-
   if (noRoomsAtAll) {
     const modeLabel = MODE_LABELS[mode] ?? mode;
     return (
-      <div className="mb-10">
-        <div className={`${bannerBase} bg-red-500/10 border-red-500/20 text-red-300/80`}>
+      <div className={`mb-10 flex items-center justify-center ${SECTION_HEIGHT}`}>
+        <div className="inline-flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300/80 text-sm whitespace-nowrap">
           <svg className="w-4 h-4 shrink-0 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
           </svg>
@@ -61,16 +63,20 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm }: Pr
     );
   }
 
-  if (display.length === 0) return null;
+  if (display.length === 0) {
+    return <div className={`mb-10 ${SECTION_HEIGHT}`} />;
+  }
 
   return (
-    <div className="mb-10">
+    <div className={`mb-10 ${SECTION_HEIGHT}`}>
       {noSkillMatch && (
-        <div className={`${bannerBase} bg-yellow-500/10 border-yellow-500/20 text-yellow-300/80`}>
-          <svg className="w-4 h-4 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-          </svg>
-          No lobbies near your skill level — showing all instead
+        <div className="flex justify-center mb-3">
+          <div className="inline-flex items-center gap-2.5 px-4 py-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300/80 text-sm whitespace-nowrap">
+            <svg className="w-4 h-4 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+            No lobbies near your skill level — showing all instead
+          </div>
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
