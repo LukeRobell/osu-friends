@@ -48,7 +48,7 @@ export default async function StreamsSection() {
             <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`${stream.thumbnailUrl}?t=${Math.floor(Date.now() / 60000)}`}
+                src={`${stream.thumbnailUrl}?t=${Date.now()}`}
                 alt={stream.title}
                 className="w-full h-full object-cover"
               />
