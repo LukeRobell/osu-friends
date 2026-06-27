@@ -11,7 +11,8 @@ import DiscoverClient from './DiscoverClient';
 
 export const dynamic = 'force-dynamic';
 
-export default async function DiscoverPage() {
+export default async function DiscoverPage({ searchParams }: { searchParams: { mode?: string } }) {
+  const activeMode = searchParams.mode ?? null;
   const session = await getServerSession(authOptions);
 
   let userPp: number | null = null;
@@ -78,6 +79,7 @@ export default async function DiscoverPage() {
             users={displayUsers}
             userPp={userPp}
             friendIds={friendIds}
+            initialMode={activeMode ?? ''}
             lobbiesHeading={
               <div className="mb-3">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -96,7 +98,7 @@ export default async function DiscoverPage() {
               <>
                 <Suspense fallback={null}><LiveTournaments /></Suspense>
                 <Suspense fallback={null}>
-                  <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={null} />
+                  <LiveLobbies userPp={userPp} userOsuId={session?.user?.osuId ?? null} mode={activeMode} />
                 </Suspense>
               </>
             }

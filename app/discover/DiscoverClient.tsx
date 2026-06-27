@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { User } from '@prisma/client';
 import UserCard from '@/components/UserCard';
 import DiscoverFilters from './DiscoverFilters';
@@ -22,12 +23,25 @@ interface Props {
   friendIds: number[];
   lobbies: React.ReactNode;
   lobbiesHeading: React.ReactNode;
+  initialMode: string;
 }
 
-export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobbiesHeading }: Props) {
+export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobbiesHeading, initialMode }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [filters, setFilters] = useState<Filters>({
-    q: '', mode: '', country: '', language: '', rankMin: '', rankMax: '', joinedBefore: '', showAll: false,
+    q: '', mode: initialMode, country: '', language: '', rankMin: '', rankMax: '', joinedBefore: '', showAll: false,
   });
+
+  function setMode(mode: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (mode) params.set('mode', mode);
+    else params.delete('mode');
+    router.replace(`${pathname}?${params.toString()}`);
+    setFilters(f => ({ ...f, mode }));
+  }
 
   const friendSet = useMemo(() => new Set(friendIds), [friendIds]);
 
@@ -82,7 +96,7 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
         {MODES.map(m => (
           <button
             key={m.id}
-            onClick={() => setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id }))}
+            onClick={() => setMode(filters.mode === m.id ? '' : m.id)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
             }`}
