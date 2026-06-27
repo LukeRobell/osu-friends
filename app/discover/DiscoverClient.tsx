@@ -13,7 +13,7 @@ interface Filters {
   language: string;
   rankMin: string;
   rankMax: string;
-  joinedBefore: string;
+  accountAge: string;
   showAll: boolean;
 }
 
@@ -32,7 +32,7 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
   const searchParams = useSearchParams();
 
   const [filters, setFilters] = useState<Filters>({
-    q: '', mode: initialMode, country: '', language: '', rankMin: '', rankMax: '', joinedBefore: '', showAll: false,
+    q: '', mode: initialMode, country: '', language: '', rankMin: '', rankMax: '', accountAge: '', showAll: false,
   });
 
   function setMode(mode: string) {
@@ -50,7 +50,7 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
   const ppMax = userPp != null && ppWindow != null ? userPp + ppWindow : null;
 
   const filtered = useMemo(() => {
-    const hasExplicit = !!(filters.q || filters.country || filters.language || filters.rankMin || filters.rankMax || filters.joinedBefore);
+    const hasExplicit = !!(filters.q || filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge);
 
     return users.filter(u => {
       if (filters.q && !u.username.toLowerCase().includes(filters.q.toLowerCase())) return false;
@@ -63,9 +63,14 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
       if (filters.rankMax) {
         if (u.globalRank == null || u.globalRank > Number(filters.rankMax)) return false;
       }
-      if (filters.joinedBefore) {
-        const cutoff = new Date(`${filters.joinedBefore}-01-01`);
-        if (!u.osuJoinDate || new Date(u.osuJoinDate) >= cutoff) return false;
+      if (filters.accountAge) {
+        if (!u.osuJoinDate) return false;
+        const ageYears = (Date.now() - new Date(u.osuJoinDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+        if (filters.accountAge === '<1' && ageYears >= 1) return false;
+        if (filters.accountAge === '1'  && (ageYears < 1 || ageYears >= 5)) return false;
+        if (filters.accountAge === '5'  && ageYears < 5)  return false;
+        if (filters.accountAge === '10' && ageYears < 10) return false;
+        if (filters.accountAge === '15' && ageYears < 15) return false;
       }
       if (!filters.showAll && !hasExplicit && ppMin != null && ppMax != null) {
         if (u.pp == null || u.pp < ppMin || u.pp > ppMax) return false;
@@ -76,7 +81,7 @@ export default function DiscoverClient({ users, userPp, friendIds, lobbies, lobb
 
   const title = filters.q
     ? `Results for "${filters.q}"`
-    : filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.joinedBefore)
+    : filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge)
       ? 'All osu!friends members'
       : 'osu!friends members near your skill level';
 

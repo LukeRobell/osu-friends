@@ -12,7 +12,7 @@ export interface Filters {
   language: string;
   rankMin: string;
   rankMax: string;
-  joinedBefore: string;
+  accountAge: string;
   showAll: boolean;
 }
 
@@ -26,7 +26,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
     onChange({ ...filters, ...patch });
   }
 
-  const activeFilters = [filters.country, filters.language, filters.rankMin, filters.rankMax, filters.joinedBefore].filter(Boolean).length;
+  const activeFilters = [filters.country, filters.language, filters.rankMin, filters.rankMax, filters.accountAge].filter(Boolean).length;
 
   return (
     <div className="space-y-3 mb-8">
@@ -51,17 +51,18 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
         <LanguageSelect value={filters.language} onChange={language => set({ language })} />
 
         <select
-          value={filters.joinedBefore}
-          onChange={e => set({ joinedBefore: e.target.value })}
+          value={filters.accountAge}
+          onChange={e => set({ accountAge: e.target.value })}
           className={`bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none cursor-pointer ${
-            filters.joinedBefore ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
+            filters.accountAge ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400'
           }`}
         >
           <option value="">📅 Any era</option>
-          <option value="2013">OG (before 2013)</option>
-          <option value="2016">Veteran (before 2016)</option>
-          <option value="2019">Before 2019</option>
-          <option value="2022">Before 2022</option>
+          <option value="<1">Less than a year</option>
+          <option value="1">1–5 years</option>
+          <option value="5">5+ years</option>
+          <option value="10">10+ years</option>
+          <option value="15">15+ years</option>
         </select>
 
         <div className="flex items-center gap-1">
@@ -99,7 +100,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
 
         {activeFilters > 0 && (
           <button
-            onClick={() => set({ country: '', language: '', rankMin: '', rankMax: '', joinedBefore: '' })}
+            onClick={() => set({ country: '', language: '', rankMin: '', rankMax: '', accountAge: '' })}
             className="text-xs text-gray-500 hover:text-gray-300 transition-colors ml-1"
           >
             Clear filters ({activeFilters})
