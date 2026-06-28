@@ -3,12 +3,12 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-// Render at 2x logical size so osu!'s upscaling stays crisp
-const W      = 640;
-const H      = 360;
-const PAD    = 20;
-const BAR_W  = 220;
-const BAR_H  = 6;
+const W     = 480;
+const H     = 320;
+const PAD   = 16;
+const BAR_W = 196;
+const BAR_H = 5;
+const INNER = W - PAD * 2;
 
 const MODE_LABELS: Record<string, string> = {
   osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania',
@@ -48,119 +48,121 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
       username: string; rivalCount: number; rival: SingleRival | null;
     } = await dataRes.json();
 
-    const bothRanks     = rival && rival.myRank && rival.rivalRank;
-    const myRankPct     = bothRanks ? (Math.min(rival!.myRank!, rival!.rivalRank!) / rival!.myRank!)    * 100 : (rival?.myRank    ? 100 : 0);
-    const rivalRankPct  = bothRanks ? (Math.min(rival!.myRank!, rival!.rivalRank!) / rival!.rivalRank!) * 100 : (rival?.rivalRank ? 100 : 0);
-    const myRankAhead   = !!(rival?.myRank && rival?.rivalRank && rival.myRank < rival.rivalRank);
-    const maxPp         = Math.max(rival?.myPp ?? 0, rival?.rivalPp ?? 0);
-    const myPpPct       = maxPp > 0 && rival?.myPp    ? (rival.myPp    / maxPp) * 100 : 0;
-    const rivalPpPct    = maxPp > 0 && rival?.rivalPp ? (rival.rivalPp / maxPp) * 100 : 0;
-    const myPpAhead     = !!(rival?.myPp && rival?.rivalPp && rival.myPp > rival.rivalPp);
+    const bothRanks    = rival && rival.myRank && rival.rivalRank;
+    const myRankPct    = bothRanks ? (Math.min(rival!.myRank!, rival!.rivalRank!) / rival!.myRank!)    * 100 : (rival?.myRank    ? 100 : 0);
+    const rivalRankPct = bothRanks ? (Math.min(rival!.myRank!, rival!.rivalRank!) / rival!.rivalRank!) * 100 : (rival?.rivalRank ? 100 : 0);
+    const myRankAhead  = !!(rival?.myRank && rival?.rivalRank && rival.myRank < rival.rivalRank);
+    const maxPp        = Math.max(rival?.myPp ?? 0, rival?.rivalPp ?? 0);
+    const myPpPct      = maxPp > 0 && rival?.myPp    ? (rival.myPp    / maxPp) * 100 : 0;
+    const rivalPpPct   = maxPp > 0 && rival?.rivalPp ? (rival.rivalPp / maxPp) * 100 : 0;
+    const myPpAhead    = !!(rival?.myPp && rival?.rivalPp && rival.myPp > rival.rivalPp);
     const mySnipesAhead = (rival?.mySnipes ?? 0) >= (rival?.theirSnipes ?? 0);
-
-    const INNER = W - PAD * 2;
 
     return new ImageResponse(
       (
         <div style={{ display: 'flex', flexDirection: 'column', width: W, height: H, backgroundColor: '#0d0d12', fontFamily: 'sans-serif' }}>
 
-          {/* ── Header ── */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: W, height: 52, padding: `0 ${PAD}px`, borderBottom: '1px solid #1c1c28' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* ── Brand header ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: W, height: 62, backgroundColor: '#0a0a0f', borderBottom: '1px solid #1c1c28' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
               <div style={{ display: 'flex', color: '#ec4899', fontSize: 18 }}>⚔</div>
-              <div style={{ display: 'flex', color: '#f3f4f6', fontSize: 17, fontWeight: 700 }}>{username}</div>
-              <div style={{ display: 'flex', color: '#3d3d50', fontSize: 14 }}>· Rivals</div>
+              <div style={{ display: 'flex', color: '#f3f4f6', fontSize: 17, fontWeight: 700 }}>osufriends.com</div>
+            </div>
+            <div style={{ display: 'flex', fontSize: 10, color: '#3d3d50', marginTop: 3 }}>
+              meet friends · challenge rivals · opt-in for tournaments
+            </div>
+          </div>
+
+          {/* ── Player row ── */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: W, padding: `8px ${PAD}px`, borderBottom: '1px solid #1c1c28' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ display: 'flex', fontSize: 11, color: '#6b7080' }}>rivals for</div>
+              <div style={{ display: 'flex', fontSize: 13, fontWeight: 700, color: '#ec4899' }}>{username}</div>
               {rivalCount > 1 && (
-                <div style={{ display: 'flex', color: '#2e2e3d', fontSize: 12 }}>({rivalCount})</div>
+                <div style={{ display: 'flex', fontSize: 10, color: '#2e2e3d' }}>({rivalCount} total)</div>
               )}
             </div>
-            <div style={{ display: 'flex', color: '#2e2e3d', fontSize: 12 }}>osufriends.com</div>
+            {rival && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <img src={rival.avatarUrl} width={22} height={22} style={{ borderRadius: 11 }} alt="" />
+                <div style={{ display: 'flex', fontSize: 12, fontWeight: 600, color: '#9ca3af' }}>⚔ {rival.username}</div>
+                <div style={{ display: 'flex', fontSize: 10, padding: '2px 7px', backgroundColor: '#1a1a24', borderRadius: 99, color: '#6b7080' }}>
+                  {MODE_LABELS[rival.mode] ?? rival.mode}
+                </div>
+              </div>
+            )}
           </div>
 
           {!rival ? (
             <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ display: 'flex', color: '#3d3d50', fontSize: 14 }}>No rivals yet — add one at osufriends.com</div>
+              <div style={{ display: 'flex', fontSize: 12, color: '#3d3d50' }}>No rivals yet — add one at osufriends.com</div>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', width: W, padding: `14px ${PAD}px 0` }}>
-
-              {/* ── Rival header ── */}
-              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 14 }}>
-                <img src={rival.avatarUrl} width={36} height={36} style={{ borderRadius: 18, marginRight: 10 }} alt="" />
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', fontSize: 15, fontWeight: 700, color: '#f3f4f6' }}>⚔ {rival.username}</div>
-                  <div style={{ display: 'flex', fontSize: 12, color: '#4b4b62', marginTop: 2 }}>
-                    {rival.rivalRank ? `#${rival.rivalRank.toLocaleString()}` : '—'} · {rival.rivalPp ? `${Math.round(rival.rivalPp)}pp` : '—'}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', marginLeft: 'auto', fontSize: 12, padding: '3px 10px', backgroundColor: '#1a1a24', borderRadius: 99, color: '#6b7080' }}>
-                  {MODE_LABELS[rival.mode] ?? rival.mode}
-                </div>
-              </div>
+            <div style={{ display: 'flex', flexDirection: 'column', width: W, padding: `10px ${PAD}px 0` }}>
 
               {/* ── Rank ── */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: INNER, marginBottom: 5 }}>
-                <div style={{ display: 'flex', fontSize: 11, color: '#3d3d50', fontWeight: 600 }}>RANK</div>
-                <div style={{ display: 'flex', fontSize: 11, color: myRankAhead ? '#34d399' : bothRanks ? '#f87171' : '#3d3d50' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: INNER, marginBottom: 4 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#3d3d50', fontWeight: 600 }}>RANK</div>
+                <div style={{ display: 'flex', fontSize: 10, color: myRankAhead ? '#34d399' : bothRanks ? '#f87171' : '#3d3d50' }}>
                   {myRankAhead ? "You're ahead" : bothRanks ? "They're ahead" : ''}
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 5 }}>
-                <div style={{ display: 'flex', fontSize: 11, color: '#6b7080', width: 28 }}>You</div>
+              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 4 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#6b7080', width: 26 }}>You</div>
                 {bar(pct2px(myRankPct), '#ec4899')}
-                <div style={{ display: 'flex', fontSize: 11, color: '#9ca3af', marginLeft: 8 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#9ca3af', marginLeft: 7 }}>
                   {rival.myRank ? `#${rival.myRank.toLocaleString()}` : '—'}
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 14 }}>
-                <div style={{ display: 'flex', fontSize: 11, color: '#6b7080', width: 28 }}>⚔</div>
+              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 11 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#6b7080', width: 26 }}>⚔</div>
                 {bar(pct2px(rivalRankPct), '#818cf8')}
-                <div style={{ display: 'flex', fontSize: 11, color: '#9ca3af', marginLeft: 8 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#9ca3af', marginLeft: 7 }}>
                   {rival.rivalRank ? `#${rival.rivalRank.toLocaleString()}` : '—'}
                 </div>
               </div>
 
               {/* ── PP ── */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', width: INNER, marginBottom: 5 }}>
-                <div style={{ display: 'flex', fontSize: 11, color: '#3d3d50', fontWeight: 600 }}>PP</div>
-                <div style={{ display: 'flex', fontSize: 11, color: myPpAhead ? '#34d399' : (rival.myPp && rival.rivalPp) ? '#f87171' : '#3d3d50' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: INNER, marginBottom: 4 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#3d3d50', fontWeight: 600 }}>PP</div>
+                <div style={{ display: 'flex', fontSize: 10, color: myPpAhead ? '#34d399' : (rival.myPp && rival.rivalPp) ? '#f87171' : '#3d3d50' }}>
                   {myPpAhead ? "You're ahead" : (rival.myPp && rival.rivalPp) ? "They're ahead" : ''}
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 5 }}>
-                <div style={{ display: 'flex', fontSize: 11, color: '#6b7080', width: 28 }}>You</div>
+              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 4 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#6b7080', width: 26 }}>You</div>
                 {bar(pct2px(myPpPct), '#ec4899')}
-                <div style={{ display: 'flex', fontSize: 11, color: '#9ca3af', marginLeft: 8 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#9ca3af', marginLeft: 7 }}>
                   {rival.myPp ? `${Math.round(rival.myPp)}pp` : '—'}
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 14 }}>
-                <div style={{ display: 'flex', fontSize: 11, color: '#6b7080', width: 28 }}>⚔</div>
+              <div style={{ display: 'flex', alignItems: 'center', width: INNER, marginBottom: 11 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#6b7080', width: 26 }}>⚔</div>
                 {bar(pct2px(rivalPpPct), '#818cf8')}
-                <div style={{ display: 'flex', fontSize: 11, color: '#9ca3af', marginLeft: 8 }}>
+                <div style={{ display: 'flex', fontSize: 10, color: '#9ca3af', marginLeft: 7 }}>
                   {rival.rivalPp ? `${Math.round(rival.rivalPp)}pp` : '—'}
                 </div>
               </div>
 
-              {/* ── Snipes + Recent play ── */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: INNER, paddingTop: 10, borderTop: '1px solid #1a1a24' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ display: 'flex', fontSize: 11, color: '#3d3d50', fontWeight: 600 }}>SNIPES</div>
-                  <div style={{ display: 'flex', fontSize: 15, fontWeight: 700, color: mySnipesAhead ? '#ec4899' : '#4b4b62' }}>{rival.mySnipes}</div>
-                  <div style={{ display: 'flex', fontSize: 11, color: '#2e2e3d' }}>vs</div>
-                  <div style={{ display: 'flex', fontSize: 15, fontWeight: 700, color: !mySnipesAhead ? '#818cf8' : '#4b4b62' }}>{rival.theirSnipes}</div>
+              {/* ── Snipes + recent play ── */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: INNER, paddingTop: 8, borderTop: '1px solid #1a1a24' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <div style={{ display: 'flex', fontSize: 10, color: '#3d3d50', fontWeight: 600 }}>SNIPES</div>
+                  <div style={{ display: 'flex', fontSize: 14, fontWeight: 700, color: mySnipesAhead ? '#ec4899' : '#4b4b62' }}>{rival.mySnipes}</div>
+                  <div style={{ display: 'flex', fontSize: 10, color: '#2e2e3d' }}>vs</div>
+                  <div style={{ display: 'flex', fontSize: 14, fontWeight: 700, color: !mySnipesAhead ? '#818cf8' : '#4b4b62' }}>{rival.theirSnipes}</div>
                 </div>
                 {rival.recentPlay && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                      <div style={{ display: 'flex', fontSize: 11, color: '#6b7080' }}>
-                        {rival.recentPlay.title.length > 26 ? rival.recentPlay.title.slice(0, 26) + '…' : rival.recentPlay.title}
+                      <div style={{ display: 'flex', fontSize: 10, color: '#6b7080' }}>
+                        {rival.recentPlay.title.length > 24 ? rival.recentPlay.title.slice(0, 24) + '…' : rival.recentPlay.title}
                       </div>
-                      <div style={{ display: 'flex', fontSize: 12, color: '#818cf8', fontWeight: 700, marginTop: 2 }}>
+                      <div style={{ display: 'flex', fontSize: 11, color: '#818cf8', fontWeight: 700, marginTop: 1 }}>
                         {rival.recentPlay.pp}pp
                       </div>
                     </div>
-                    <div style={{ display: 'flex', fontSize: 16, color: '#3d3d50' }}>♪</div>
+                    <div style={{ display: 'flex', fontSize: 14, color: '#3d3d50' }}>♪</div>
                   </div>
                 )}
               </div>
@@ -169,9 +171,9 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
           )}
 
           {/* ── Footer ── */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: W, height: 32, marginTop: 'auto', backgroundColor: '#09090e', borderTop: '1px solid #1c1c28' }}>
-            <div style={{ display: 'flex', fontSize: 12, color: '#3d3d50' }}>Track your rivals at</div>
-            <div style={{ display: 'flex', fontSize: 12, color: '#ec4899', marginLeft: 5, fontWeight: 600 }}>osufriends.com</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: W, height: 28, marginTop: 'auto', backgroundColor: '#09090e', borderTop: '1px solid #1c1c28' }}>
+            <div style={{ display: 'flex', fontSize: 10, color: '#ec4899', fontWeight: 600 }}>osufriends.com</div>
+            <div style={{ display: 'flex', fontSize: 10, color: '#2e2e3d', marginLeft: 6 }}>· meet friends · challenge rivals · opt-in for tournaments</div>
           </div>
 
         </div>
