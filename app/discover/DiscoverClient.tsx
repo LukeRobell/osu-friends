@@ -63,13 +63,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
 
   const currentStarRange = effectivePp != null ? starRange(effectivePp) : defaultStarRange;
 
-  const ppWindow = userPp != null ? Math.max(20, Math.round(userPp * 0.15)) : null;
-  const ppMin = userPp != null && ppWindow != null ? userPp - ppWindow : null;
-  const ppMax = userPp != null && ppWindow != null ? userPp + ppWindow : null;
-
   const filtered = useMemo(() => {
-    const hasExplicit = !!(filters.q || filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge);
-
     return users.filter(u => {
       if (filters.q && !u.username.toLowerCase().includes(filters.q.toLowerCase())) return false;
       if (filters.country && u.countryCode !== filters.country) return false;
@@ -89,12 +83,9 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
         if (filters.accountAge === '10' && ageYears < 10) return false;
         if (filters.accountAge === '15' && ageYears < 15) return false;
       }
-      if (!filters.showAll && !hasExplicit && ppMin != null && ppMax != null) {
-        if (u.pp == null || u.pp < ppMin || u.pp > ppMax) return false;
-      }
       return true;
     });
-  }, [users, filters, ppMin, ppMax]);
+  }, [users, filters]);
 
 
 
@@ -165,17 +156,11 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           osu!friends members
-          {filtered.length > 0 && (
-            <span className="text-sm font-normal text-gray-500">— {filtered.length} players</span>
-          )}
         </h2>
         <div className="flex items-center justify-between ml-6 mb-4 gap-4">
           <p className="text-xs text-gray-600 shrink-0">
-            {filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge)
-              ? 'Filtered from all registered members'
-              : userPp != null
-                ? 'Sorted by online status'
-                : 'All registered osu!friends members'}
+            {userPp != null ? 'Sorted by online status' : 'All osu!friends members'}
+            {filtered.length > 0 && <span className="text-gray-500"> · {filtered.length} players</span>}
           </p>
           <DiscoverFilters filters={filters} onChange={setFiltersAndReset} />
         </div>
