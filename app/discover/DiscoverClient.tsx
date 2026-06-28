@@ -112,7 +112,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
   return (
     <>
       <div className="mb-4">
-        <h2 className="text-lg font-semibold flex items-center gap-2 mb-2">
+        <h2 className="text-lg font-semibold flex items-center gap-2 mb-0.5">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
