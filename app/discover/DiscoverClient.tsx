@@ -111,8 +111,8 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
 
   return (
     <>
-      <div className="flex items-center justify-between mb-1">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold flex items-center gap-2 mb-2">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
@@ -122,8 +122,8 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
           <RefreshButton />
         </h2>
 
-        {/* Mode filter + any-difficulty toggle — far right */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Mode filter + any-difficulty toggle — sits where subtitle was */}
+        <div className="flex flex-wrap items-center gap-2 ml-5">
           {MODES.map(m => (
             <button
               key={m.id}
@@ -148,7 +148,6 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
           </button>
         </div>
       </div>
-      <p className="text-xs text-gray-600 mb-4 ml-5">Hosts within your skill level towards top</p>
 
       {lobbyExtras}
       <LiveLobbiesClient
