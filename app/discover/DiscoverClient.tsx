@@ -96,11 +96,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
     });
   }, [users, filters, ppMin, ppMax]);
 
-  const title = filters.q
-    ? `Results for "${filters.q}"`
-    : filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge)
-      ? 'All osu!friends members'
-      : 'osu!friends members near your skill level';
+
 
   const MODES = [
     { id: 'osu', label: 'osu!' },
@@ -163,27 +159,26 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
 
       {/* Members section */}
       <div className="border-t border-white/5 pt-8 mb-4">
-        <div className="mb-3">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <svg className="w-4 h-4 text-pink-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            {title}
-            {filtered.length > 0 && (
-              <span className="text-sm font-normal text-gray-500">— {filtered.length} players</span>
-            )}
-          </h2>
-          <p className="text-xs text-gray-600 mt-0.5 ml-6">
+        <h2 className="text-lg font-semibold flex items-center gap-2 mb-0.5">
+          <svg className="w-4 h-4 text-pink-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          osu!friends members
+          {filtered.length > 0 && (
+            <span className="text-sm font-normal text-gray-500">— {filtered.length} players</span>
+          )}
+        </h2>
+        <div className="flex items-center justify-between ml-6 mb-4">
+          <p className="text-xs text-gray-600 shrink-0 mr-4">
             {filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge)
               ? 'Filtered from all registered members'
               : userPp != null
-                ? 'Sorted by online status · filtered to your pp range'
+                ? 'Sorted by online status · filtered to your avg pp'
                 : 'All registered osu!friends members'}
           </p>
+          <DiscoverFilters filters={filters} onChange={setFiltersAndReset} />
         </div>
       </div>
-
-      <DiscoverFilters filters={filters} onChange={setFiltersAndReset} />
 
       {filtered.length === 0 ? (
         <div className="text-center py-20">
