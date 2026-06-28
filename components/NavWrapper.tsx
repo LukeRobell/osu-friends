@@ -6,7 +6,7 @@ import SmoothScroll from './SmoothScroll';
 
 export default function NavWrapper() {
   const pathname = usePathname();
-  if (pathname.startsWith('/widget')) return null;
+  if (pathname.startsWith('/widget') || pathname.startsWith('/twitch-extension')) return null;
   return (
     <>
       <SmoothScroll />

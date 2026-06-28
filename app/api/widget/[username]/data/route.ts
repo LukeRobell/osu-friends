@@ -4,6 +4,15 @@ import { prisma } from '@/lib/prisma';
 const MODE_PP   = { osu: 'pp', taiko: 'taikoPp', fruits: 'catchPp', mania: 'maniaPp' } as const;
 const MODE_RANK = { osu: 'globalRank', taiko: 'taikoGlobalRank', fruits: 'catchGlobalRank', mania: 'maniaGlobalRank' } as const;
 
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: CORS });
+}
+
 export async function GET(_req: NextRequest, { params }: { params: { username: string } }) {
   const username = decodeURIComponent(params.username);
   const now = new Date();
@@ -70,6 +79,6 @@ export async function GET(_req: NextRequest, { params }: { params: { username: s
 
   return NextResponse.json(
     { username: me.username, rivals },
-    { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } }
+    { headers: { ...CORS, 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } }
   );
 }

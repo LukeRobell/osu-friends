@@ -5,6 +5,28 @@ import Image from 'next/image';
 import Link from 'next/link';
 import RivalCompareCard, { type RivalCardData } from './RivalCompareCard';
 
+function EmbedRow({ label, value, copyKey, copiedKey, onCopy }: {
+  label: string; value: string; copyKey: string;
+  copiedKey: string | null; onCopy: (v: string, k: string) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-gray-700 w-24 shrink-0">{label}</span>
+      <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2 py-1.5 truncate font-mono min-w-0">{value}</code>
+      <button
+        onClick={() => onCopy(value, copyKey)}
+        className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
+          copiedKey === copyKey
+            ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10'
+            : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+        }`}
+      >
+        {copiedKey === copyKey ? 'Copied!' : 'Copy'}
+      </button>
+    </div>
+  );
+}
+
 interface PendingRequest {
   id: string;
   fromUsername: string;
@@ -76,55 +98,40 @@ export default function RivalsClient({
       </div>
 
       {showEmbed && (
-        <div className="mb-3 bg-gray-900/60 border border-white/10 rounded-xl p-3 space-y-2.5">
-          <p className="text-xs text-gray-500">Paste in your osu! profile or Twitch panel to show your rival cards.</p>
+        <div className="mb-3 bg-gray-900/60 border border-white/10 rounded-xl p-3 space-y-3">
+          {/* osu! profile */}
           <div>
-            <p className="text-xs text-gray-600 mb-1">osu! profile (BBCode)</p>
-            <div className="flex items-center gap-2">
-              <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2.5 py-1.5 truncate font-mono">{bbCode}</code>
-              <button
-                onClick={() => copyText(bbCode, 'bbcode')}
-                className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
-                  copiedKey === 'bbcode'
-                    ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10'
-                    : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
-                }`}
-              >
-                {copiedKey === 'bbcode' ? 'Copied!' : 'Copy'}
-              </button>
+            <p className="text-xs text-gray-500 mb-1.5 font-medium">osu! profile</p>
+            <EmbedRow label="BBCode" value={bbCode} copyKey="bbcode" copiedKey={copiedKey} onCopy={copyText} />
+          </div>
+
+          <div className="border-t border-white/5" />
+
+          {/* Twitch */}
+          <div>
+            <p className="text-xs text-gray-500 mb-1.5 font-medium">Twitch</p>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-600">Live panel (extension)</span>
+                <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Live</span>
+              </div>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Install the <strong className="text-gray-400">osu!friends</strong> Twitch Extension on your channel dashboard, then enter your username in the extension config.
+              </p>
+              <EmbedRow label="Static image" value={widgetUrl} copyKey="url" copiedKey={copiedKey} onCopy={copyText} />
             </div>
           </div>
+
+          <div className="border-t border-white/5" />
+
+          {/* OBS */}
           <div>
-            <p className="text-xs text-gray-600 mb-1">Twitch panel (static image URL)</p>
-            <div className="flex items-center gap-2">
-              <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2.5 py-1.5 truncate font-mono">{widgetUrl}</code>
-              <button
-                onClick={() => copyText(widgetUrl, 'url')}
-                className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
-                  copiedKey === 'url'
-                    ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10'
-                    : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
-                }`}
-              >
-                {copiedKey === 'url' ? 'Copied!' : 'Copy'}
-              </button>
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-xs text-gray-500 font-medium">OBS overlay</p>
+              <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Live</span>
             </div>
-          </div>
-          <div>
-            <p className="text-xs text-gray-600 mb-1">OBS Browser Source (live · updates every 5 min)</p>
-            <div className="flex items-center gap-2">
-              <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2.5 py-1.5 truncate font-mono">{obsUrl}</code>
-              <button
-                onClick={() => copyText(obsUrl, 'obs')}
-                className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
-                  copiedKey === 'obs'
-                    ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10'
-                    : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
-                }`}
-              >
-                {copiedKey === 'obs' ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
+            <EmbedRow label="Browser Source URL" value={obsUrl} copyKey="obs" copiedKey={copiedKey} onCopy={copyText} />
+            <p className="text-xs text-gray-600 mt-1">Width: 380px · Height: ~290px per rival</p>
           </div>
         </div>
       )}
