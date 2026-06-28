@@ -173,7 +173,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
             {filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge)
               ? 'Filtered from all registered members'
               : userPp != null
-                ? 'Sorted by online status · filtered to your avg pp'
+                ? 'Sorted by online status'
                 : 'All registered osu!friends members'}
           </p>
           <DiscoverFilters filters={filters} onChange={setFiltersAndReset} />

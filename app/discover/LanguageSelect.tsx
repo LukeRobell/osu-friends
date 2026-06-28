@@ -52,7 +52,7 @@ export default function LanguageSelect({ value, onChange }: Props) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(o => !o)}
-        className={`flex items-center gap-2 bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none transition-colors ${
+        className={`flex items-center gap-2 bg-gray-800 border rounded-lg px-3 py-1.5 text-sm focus:outline-none transition-colors whitespace-nowrap ${
           value ? 'border-pink-500/50 text-pink-400' : 'border-transparent text-gray-400 hover:text-white'
         }`}
       >
@@ -61,7 +61,7 @@ export default function LanguageSelect({ value, onChange }: Props) {
         ) : (
           <span>💬</span>
         )}
-        <span>{selected ? selected.name : 'Any language'}</span>
+        <span>{selected ? selected.name : 'Language'}</span>
         <svg className="w-3 h-3 opacity-50 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
