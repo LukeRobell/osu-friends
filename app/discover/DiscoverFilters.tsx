@@ -61,7 +61,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
         </svg>
         <input
           type="text"
-          placeholder="Username…"
+          placeholder="Username"
           value={filters.q}
           onChange={e => set({ q: e.target.value })}
           className={`w-28 bg-gray-800 border rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none transition-colors ${

@@ -46,6 +46,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
   });
   const [page, setPage] = useState(1);
   const [anyDifficulty, setAnyDifficulty] = useState(false);
+  const [lobbyNotice, setLobbyNotice] = useState<{ type: 'warn' | 'error'; text: string } | null>(null);
 
   function setFiltersAndReset(f: Filters) {
     setFilters(f);
@@ -99,14 +100,34 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
   return (
     <>
       <div className="mb-4">
-        <h2 className="text-lg font-semibold flex items-center gap-2 mb-0.5">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-          </span>
-          Live lobbies
-          <span className="text-sm font-normal text-gray-500">{currentStarRange}</span>
-        </h2>
+        <div className="flex items-center justify-between mb-0.5">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+            </span>
+            Live lobbies
+            <span className="text-sm font-normal text-gray-500">{currentStarRange}</span>
+          </h2>
+          {lobbyNotice && (
+            <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs whitespace-nowrap ${
+              lobbyNotice.type === 'error'
+                ? 'bg-red-500/10 border border-red-500/20 text-red-300/80'
+                : 'bg-yellow-500/10 border border-yellow-500/20 text-yellow-300/80'
+            }`}>
+              {lobbyNotice.type === 'error' ? (
+                <svg className="w-3.5 h-3.5 shrink-0 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+              ) : (
+                <svg className="w-3.5 h-3.5 shrink-0 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+              )}
+              {lobbyNotice.text}
+            </div>
+          )}
+        </div>
 
         {/* Subtitle + filters on the same line */}
         <div className="flex items-center justify-between ml-5">
@@ -147,6 +168,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
         userPp={effectivePp}
         canSendDm={canSendDm}
         anyDifficulty={anyDifficulty}
+        onNotify={setLobbyNotice}
       />
 
       {/* Members section */}
