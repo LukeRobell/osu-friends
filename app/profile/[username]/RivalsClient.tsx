@@ -29,6 +29,7 @@ export default function RivalsClient({
 
   const widgetUrl = `https://osufriends.com/api/widget/${encodeURIComponent(username)}`;
   const bbCode = `[img]${widgetUrl}[/img]`;
+  const obsUrl = `https://osufriends.com/widget/${encodeURIComponent(username)}`;
 
   function copyText(text: string, key: string) {
     navigator.clipboard.writeText(text).catch(() => {});
@@ -94,7 +95,7 @@ export default function RivalsClient({
             </div>
           </div>
           <div>
-            <p className="text-xs text-gray-600 mb-1">Twitch panel / image URL</p>
+            <p className="text-xs text-gray-600 mb-1">Twitch panel (static image URL)</p>
             <div className="flex items-center gap-2">
               <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2.5 py-1.5 truncate font-mono">{widgetUrl}</code>
               <button
@@ -106,6 +107,22 @@ export default function RivalsClient({
                 }`}
               >
                 {copiedKey === 'url' ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs text-gray-600 mb-1">OBS Browser Source (live · updates every 5 min)</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2.5 py-1.5 truncate font-mono">{obsUrl}</code>
+              <button
+                onClick={() => copyText(obsUrl, 'obs')}
+                className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
+                  copiedKey === 'obs'
+                    ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10'
+                    : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+                }`}
+              >
+                {copiedKey === 'obs' ? 'Copied!' : 'Copy'}
               </button>
             </div>
           </div>
