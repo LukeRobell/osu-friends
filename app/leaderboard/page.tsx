@@ -150,9 +150,15 @@ async function PlayersTab({ mode }: { mode: string }) {
 }
 
 async function RivalsTab() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const monthLabel = now.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  const resetLabel = nextMonth.toLocaleString('en-US', { month: 'long', day: 'numeric' });
+
   const grouped = await prisma.snipeChallenge.groupBy({
     by: ['watcherId'],
-    where: { status: 'SNIPED' },
+    where: { status: 'SNIPED', snipedAt: { gte: startOfMonth } },
     _count: { id: true },
     orderBy: { _count: { id: 'desc' } },
     take: 100,
@@ -161,7 +167,7 @@ async function RivalsTab() {
   if (grouped.length === 0) {
     return (
       <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-12 text-center">
-        <p className="text-gray-500 mb-1">No snipes yet.</p>
+        <p className="text-gray-500 mb-1">No snipes yet this month.</p>
         <p className="text-gray-600 text-sm">Set a rival, get notified when they score, go beat it.</p>
       </div>
     );
@@ -182,6 +188,11 @@ async function RivalsTab() {
     .filter((r) => r.username);
 
   return (
+    <div>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm text-gray-400">{monthLabel}</p>
+        <p className="text-xs text-gray-600">Resets {resetLabel}</p>
+      </div>
     <div className="bg-gray-900/60 border border-white/10 rounded-2xl overflow-hidden">
       <div className="grid grid-cols-[48px_1fr_120px_160px] text-xs text-gray-500 uppercase tracking-wider px-6 py-3 border-b border-white/5">
         <span>#</span><span>Player</span>
@@ -206,6 +217,7 @@ async function RivalsTab() {
           <span className="text-right text-gray-500 text-sm">{r.rival?.username ?? '—'}</span>
         </Link>
       ))}
+    </div>
     </div>
   );
 }
