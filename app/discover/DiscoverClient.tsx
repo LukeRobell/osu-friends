@@ -122,30 +122,33 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
           <RefreshButton />
         </h2>
 
-        {/* Mode filter + any-difficulty toggle — sits where subtitle was */}
-        <div className="flex flex-wrap items-center gap-2 ml-5">
-          {MODES.map(m => (
+        {/* Subtitle + filters on the same line */}
+        <div className="flex items-center justify-between ml-5">
+          <p className="text-xs text-gray-600">Hosts within your skill level towards top</p>
+          <div className="flex flex-wrap items-center gap-2">
+            {MODES.map(m => (
+              <button
+                key={m.id}
+                onClick={() => { setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id })); setPage(1); }}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+
+            <div className="w-px h-5 bg-gray-700 mx-1" />
+
             <button
-              key={m.id}
-              onClick={() => { setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id })); setPage(1); }}
+              onClick={() => setAnyDifficulty(v => !v)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+                anyDifficulty ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
               }`}
             >
-              {m.label}
+              Any difficulty
             </button>
-          ))}
-
-          <div className="w-px h-5 bg-gray-700 mx-1" />
-
-          <button
-            onClick={() => setAnyDifficulty(v => !v)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              anyDifficulty ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-            }`}
-          >
-            Any difficulty
-          </button>
+          </div>
         </div>
       </div>
 
