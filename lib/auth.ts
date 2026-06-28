@@ -74,6 +74,7 @@ export const authOptions: NextAuthOptions = {
             countryCode: p.country_code,
             pp,
             preferredModes: [p.playmode ?? 'osu'],
+            languages: [],
             isRegistered: true,
             lastSeen: new Date(),
           },
