@@ -205,7 +205,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-2.5 py-1.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   ←
                 </button>
@@ -213,8 +213,8 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
                   <button
                     key={n}
                     onClick={() => setPage(n)}
-                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                      n === page ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                      n === page ? 'bg-pink-500 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'
                     }`}
                   >
                     {n}
@@ -223,7 +223,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-2.5 py-1.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   →
                 </button>
