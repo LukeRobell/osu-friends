@@ -41,12 +41,19 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ profile }) {
-      if (!profile) return false;
+      if (!profile) {
+        console.error('[auth] signIn: profile is null/undefined');
+        return false;
+      }
       const p = profile as unknown as OsuProfile;
+      console.log('[auth] signIn attempt:', p.id, p.username);
 
       try {
         const rank = p.statistics?.global_rank ?? null;
-        const pp = await fetchUserAvgTopPp(p.id, p.playmode ?? 'osu').catch(() => null);
+        const pp = await fetchUserAvgTopPp(p.id, p.playmode ?? 'osu').catch((err) => {
+          console.error('[auth] fetchUserAvgTopPp failed (non-fatal):', err);
+          return null;
+        });
 
         await prisma.user.upsert({
           where: { osuId: p.id },
@@ -71,8 +78,9 @@ export const authOptions: NextAuthOptions = {
             lastSeen: new Date(),
           },
         });
+        console.log('[auth] signIn success:', p.username);
       } catch (err) {
-        console.error('[auth] Failed to upsert user on sign-in:', err);
+        console.error('[auth] signIn upsert failed:', err);
         return false;
       }
 
