@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ImageResponse } from 'next/og';
-import { prisma } from '@/lib/prisma';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
-const MODE_PP   = { osu: 'pp', taiko: 'taikoPp', fruits: 'catchPp', mania: 'maniaPp' } as const;
-const MODE_RANK = { osu: 'globalRank', taiko: 'taikoGlobalRank', fruits: 'catchGlobalRank', mania: 'maniaGlobalRank' } as const;
 const MODE_LABELS: Record<string, string> = { osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania' };
 
 const W = 480;
@@ -13,73 +10,29 @@ const HEADER_H = 46;
 const CARD_H = 152;
 const FOOTER_H = 30;
 
+interface RivalRow {
+  username: string;
+  avatarUrl: string;
+  mode: string;
+  rivalRank: number | null;
+  rivalPp: number | null;
+  myRank: number | null;
+  myPp: number | null;
+  mySnipes: number;
+  theirSnipes: number;
+}
+
 export async function GET(req: NextRequest, { params }: { params: { username: string } }) {
   try {
-    const username = decodeURIComponent(params.username);
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const host = req.headers.get('host') ?? 'osufriends.com';
+    const proto = host.startsWith('localhost') ? 'http' : 'https';
+    const dataUrl = `${proto}://${host}/api/widget/${encodeURIComponent(params.username)}/data`;
 
-    const me = await prisma.user.findFirst({
-      where: { username: { equals: username, mode: 'insensitive' } },
-      select: {
-        id: true, username: true,
-        globalRank: true, pp: true,
-        taikoGlobalRank: true, taikoPp: true,
-        catchGlobalRank: true, catchPp: true,
-        maniaGlobalRank: true, maniaPp: true,
-        myRivals: {
-          orderBy: { createdAt: 'asc' },
-          include: {
-            rival: {
-              select: {
-                id: true, username: true, avatarUrl: true,
-                globalRank: true, pp: true,
-                taikoGlobalRank: true, taikoPp: true,
-                catchGlobalRank: true, catchPp: true,
-                maniaGlobalRank: true, maniaPp: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!me) {
+    const dataRes = await fetch(dataUrl, { next: { revalidate: 300 } });
+    if (!dataRes.ok) {
       return new NextResponse('Not found', { status: 404 });
     }
-
-    const mySnipeRows = await prisma.snipeChallenge.groupBy({
-      by: ['rivalId'],
-      where: { watcherId: me.id, status: 'SNIPED', snipedAt: { gte: startOfMonth } },
-      _count: { id: true },
-    });
-    const mySnipeMap = Object.fromEntries(mySnipeRows.map(r => [r.rivalId, r._count.id]));
-
-    const theirSnipeRows = await prisma.snipeChallenge.groupBy({
-      by: ['watcherId'],
-      where: { rivalId: me.id, status: 'SNIPED', snipedAt: { gte: startOfMonth } },
-      _count: { id: true },
-    });
-    const theirSnipeMap = Object.fromEntries(theirSnipeRows.map(r => [r.watcherId, r._count.id]));
-
-    const rivals = me.myRivals.map(ur => {
-      const rival = ur.rival;
-      const mode = (ur.gameMode ?? 'osu') as keyof typeof MODE_PP;
-      const ppField = MODE_PP[mode] ?? 'pp';
-      const rankField = MODE_RANK[mode] ?? 'globalRank';
-      return {
-        username: rival.username,
-        avatarUrl: rival.avatarUrl,
-        rivalId: rival.id,
-        mode,
-        rivalRank: rival[rankField] as number | null,
-        rivalPp: rival[ppField] as number | null,
-        myRank: me[rankField] as number | null,
-        myPp: me[ppField] as number | null,
-        mySnipes: mySnipeMap[rival.id] ?? 0,
-        theirSnipes: theirSnipeMap[rival.id] ?? 0,
-      };
-    });
+    const { username, rivals }: { username: string; rivals: RivalRow[] } = await dataRes.json();
 
     const height = HEADER_H + (rivals.length > 0 ? rivals.length * CARD_H : 72) + FOOTER_H;
 
@@ -90,13 +43,12 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', height: HEADER_H, borderBottom: '1px solid #1c1c28' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ color: '#ec4899', fontSize: 15, lineHeight: 1 }}>⚔</span>
-              <span style={{ color: '#f3f4f6', fontSize: 13, fontWeight: 600, letterSpacing: 0.2 }}>{me.username}</span>
+              <span style={{ color: '#f3f4f6', fontSize: 13, fontWeight: 600, letterSpacing: 0.2 }}>{username}</span>
               <span style={{ color: '#3d3d50', fontSize: 11 }}>· Rivals</span>
             </div>
             <span style={{ color: '#2e2e3d', fontSize: 10, letterSpacing: 0.5 }}>osufriends.com</span>
           </div>
 
-          {/* Rival cards */}
           {rivals.length === 0 ? (
             <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ color: '#3d3d50', fontSize: 11 }}>No rivals yet — set some up at osufriends.com</span>
@@ -113,16 +65,15 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
               const myRankAhead = !!(r.myRank && r.rivalRank && r.myRank < r.rivalRank);
 
               const maxPp = Math.max(r.myPp ?? 0, r.rivalPp ?? 0);
-              const myPpBar = maxPp > 0 && r.myPp ? (r.myPp / maxPp) * 100 : 0;
+              const myPpBar  = maxPp > 0 && r.myPp   ? (r.myPp   / maxPp) * 100 : 0;
               const rivalPpBar = maxPp > 0 && r.rivalPp ? (r.rivalPp / maxPp) * 100 : 0;
               const myPpAhead = !!(r.myPp && r.rivalPp && r.myPp > r.rivalPp);
               const mySnipesAhead = r.mySnipes >= r.theirSnipes;
 
               return (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', padding: '10px 14px 10px', height: CARD_H, borderBottom: i < rivals.length - 1 ? '1px solid #1c1c28' : 'none' }}>
-                  {/* Rival header */}
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', padding: '10px 14px', height: CARD_H, borderBottom: i < rivals.length - 1 ? '1px solid #1c1c28' : 'none' }}>
+                  {/* Rival header row */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 9 }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={r.avatarUrl} width={26} height={26} style={{ borderRadius: 13 }} alt="" />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ color: '#f3f4f6', fontSize: 11, fontWeight: 600 }}>⚔ {r.username}</span>
@@ -135,7 +86,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                     </div>
                   </div>
 
-                  {/* Rank */}
+                  {/* Rank bars */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{ fontSize: 9, color: '#3d3d50', textTransform: 'uppercase', letterSpacing: 0.8 }}>Rank</span>
                     <span style={{ fontSize: 9, color: myRankAhead ? '#34d399' : (bothRanks ? '#f87171' : '#3d3d50') }}>
@@ -161,7 +112,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                     </span>
                   </div>
 
-                  {/* PP */}
+                  {/* PP bars */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{ fontSize: 9, color: '#3d3d50', textTransform: 'uppercase', letterSpacing: 0.8 }}>PP</span>
                     <span style={{ fontSize: 9, color: myPpAhead ? '#34d399' : (r.myPp && r.rivalPp ? '#f87171' : '#3d3d50') }}>
