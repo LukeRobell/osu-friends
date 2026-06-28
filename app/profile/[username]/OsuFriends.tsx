@@ -1,7 +1,8 @@
 import { getAccessToken } from '@/lib/auth-server';
 import { fetchFriends, fetchActiveRooms } from '@/lib/osu-api';
 import { prisma } from '@/lib/prisma';
-import OsuFriendCard, { OsuFriendData } from '@/components/OsuFriendCard';
+import { OsuFriendData } from '@/components/OsuFriendCard';
+import OsuFriendsClient from '@/components/OsuFriendsClient';
 
 export default async function OsuFriends() {
   const accessToken = await getAccessToken();
@@ -73,11 +74,7 @@ export default async function OsuFriends() {
         Friends on osu!friends
         <span className="ml-2 text-gray-500 text-xs">({friendsOnApp.length})</span>
       </p>
-      <div className="flex flex-col gap-2">
-        {friendsOnApp.map(friend => (
-          <OsuFriendCard key={friend.osuId} friend={friend} />
-        ))}
-      </div>
+      <OsuFriendsClient friends={friendsOnApp} />
     </div>
   );
 }
