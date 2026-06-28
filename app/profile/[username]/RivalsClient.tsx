@@ -14,14 +14,27 @@ interface PendingRequest {
 }
 
 export default function RivalsClient({
+  username,
   initialCards,
   pendingRequests: initialPending,
 }: {
+  username: string;
   initialCards: RivalCardData[];
   pendingRequests: PendingRequest[];
 }) {
   const [cards, setCards] = useState(initialCards);
   const [pending, setPending] = useState(initialPending);
+  const [showEmbed, setShowEmbed] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const widgetUrl = `https://osufriends.com/api/widget/${encodeURIComponent(username)}`;
+  const bbCode = `[img]${widgetUrl}[/img]`;
+
+  function copyText(text: string, key: string) {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 1800);
+  }
 
   function removeRival(rivalUserId: string) {
     setCards(prev => prev.filter(c => c.rivalUserId !== rivalUserId));
@@ -41,12 +54,63 @@ export default function RivalsClient({
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-3">
-        <p className="text-gray-400 text-sm">⚔️ Rivals</p>
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          <p className="text-gray-400 text-sm">⚔️ Rivals</p>
+          {cards.length > 0 && (
+            <span className="text-xs text-gray-600">{cards.length}/3</span>
+          )}
+        </div>
         {cards.length > 0 && (
-          <span className="text-xs text-gray-600">{cards.length}/3</span>
+          <button
+            onClick={() => setShowEmbed(v => !v)}
+            className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+            </svg>
+            Embed
+          </button>
         )}
       </div>
+
+      {showEmbed && (
+        <div className="mb-3 bg-gray-900/60 border border-white/10 rounded-xl p-3 space-y-2.5">
+          <p className="text-xs text-gray-500">Paste in your osu! profile or Twitch panel to show your rival cards.</p>
+          <div>
+            <p className="text-xs text-gray-600 mb-1">osu! profile (BBCode)</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2.5 py-1.5 truncate font-mono">{bbCode}</code>
+              <button
+                onClick={() => copyText(bbCode, 'bbcode')}
+                className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
+                  copiedKey === 'bbcode'
+                    ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10'
+                    : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+                }`}
+              >
+                {copiedKey === 'bbcode' ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs text-gray-600 mb-1">Twitch panel / image URL</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-black/40 text-gray-400 rounded-lg px-2.5 py-1.5 truncate font-mono">{widgetUrl}</code>
+              <button
+                onClick={() => copyText(widgetUrl, 'url')}
+                className={`shrink-0 text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
+                  copiedKey === 'url'
+                    ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10'
+                    : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+                }`}
+              >
+                {copiedKey === 'url' ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {cards.length > 0 && (
         <div className="flex flex-col gap-3">

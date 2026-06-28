@@ -22,6 +22,7 @@ async function RivalSectionInner({ userId }: { userId: string }) {
   const me = await prisma.user.findUnique({
     where: { id: userId },
     select: {
+      username: true,
       globalRank: true, pp: true,
       taikoGlobalRank: true, taikoPp: true,
       catchGlobalRank: true, catchPp: true,
@@ -111,6 +112,7 @@ async function RivalSectionInner({ userId }: { userId: string }) {
   return (
     <div className="mt-8 pt-6 border-t border-gray-800">
       <RivalsClient
+        username={me.username}
         initialCards={rivalCards}
         pendingRequests={pendingRequests.map(r => ({
           id: r.id,
