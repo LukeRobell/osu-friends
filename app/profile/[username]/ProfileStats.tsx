@@ -53,19 +53,14 @@ export default function ProfileStats({
     mania: maniaPp,
   };
 
-  // Only show modes that have data
-  const availableModes = Object.entries(rankByMode)
-    .filter(([, rank]) => rank != null)
-    .map(([m]) => m);
-
+  const ALL_MODES = ['osu', 'taiko', 'fruits', 'mania'];
   const currentRank = rankByMode[mode] ?? null;
   const currentPp = ppByMode[mode] ?? null;
 
   return (
     <div className="mb-8">
-      {availableModes.length > 1 && (
-        <div className="flex gap-1.5 mb-3">
-          {availableModes.map(m => (
+      <div className="flex gap-1.5 mb-3">
+        {ALL_MODES.map(m => (
             <button
               key={m}
               onClick={() => setMode(m)}
@@ -79,7 +74,6 @@ export default function ProfileStats({
             </button>
           ))}
         </div>
-      )}
 
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-gray-800 rounded-xl p-4">
