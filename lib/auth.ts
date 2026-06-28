@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
 
       try {
         const rank = p.statistics?.global_rank ?? null;
-        const pp = await fetchUserAvgTopPp(p.id, p.playmode ?? 'osu');
+        const pp = await fetchUserAvgTopPp(p.id, p.playmode ?? 'osu').catch(() => null);
 
         await prisma.user.upsert({
           where: { osuId: p.id },
