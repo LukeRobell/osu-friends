@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -27,7 +28,7 @@ const FOUNDERS = [
   },
 ];
 
-const FEATURES = [
+const FEATURES: { title: string; body: string; icon: React.ReactNode; highlight?: boolean }[] = [
   {
     title: 'Skill-matched players',
     body: 'We use your average top-play pp — not account pp — to find players within ±15% of your skill level.',
@@ -48,12 +49,13 @@ const FEATURES = [
   },
   {
     title: 'Rival system & snipes',
-    body: 'Challenge a player as your rival. Get notified when they post a meaningful score — beat it to register a snipe. Top snipers rank on the leaderboard.',
+    body: 'Pick up to 3 rivals. When one of them posts a significant play, you get an osu! in-game DM and 7 days to beat their score. Animated head-to-head cards on your profile compare rank, pp, and monthly snipes. Top snipers climb a monthly leaderboard that resets every 1st.',
     icon: (
       <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
       </svg>
     ),
+    highlight: true,
   },
   {
     title: '4v4 tournaments',
@@ -80,7 +82,7 @@ const STEPS = [
   {
     n: '03',
     title: 'Play together',
-    body: 'Join a lobby, DM the host, challenge a rival, snipe their scores, or opt into a daily 4v4 tournament. Top snipers climb the leaderboard.',
+    body: 'Join a lobby, DM the host, or challenge up to 3 rivals. When a rival posts a big play you get an osu! DM — beat their score within 7 days to snipe them. Opt into a daily 4v4 tournament and let us handle the scheduling.',
   },
 ];
 
@@ -246,8 +248,17 @@ export default function Home() {
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="bg-gray-900/60 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-pink-500/30 transition-all duration-300 group"
+                className={`bg-gray-900/60 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 group ${
+                  f.highlight
+                    ? 'border-pink-500/40 hover:border-pink-500/70 sm:col-span-2 relative overflow-hidden'
+                    : 'border-white/10 hover:border-pink-500/30'
+                }`}
               >
+                {f.highlight && (
+                  <span className="absolute top-4 right-4 text-xs font-medium text-pink-400 bg-pink-500/10 border border-pink-500/20 px-2.5 py-0.5 rounded-full">
+                    Updated
+                  </span>
+                )}
                 <div className="mb-4">{f.icon}</div>
                 <h3 className="text-lg font-semibold text-white mb-2">{f.title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">{f.body}</p>
