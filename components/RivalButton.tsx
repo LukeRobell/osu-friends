@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
-type RivalStatus = 'loading' | 'not_logged_in' | 'self' | 'none' | 'pending_sent' | 'pending_received' | 'rivals' | 'have_rival';
+type RivalStatus = 'loading' | 'not_logged_in' | 'self' | 'none' | 'pending_sent' | 'pending_received' | 'rivals' | 'rival_limit';
 
-export default function RivalButton({ targetOsuId }: { targetOsuId: number }) {
+export default function RivalButton({ targetOsuId, rivalUserId }: { targetOsuId: number; rivalUserId?: string }) {
   const [status, setStatus] = useState<RivalStatus>('loading');
   const [requestId, setRequestId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -29,7 +29,7 @@ export default function RivalButton({ targetOsuId }: { targetOsuId: number }) {
     if (res.ok) setStatus('pending_sent');
     else {
       const d = await res.json();
-      if (d.error === 'already_have_rival') alert('You already have a rival. Remove them first.');
+      if (d.error === 'rival_limit_reached') setStatus('rival_limit');
     }
     setBusy(false);
   }
@@ -51,8 +51,13 @@ export default function RivalButton({ targetOsuId }: { targetOsuId: number }) {
   }
 
   async function remove() {
+    if (!rivalUserId) return;
     setBusy(true);
-    const res = await fetch('/api/rival/remove', { method: 'POST' });
+    const res = await fetch('/api/rival/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rivalUserId }),
+    });
     if (res.ok) setStatus('none');
     setBusy(false);
   }
@@ -64,17 +69,17 @@ export default function RivalButton({ targetOsuId }: { targetOsuId: number }) {
     return (
       <div className="flex items-center gap-2">
         <span className="text-sm text-pink-400 font-medium">⚔️ Your rival</span>
-        <button onClick={remove} disabled={busy} className="text-xs text-gray-500 hover:text-red-400 transition-colors">
-          Remove
-        </button>
+        {rivalUserId && (
+          <button onClick={remove} disabled={busy} className="text-xs text-gray-500 hover:text-red-400 transition-colors">
+            Remove
+          </button>
+        )}
       </div>
     );
   }
 
   if (status === 'pending_sent') {
-    return (
-      <span className="text-sm text-gray-400 italic">Challenge sent...</span>
-    );
+    return <span className="text-sm text-gray-400 italic">Challenge sent...</span>;
   }
 
   if (status === 'pending_received') {
@@ -90,10 +95,8 @@ export default function RivalButton({ targetOsuId }: { targetOsuId: number }) {
     );
   }
 
-  if (status === 'have_rival') {
-    return (
-      <span className="text-xs text-gray-500">You already have a rival</span>
-    );
+  if (status === 'rival_limit') {
+    return <span className="text-xs text-gray-500">Max 3 rivals reached</span>;
   }
 
   return (

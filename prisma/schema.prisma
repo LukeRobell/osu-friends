@@ -42,9 +42,8 @@ model User {
   twitchUsername    String?
   createdAt         DateTime @default(now())
 
-  rivalId           String?
-  rival             User?          @relation("UserRival", fields: [rivalId], references: [id])
-  rivalOf           User[]         @relation("UserRival")
+  myRivals              UserRival[]    @relation("MyRivals")
+  rivalOf               UserRival[]    @relation("RivalOf")
 
   playSessions          PlaySession[]
   sentRequests          FriendRequest[]        @relation("SentRequests")
@@ -58,6 +57,19 @@ model User {
   snipesAsRival         SnipeChallenge[]     @relation("RivalChallenges")
   teamProfileOwned      TeamProfile?         @relation("TeamProfileOwner")
   teamApplications      TeamApplication[]
+}
+
+model UserRival {
+  id        String   @id @default(cuid())
+  userId    String
+  rivalId   String
+  createdAt DateTime @default(now())
+
+  user  User @relation("MyRivals", fields: [userId],  references: [id])
+  rival User @relation("RivalOf",  fields: [rivalId], references: [id])
+
+  @@unique([userId, rivalId])
+  @@index([userId])
 }
 
 model PlaySession {

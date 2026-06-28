@@ -3,6 +3,8 @@ import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
 import { createNotification } from '@/lib/notifications';
 
+const MAX_RIVALS = 3;
+
 export async function POST(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -12,10 +14,12 @@ export async function POST(req: NextRequest) {
 
   const me = await prisma.user.findFirst({
     where: { osuId: token.osuId as number },
-    select: { id: true, username: true, rivalId: true },
+    select: { id: true, username: true, _count: { select: { myRivals: true } } },
   });
   if (!me) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  if (me.rivalId) return NextResponse.json({ error: 'already_have_rival' }, { status: 400 });
+  if (me._count.myRivals >= MAX_RIVALS) {
+    return NextResponse.json({ error: 'rival_limit_reached' }, { status: 400 });
+  }
 
   const target = await prisma.user.findFirst({
     where: { osuId: targetOsuId, isRegistered: true },
@@ -23,6 +27,12 @@ export async function POST(req: NextRequest) {
   });
   if (!target) return NextResponse.json({ error: 'Target not found' }, { status: 404 });
   if (me.id === target.id) return NextResponse.json({ error: 'Cannot rival yourself' }, { status: 400 });
+
+  // Already rivals?
+  const alreadyRival = await prisma.userRival.findUnique({
+    where: { userId_rivalId: { userId: me.id, rivalId: target.id } },
+  });
+  if (alreadyRival) return NextResponse.json({ error: 'already_rivals' }, { status: 400 });
 
   const existing = await prisma.rivalRequest.findFirst({
     where: {

@@ -156,15 +156,23 @@ async function RivalsTab() {
   const monthLabel = now.toLocaleString('en-US', { month: 'long', year: 'numeric' });
   const resetLabel = nextMonth.toLocaleString('en-US', { month: 'long', day: 'numeric' });
 
+  // Group by (watcher, rival) pair — we want snipes against a single rival
   const grouped = await prisma.snipeChallenge.groupBy({
-    by: ['watcherId'],
+    by: ['watcherId', 'rivalId'],
     where: { status: 'SNIPED', snipedAt: { gte: startOfMonth } },
     _count: { id: true },
-    orderBy: { _count: { id: 'desc' } },
-    take: 100,
   });
 
-  if (grouped.length === 0) {
+  // For each watcher, keep only their best rival (most snipes against one person)
+  const bestPerWatcher = new Map<string, { rivalId: string; count: number }>();
+  for (const row of grouped) {
+    const existing = bestPerWatcher.get(row.watcherId);
+    if (!existing || row._count.id > existing.count) {
+      bestPerWatcher.set(row.watcherId, { rivalId: row.rivalId, count: row._count.id });
+    }
+  }
+
+  if (bestPerWatcher.size === 0) {
     return (
       <div className="bg-gray-900/60 border border-white/10 rounded-2xl p-12 text-center">
         <p className="text-gray-500 mb-1">No snipes yet this month.</p>
@@ -173,18 +181,23 @@ async function RivalsTab() {
     );
   }
 
-  const userIds = grouped.map((g) => g.watcherId);
+  const sorted = Array.from(bestPerWatcher.entries())
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 100);
+
+  const allUserIds = Array.from(new Set([...sorted.map(([w]) => w), ...sorted.map(([, { rivalId }]) => rivalId)]));
   const users = await prisma.user.findMany({
-    where: { id: { in: userIds } },
-    select: {
-      id: true, osuId: true, username: true, avatarUrl: true, countryCode: true,
-      rival: { select: { username: true } },
-    },
+    where: { id: { in: allUserIds } },
+    select: { id: true, osuId: true, username: true, avatarUrl: true, countryCode: true },
   });
 
   const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
-  const rows = grouped
-    .map((g) => ({ ...userMap[g.watcherId], snipes: g._count.id }))
+  const rows = sorted
+    .map(([watcherId, { rivalId, count }]) => ({
+      ...userMap[watcherId],
+      snipes: count,
+      rivalName: userMap[rivalId]?.username ?? '?',
+    }))
     .filter((r) => r.username);
 
   return (
@@ -214,7 +227,7 @@ async function RivalsTab() {
             )}
           </div>
           <span className="text-right text-pink-400 text-sm font-semibold">{r.snipes} 🎯</span>
-          <span className="text-right text-gray-500 text-sm">{r.rival?.username ?? '—'}</span>
+          <span className="text-right text-gray-500 text-sm">{r.rivalName ?? '—'}</span>
         </Link>
       ))}
     </div>

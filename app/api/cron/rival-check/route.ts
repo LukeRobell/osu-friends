@@ -26,20 +26,16 @@ export async function GET(req: NextRequest) {
   let snipesFound = 0;
 
   // ── Phase 1: detect new rival plays, notify watcher, create SnipeChallenges ──
-  const watchers = await prisma.user.findMany({
-    where: { rivalId: { not: null }, isRegistered: true },
-    select: {
-      id: true,
-      osuId: true,
-      username: true,
-      rivalId: true,
+  const rivalPairs = await prisma.userRival.findMany({
+    include: {
+      user:  { select: { id: true, osuId: true, username: true } },
       rival: { select: { id: true, osuId: true, username: true, pp: true } },
     },
   });
 
-  for (const watcher of watchers) {
-    const rival = watcher.rival;
-    if (!rival) continue;
+  for (const pair of rivalPairs) {
+    const watcher = pair.user;
+    const rival   = pair.rival;
 
     const plays = await fetchUserBestPlays(rival.osuId, 'osu', 50).catch(() => []);
     if (!plays.length) continue;
@@ -157,7 +153,7 @@ export async function GET(req: NextRequest) {
     ok: true,
     notified,
     snipesFound,
-    watchersChecked: watchers.length,
+    watchersChecked: rivalPairs.length,
     openChallengesChecked: openChallenges.length,
   });
 }

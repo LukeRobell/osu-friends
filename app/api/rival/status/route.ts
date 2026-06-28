@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
 
+const MAX_RIVALS = 3;
+
 export async function GET(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token) return NextResponse.json({ status: 'not_logged_in' });
@@ -16,7 +18,7 @@ export async function GET(req: NextRequest) {
   const [me, target] = await Promise.all([
     prisma.user.findFirst({
       where: { osuId: token.osuId as number },
-      select: { id: true, rivalId: true },
+      select: { id: true, _count: { select: { myRivals: true } } },
     }),
     prisma.user.findFirst({
       where: { osuId: targetOsuId },
@@ -26,9 +28,15 @@ export async function GET(req: NextRequest) {
 
   if (!me || !target) return NextResponse.json({ status: 'none' });
 
-  if (me.rivalId === target.id) return NextResponse.json({ status: 'rivals' });
-  if (me.rivalId && me.rivalId !== target.id) {
-    return NextResponse.json({ status: 'have_rival' });
+  // Already rivals?
+  const isRival = await prisma.userRival.findUnique({
+    where: { userId_rivalId: { userId: me.id, rivalId: target.id } },
+  });
+  if (isRival) return NextResponse.json({ status: 'rivals' });
+
+  // At limit?
+  if (me._count.myRivals >= MAX_RIVALS) {
+    return NextResponse.json({ status: 'rival_limit' });
   }
 
   const pending = await prisma.rivalRequest.findFirst({
