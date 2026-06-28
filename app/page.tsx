@@ -49,7 +49,7 @@ const FEATURES: { title: string; body: string; icon: React.ReactNode; highlight?
   },
   {
     title: 'Rival system & snipes',
-    body: 'Pick up to 3 rivals. When one of them posts a significant play, you get an osu! in-game DM and 7 days to beat their score. Animated head-to-head cards on your profile compare rank, pp, and monthly snipes. Top snipers climb a monthly leaderboard that resets every 1st.',
+    body: 'Pick up to 3 rivals and choose your mode — osu!, Taiko, Catch, or Mania. When one of them posts a significant play, you get an osu! in-game DM and 7 days to beat their score. Head-to-head cards on your profile track rank, pp, and monthly snipes. Top snipers climb a monthly leaderboard.',
     icon: (
       <svg className="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
@@ -248,9 +248,9 @@ export default function Home() {
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className={`bg-gray-900/60 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 group ${
+                className={`bg-gray-900/60 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 group relative ${
                   f.highlight
-                    ? 'border-pink-500/40 hover:border-pink-500/70 sm:col-span-2 relative overflow-hidden'
+                    ? 'border-pink-500/40 hover:border-pink-500/70'
                     : 'border-white/10 hover:border-pink-500/30'
                 }`}
               >
