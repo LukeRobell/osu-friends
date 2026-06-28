@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { User } from '@prisma/client';
 import ProfileModal, { ModalUser } from './ProfileModal';
+import FriendDmButton from './FriendDmButton';
 
 const modeLabels: Record<string, string> = {
   osu: 'osu!',
@@ -20,7 +21,12 @@ function timeAgo(date: Date): string {
   return `${Math.floor(seconds / (86400 * 30))}mo ago`;
 }
 
-export default function UserCard({ user, isOsuFriend = false, activeMode = null }: { user: User; isOsuFriend?: boolean; activeMode?: string | null }) {
+export default function UserCard({ user, isOsuFriend = false, activeMode = null, canSendDm = false }: {
+  user: User;
+  isOsuFriend?: boolean;
+  activeMode?: string | null;
+  canSendDm?: boolean;
+}) {
   const [showModal, setShowModal] = useState(false);
 
   const modalUser: ModalUser = {
@@ -41,7 +47,8 @@ export default function UserCard({ user, isOsuFriend = false, activeMode = null 
 
   return (
     <>
-      <button
+      {/* Outer div so FriendDmButton (a real <button>) can nest without invalid HTML */}
+      <div
         onClick={() => setShowModal(true)}
         className="w-full text-left bg-gray-900 hover:bg-gray-800 rounded-xl p-4 flex items-center gap-4 transition-colors cursor-pointer"
       >
@@ -104,14 +111,19 @@ export default function UserCard({ user, isOsuFriend = false, activeMode = null 
                 ))}
               </div>
             )}
-            {user.lastSeen && (
-              <span className={`text-xs ml-auto ${user.isOnline ? 'text-green-400' : 'text-gray-500'}`}>
-                {user.isOnline ? 'Online now' : timeAgo(new Date(user.lastSeen))}
-              </span>
-            )}
+            <div className="flex items-center gap-3 ml-auto">
+              {user.lastSeen && (
+                <span className={`text-xs ${user.isOnline ? 'text-green-400' : 'text-gray-500'}`}>
+                  {user.isOnline ? 'Online now' : timeAgo(new Date(user.lastSeen))}
+                </span>
+              )}
+              {canSendDm && (
+                <FriendDmButton targetId={user.osuId} targetUsername={user.username} />
+              )}
+            </div>
           </div>
         </div>
-      </button>
+      </div>
 
       {showModal && <ProfileModal user={modalUser} onClose={() => setShowModal(false)} />}
     </>

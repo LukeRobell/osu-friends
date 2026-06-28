@@ -192,6 +192,15 @@ model LobbyDm {
   @@index([senderOsuId, targetOsuId])
 }
 
+model MemberDm {
+  id          String   @id @default(cuid())
+  senderOsuId Int
+  targetOsuId Int
+  sentAt      DateTime @default(now())
+
+  @@index([senderOsuId, targetOsuId])
+}
+
 model Notification {
   id        String           @id @default(cuid())
   userId    String
