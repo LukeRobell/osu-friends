@@ -82,7 +82,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                         {r.rivalRank ? `#${r.rivalRank.toLocaleString()}` : '—'} · {r.rivalPp ? `${Math.round(r.rivalPp)}pp` : '—'}
                       </span>
                     </div>
-                    <div style={{ marginLeft: 'auto', fontSize: 9, padding: '2px 7px', backgroundColor: '#1a1a24', borderRadius: 99, color: '#6b7080' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', fontSize: 9, padding: '2px 7px', backgroundColor: '#1a1a24', borderRadius: 99, color: '#6b7080' }}>
                       {MODE_LABELS[r.mode] ?? r.mode}
                     </div>
                   </div>
@@ -96,8 +96,8 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <span style={{ fontSize: 9, color: '#6b7080', width: 22 }}>You</span>
-                    <div style={{ flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ width: `${myRankBar}%`, height: '100%', backgroundColor: '#ec4899', borderRadius: 99 }} />
+                    <div style={{ display: 'flex', flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ width: `${myRankBar}%`, height: 4, backgroundColor: '#ec4899', borderRadius: 99 }} />
                     </div>
                     <span style={{ fontSize: 9, color: '#9ca3af', width: 54, textAlign: 'right' }}>
                       {r.myRank ? `#${r.myRank.toLocaleString()}` : '—'}
@@ -105,8 +105,8 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                     <span style={{ fontSize: 9, color: '#6b7080', width: 22 }}>⚔</span>
-                    <div style={{ flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ width: `${rivalRankBar}%`, height: '100%', backgroundColor: '#818cf8', borderRadius: 99 }} />
+                    <div style={{ display: 'flex', flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ width: `${rivalRankBar}%`, height: 4, backgroundColor: '#818cf8', borderRadius: 99 }} />
                     </div>
                     <span style={{ fontSize: 9, color: '#9ca3af', width: 54, textAlign: 'right' }}>
                       {r.rivalRank ? `#${r.rivalRank.toLocaleString()}` : '—'}
@@ -122,8 +122,8 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <span style={{ fontSize: 9, color: '#6b7080', width: 22 }}>You</span>
-                    <div style={{ flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ width: `${myPpBar}%`, height: '100%', backgroundColor: '#ec4899', borderRadius: 99 }} />
+                    <div style={{ display: 'flex', flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ width: `${myPpBar}%`, height: 4, backgroundColor: '#ec4899', borderRadius: 99 }} />
                     </div>
                     <span style={{ fontSize: 9, color: '#9ca3af', width: 54, textAlign: 'right' }}>
                       {r.myPp ? `${Math.round(r.myPp)}pp` : '—'}
@@ -131,8 +131,8 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                     <span style={{ fontSize: 9, color: '#6b7080', width: 22 }}>⚔</span>
-                    <div style={{ flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ width: `${rivalPpBar}%`, height: '100%', backgroundColor: '#818cf8', borderRadius: 99 }} />
+                    <div style={{ display: 'flex', flex: 1, height: 4, backgroundColor: '#1a1a24', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ width: `${rivalPpBar}%`, height: 4, backgroundColor: '#818cf8', borderRadius: 99 }} />
                     </div>
                     <span style={{ fontSize: 9, color: '#9ca3af', width: 54, textAlign: 'right' }}>
                       {r.rivalPp ? `${Math.round(r.rivalPp)}pp` : '—'}
