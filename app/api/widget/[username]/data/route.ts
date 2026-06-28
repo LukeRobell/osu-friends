@@ -106,7 +106,25 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
     );
   }
 
-  // Default — all rivals (used by OBS widget and Twitch extension)
+  // Default — all rivals + recent plays (used by OBS widget and Twitch extension)
+  const playMap: Record<string, { title: string; version: string; pp: number } | null> = {};
+  await Promise.all(
+    me.myRivals.map(async ur => {
+      const rival = ur.rival;
+      const mode = (ur.gameMode ?? 'osu') as keyof typeof MODE_PP;
+      const ppField = MODE_PP[mode] ?? 'pp';
+      const rivalPp = rival[ppField] as number | null;
+      const plays = await fetchUserBestPlays(rival.osuId, mode, 20, 300).catch(() => []);
+      const threshold = rivalPp ? rivalPp * 0.75 : 0;
+      const recent = plays
+        .filter(p => p.pp >= threshold)
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0] ?? null;
+      playMap[rival.id] = recent
+        ? { title: recent.title, version: recent.version, pp: Math.round(recent.pp) }
+        : null;
+    })
+  );
+
   const rivals = me.myRivals.map(ur => {
     const rival = ur.rival;
     const mode = (ur.gameMode ?? 'osu') as keyof typeof MODE_PP;
@@ -122,6 +140,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
       myPp:      me[ppField]      as number | null,
       mySnipes:    mySnipeMap[rival.id]    ?? 0,
       theirSnipes: theirSnipeMap[rival.id] ?? 0,
+      recentPlay:  playMap[rival.id]       ?? null,
     };
   });
 

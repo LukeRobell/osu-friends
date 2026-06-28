@@ -172,8 +172,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
 
           {/* ── Footer ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: W, height: 28, marginTop: 'auto', backgroundColor: '#09090e', borderTop: '1px solid #1c1c28' }}>
-            <div style={{ display: 'flex', fontSize: 10, color: '#ec4899', fontWeight: 600 }}>osufriends.com</div>
-            <div style={{ display: 'flex', fontSize: 10, color: '#2e2e3d', marginLeft: 6 }}>· meet friends · challenge rivals · opt-in for tournaments</div>
+            <div style={{ display: 'flex', fontSize: 11, color: '#ec4899', fontWeight: 700 }}>osufriends.com</div>
           </div>
 
         </div>
