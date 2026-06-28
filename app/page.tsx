@@ -198,7 +198,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <Link href={`/profile/${encodeURIComponent(session.user.username)}`} className="px-6 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full font-medium transition-colors">
+                <Link href={`/profile/${encodeURIComponent(session.user.username)}`} className="px-6 py-2.5 border border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-medium transition-colors">
                   My Profile
                 </Link>
                 <a
