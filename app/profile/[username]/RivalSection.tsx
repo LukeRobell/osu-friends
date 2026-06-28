@@ -4,6 +4,15 @@ import RivalsClient from './RivalsClient';
 import type { RivalCardData } from './RivalCompareCard';
 
 export default async function RivalSection({ userId }: { userId: string }) {
+  try {
+    return await RivalSectionInner({ userId });
+  } catch (e) {
+    console.error('[RivalSection] error:', e);
+    return null;
+  }
+}
+
+async function RivalSectionInner({ userId }: { userId: string }) {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
