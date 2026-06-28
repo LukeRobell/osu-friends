@@ -26,21 +26,28 @@ export async function GET(req: NextRequest) {
   let snipesFound = 0;
 
   // ── Phase 1: detect new rival plays, notify watcher, create SnipeChallenges ──
+  const MODE_PP: Record<string, 'pp' | 'taikoPp' | 'catchPp' | 'maniaPp'> = {
+    osu: 'pp', taiko: 'taikoPp', fruits: 'catchPp', mania: 'maniaPp',
+  };
+
   const rivalPairs = await prisma.userRival.findMany({
     include: {
       user:  { select: { id: true, osuId: true, username: true } },
-      rival: { select: { id: true, osuId: true, username: true, pp: true } },
+      rival: { select: { id: true, osuId: true, username: true, pp: true, taikoPp: true, catchPp: true, maniaPp: true } },
     },
   });
 
   for (const pair of rivalPairs) {
     const watcher = pair.user;
     const rival   = pair.rival;
+    const mode    = pair.gameMode ?? 'osu';
 
-    const plays = await fetchUserBestPlays(rival.osuId, 'osu', 50).catch(() => []);
+    const plays = await fetchUserBestPlays(rival.osuId, mode, 50).catch(() => []);
     if (!plays.length) continue;
 
-    const threshold = rival.pp != null ? rival.pp * rivalThresholdMultiplier(rival.pp) : 0;
+    const ppField   = MODE_PP[mode] ?? 'pp';
+    const rivalModePp = rival[ppField] as number | null;
+    const threshold = rivalModePp != null ? rivalModePp * rivalThresholdMultiplier(rivalModePp) : 0;
     const recentSignificant = plays.filter(p => p.pp >= threshold && p.createdAt > cutoff);
     if (!recentSignificant.length) continue;
 
@@ -84,6 +91,7 @@ export async function GET(req: NextRequest) {
           mapTitle:     play.title,
           mapVersion:   play.version,
           targetPp:     play.pp,
+          gameMode:     mode,
         },
         update: {},
       });
@@ -104,7 +112,8 @@ export async function GET(req: NextRequest) {
   for (const challenge of openChallenges) {
     const score = await fetchUserScoreOnBeatmap(
       challenge.watcher.osuId,
-      challenge.beatmapId
+      challenge.beatmapId,
+      challenge.gameMode ?? 'osu'
     ).catch(() => null);
 
     if (!score || score.pp <= challenge.targetPp) continue;

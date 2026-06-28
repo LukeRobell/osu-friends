@@ -63,6 +63,7 @@ model UserRival {
   id        String   @id @default(cuid())
   userId    String
   rivalId   String
+  gameMode  String   @default("osu")
   createdAt DateTime @default(now())
 
   user  User @relation("MyRivals", fields: [userId],  references: [id])
@@ -175,6 +176,7 @@ model RivalRequest {
   id         String             @id @default(cuid())
   fromUserId String
   toUserId   String
+  gameMode   String             @default("osu")
   status     RivalRequestStatus @default(PENDING)
   createdAt  DateTime           @default(now())
 
@@ -270,6 +272,7 @@ model SnipeChallenge {
   mapTitle     String
   mapVersion   String
   targetPp     Float
+  gameMode     String               @default("osu")
   status       SnipeChallengeStatus @default(OPEN)
   createdAt    DateTime             @default(now())
   snipedAt     DateTime?

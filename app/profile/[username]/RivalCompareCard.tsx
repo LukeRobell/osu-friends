@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { countryFlagUrl } from '@/lib/osu-api';
 
+const MODE_LABELS: Record<string, string> = { osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania' };
+
 export interface RivalCardData {
   rivalUserId: string;
   rivalUsername: string;
@@ -15,6 +17,7 @@ export interface RivalCardData {
   rivalCountryCode: string | null;
   myGlobalRank: number | null;
   myPp: number | null;
+  gameMode: string;
   snipesIGaveThisMonth: number;
   snipesTheyGaveThisMonth: number;
   recentPlay: { title: string; version: string; pp: number; beatmapId: string; beatmapsetId: string } | null;
@@ -109,13 +112,18 @@ export default function RivalCompareCard({
             </div>
           </div>
         </Link>
-        <button
-          onClick={handleRemove}
-          disabled={removing}
-          className="text-xs text-gray-600 hover:text-red-400 transition-colors disabled:opacity-40"
-        >
-          Remove
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-xs text-gray-600 bg-gray-800 px-2 py-0.5 rounded-full">
+            {MODE_LABELS[data.gameMode] ?? data.gameMode}
+          </span>
+          <button
+            onClick={handleRemove}
+            disabled={removing}
+            className="text-xs text-gray-600 hover:text-red-400 transition-colors disabled:opacity-40"
+          >
+            Remove
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

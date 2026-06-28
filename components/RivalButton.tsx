@@ -4,10 +4,18 @@ import { useEffect, useState } from 'react';
 
 type RivalStatus = 'loading' | 'not_logged_in' | 'self' | 'none' | 'pending_sent' | 'pending_received' | 'rivals' | 'rival_limit';
 
+const MODES = [
+  { value: 'osu',    label: 'osu!' },
+  { value: 'taiko',  label: 'Taiko' },
+  { value: 'fruits', label: 'Catch' },
+  { value: 'mania',  label: 'Mania' },
+];
+
 export default function RivalButton({ targetOsuId, rivalUserId }: { targetOsuId: number; rivalUserId?: string }) {
   const [status, setStatus] = useState<RivalStatus>('loading');
   const [requestId, setRequestId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pickingMode, setPickingMode] = useState(false);
 
   useEffect(() => {
     fetch(`/api/rival/status?targetOsuId=${targetOsuId}`)
@@ -19,12 +27,13 @@ export default function RivalButton({ targetOsuId, rivalUserId }: { targetOsuId:
       .catch(() => setStatus('none'));
   }, [targetOsuId]);
 
-  async function sendRequest() {
+  async function sendRequest(gameMode: string) {
     setBusy(true);
+    setPickingMode(false);
     const res = await fetch('/api/rival/request', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetOsuId }),
+      body: JSON.stringify({ targetOsuId, gameMode }),
     });
     if (res.ok) setStatus('pending_sent');
     else {
@@ -59,7 +68,7 @@ export default function RivalButton({ targetOsuId, rivalUserId }: { targetOsuId:
       body: JSON.stringify({ rivalUserId }),
     });
     if (res.ok) setStatus('none');
-    setBusy(false);
+    else setBusy(false);
   }
 
   if (status === 'loading') return <div className="h-8 w-32 bg-gray-700 animate-pulse rounded-lg" />;
@@ -99,9 +108,33 @@ export default function RivalButton({ targetOsuId, rivalUserId }: { targetOsuId:
     return <span className="text-xs text-gray-500">Max 3 rivals reached</span>;
   }
 
+  if (pickingMode) {
+    return (
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-xs text-gray-500 mr-0.5">Mode:</span>
+        {MODES.map(m => (
+          <button
+            key={m.value}
+            onClick={() => sendRequest(m.value)}
+            disabled={busy}
+            className="px-2.5 py-1 bg-gray-800 hover:bg-pink-500/20 border border-gray-700 hover:border-pink-500/50 rounded-lg text-xs font-medium text-gray-300 hover:text-pink-300 transition-colors disabled:opacity-50"
+          >
+            {m.label}
+          </button>
+        ))}
+        <button
+          onClick={() => setPickingMode(false)}
+          className="text-xs text-gray-600 hover:text-gray-400 transition-colors ml-1"
+        >
+          ✕
+        </button>
+      </div>
+    );
+  }
+
   return (
     <button
-      onClick={sendRequest}
+      onClick={() => setPickingMode(true)}
       disabled={busy}
       className="px-3 py-1.5 bg-gray-700 hover:bg-pink-500 border border-gray-600 hover:border-pink-500 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
     >

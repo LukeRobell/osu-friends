@@ -28,17 +28,19 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
+  const mode = request.gameMode ?? 'osu';
+
   await prisma.$transaction([
     prisma.rivalRequest.update({ where: { id: params.id }, data: { status: 'ACCEPTED' } }),
-    // Mutual: both become rivals of each other
+    // Mutual: both become rivals of each other, both track the same mode
     prisma.userRival.upsert({
       where: { userId_rivalId: { userId: me.id, rivalId: request.fromUser.id } },
-      create: { userId: me.id, rivalId: request.fromUser.id },
+      create: { userId: me.id, rivalId: request.fromUser.id, gameMode: mode },
       update: {},
     }),
     prisma.userRival.upsert({
       where: { userId_rivalId: { userId: request.fromUser.id, rivalId: me.id } },
-      create: { userId: request.fromUser.id, rivalId: me.id },
+      create: { userId: request.fromUser.id, rivalId: me.id, gameMode: mode },
       update: {},
     }),
   ]);
