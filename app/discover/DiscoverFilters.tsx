@@ -20,16 +20,15 @@ interface Props {
 }
 
 const RANK_RANGES = [
-  { label: 'Any rank',      value: '',           min: '',       max: '' },
-  { label: '#1 – #10k',     value: '1-10k',      min: '1',      max: '10000' },
-  { label: '#10k – #50k',   value: '10k-50k',    min: '10000',  max: '50000' },
-  { label: '#50k – #100k',  value: '50k-100k',   min: '50000',  max: '100000' },
-  { label: '#100k+',        value: '100k+',      min: '100000', max: '' },
+  { label: 'Avg PP play',  value: '',        min: '',       max: '' },
+  { label: '#1 – #10k',    value: '1-10k',   min: '1',      max: '10000' },
+  { label: '#10k – #50k',  value: '10k-50k', min: '10000',  max: '50000' },
+  { label: '#50k – #100k', value: '50k-100k',min: '50000',  max: '100000' },
+  { label: '#100k+',       value: '100k+',   min: '100000', max: '' },
 ];
 
 function rankRangeValue(rankMin: string, rankMax: string): string {
-  const match = RANK_RANGES.find(r => r.min === rankMin && r.max === rankMax);
-  return match?.value ?? '';
+  return RANK_RANGES.find(r => r.min === rankMin && r.max === rankMax)?.value ?? '';
 }
 
 export default function DiscoverFilters({ filters, onChange }: Props) {
@@ -54,7 +53,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
     }`;
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex items-center gap-2">
       {/* Compact search */}
       <div className="relative">
         <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -65,7 +64,7 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
           placeholder="Username…"
           value={filters.q}
           onChange={e => set({ q: e.target.value })}
-          className={`w-32 bg-gray-800 border rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none transition-colors ${
+          className={`w-28 bg-gray-800 border rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none transition-colors ${
             filters.q ? 'border-pink-500/50' : 'border-transparent'
           }`}
         />
@@ -97,21 +96,10 @@ export default function DiscoverFilters({ filters, onChange }: Props) {
         ))}
       </select>
 
-      <div className="w-px h-5 bg-gray-700 mx-1" />
-
-      <button
-        onClick={() => set({ showAll: !filters.showAll })}
-        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-          filters.showAll ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-        }`}
-      >
-        All members
-      </button>
-
       {activeFilters > 0 && (
         <button
           onClick={() => set({ country: '', language: '', rankMin: '', rankMax: '', accountAge: '' })}
-          className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          className="text-xs text-gray-500 hover:text-gray-300 transition-colors whitespace-nowrap"
         >
           Clear ({activeFilters})
         </button>

@@ -168,8 +168,8 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
             <span className="text-sm font-normal text-gray-500">— {filtered.length} players</span>
           )}
         </h2>
-        <div className="flex items-center justify-between ml-6 mb-4">
-          <p className="text-xs text-gray-600 shrink-0 mr-4">
+        <div className="flex items-center justify-between ml-6 mb-4 gap-4">
+          <p className="text-xs text-gray-600 shrink-0">
             {filters.showAll || !!(filters.country || filters.language || filters.rankMin || filters.rankMax || filters.accountAge)
               ? 'Filtered from all registered members'
               : userPp != null
