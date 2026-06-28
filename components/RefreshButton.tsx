@@ -20,8 +20,8 @@ export default function RefreshButton() {
       className="text-gray-500 hover:text-gray-300 transition-colors"
     >
       <svg
-        width="14"
-        height="14"
+        width="16"
+        height="16"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

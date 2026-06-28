@@ -115,7 +115,6 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
           </span>
           Live lobbies
           <span className="text-sm font-normal text-gray-500">{currentStarRange}</span>
-          <RefreshButton />
         </h2>
 
         {/* Subtitle + filters on the same line */}
@@ -144,6 +143,8 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
             >
               Any difficulty
             </button>
+
+            <RefreshButton />
           </div>
         </div>
       </div>
