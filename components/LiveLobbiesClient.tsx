@@ -63,7 +63,7 @@ export default function LiveLobbiesClient({ rooms, mode, userPp, canSendDm, anyD
     });
 
     return { sorted: result, noSkillMatch, noRoomsAtAll: false };
-  }, [rooms, mode, userPp]);
+  }, [rooms, mode, userPp, anyDifficulty]);
 
   if (noRoomsAtAll) {
     const modeLabel = MODE_LABELS[mode] ?? mode;

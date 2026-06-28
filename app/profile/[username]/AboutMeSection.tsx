@@ -44,14 +44,13 @@ export default function AboutMeSection({ initial, isOwn }: Props) {
 
   async function save() {
     setSaving(true);
-    await fetch('/api/user/profile', {
+    const res = await fetch('/api/user/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ aboutMe: value }),
     });
     setSaving(false);
-    setSaved(true);
-    setEditing(false);
+    if (res.ok) { setSaved(true); setEditing(false); }
   }
 
   if (!isOwn && !value) return null;

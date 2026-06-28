@@ -33,22 +33,24 @@ export async function POST(req: NextRequest) {
   const senderOsuId  = token.osuId as number;
   const senderUsername = token.username as string;
 
-  // Enforce cooldown — one DM per host per 10 minutes
-  const recent = await prisma.lobbyDm.findFirst({
-    where: {
-      senderOsuId,
-      targetOsuId: targetId,
-      sentAt: { gte: new Date(Date.now() - COOLDOWN_MS) },
-    },
-    orderBy: { sentAt: 'desc' },
-  });
+  // Cooldown check and bot token fetch run in parallel
+  const [recent, botToken] = await Promise.all([
+    prisma.lobbyDm.findFirst({
+      where: {
+        senderOsuId,
+        targetOsuId: targetId,
+        sentAt: { gte: new Date(Date.now() - COOLDOWN_MS) },
+      },
+      orderBy: { sentAt: 'desc' },
+    }),
+    getBotToken(),
+  ]);
 
   if (recent) {
     const secondsRemaining = Math.ceil((recent.sentAt.getTime() + COOLDOWN_MS - Date.now()) / 1000);
     return NextResponse.json({ error: 'cooldown', secondsRemaining }, { status: 429 });
   }
 
-  const botToken = await getBotToken();
   if (!botToken) {
     return NextResponse.json({ error: 'bot_unavailable' }, { status: 503 });
   }
@@ -63,9 +65,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'dm_failed', fallback: true }, { status: 502 });
   }
 
-  // Record the send so the cooldown persists across refreshes
-  await prisma.lobbyDm.create({ data: { senderOsuId, targetOsuId: targetId } });
-
   // Message to the REQUESTER — confirmation + host profile + room link if public
   const hostName = targetUsername ?? 'the host';
   let requesterMessage =
@@ -76,8 +75,11 @@ export async function POST(req: NextRequest) {
     requesterMessage += `\nOr join their lobby directly: https://osu.ppy.sh/multiplayer/rooms/${roomId}`;
   }
 
-  // Fire-and-forget — don't fail the request if this DM doesn't go through
-  sendBotDm(botToken, senderOsuId, requesterMessage).catch(() => {});
+  // Record cooldown + fire requester DM in parallel
+  await Promise.all([
+    prisma.lobbyDm.create({ data: { senderOsuId, targetOsuId: targetId } }),
+    sendBotDm(botToken, senderOsuId, requesterMessage).catch(() => {}),
+  ]);
 
   return NextResponse.json({ ok: true, secondsRemaining: Math.ceil(COOLDOWN_MS / 1000) });
 }

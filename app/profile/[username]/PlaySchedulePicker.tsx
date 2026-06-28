@@ -57,14 +57,13 @@ export default function PlaySchedulePicker({ initial, isOwn, ownerTimezone }: Pr
   async function save() {
     setSaving(true);
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    await fetch('/api/user/profile', {
+    const res = await fetch('/api/user/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ playSchedule: selected, timezone: tz }),
     });
     setSaving(false);
-    setSaved(true);
-    setEditing(false);
+    if (res.ok) { setSaved(true); setEditing(false); }
   }
 
   if (!isOwn && selected.length === 0) return null;
