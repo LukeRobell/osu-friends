@@ -17,6 +17,7 @@ import MapStylePicker from './MapStylePicker';
 import PlaySchedulePicker from './PlaySchedulePicker';
 import SocialLinks from './SocialLinks';
 import DiscordCopyButton from './DiscordCopyButton';
+import ProfileStats from './ProfileStats';
 
 const LANG_CODE: Record<string, string> = {
   English: 'GB', Japanese: 'JP', Korean: 'KR', Chinese: 'CN',
@@ -152,41 +153,19 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           </div>
 
-          {(() => {
-            const prefMode = user.preferredModes?.[0] ?? 'osu';
-            const modeRank: number | null = (
-              prefMode === 'taiko'  ? user.taikoGlobalRank  :
-              prefMode === 'fruits' ? user.catchGlobalRank  :
-              prefMode === 'mania'  ? user.maniaGlobalRank  :
-              user.globalRank
-            ) ?? user.globalRank;
-            const modeLabel: Record<string,string> = { osu: 'osu!', taiko: 'Taiko', fruits: 'Catch', mania: 'Mania' };
-            return (
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-gray-800 rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-1">Global Rank <span className="text-gray-600 text-xs">({modeLabel[prefMode] ?? prefMode})</span></p>
-              <p className="text-2xl font-bold text-pink-400">
-                {modeRank != null ? `#${modeRank.toLocaleString()}` : '—'}
-              </p>
-            </div>
-            <div className="bg-gray-800 rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-1">Country Rank</p>
-              <div className="flex items-center gap-2 mt-1">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={countryFlagUrl(user.countryCode)} alt={user.countryCode} width={24} height={17} className="rounded-sm flex-shrink-0" />
-                <p className="text-2xl font-bold text-purple-400">
-                  {user.countryRank != null ? `#${user.countryRank.toLocaleString()}` : '—'}
-                </p>
-              </div>
-            </div>
-            <div className="bg-gray-800 rounded-xl p-4">
-              <p className="text-gray-400 text-sm mb-1">Average Play</p>
-              <p className="text-2xl font-bold text-white">
-                {user.pp != null ? `${Math.round(user.pp).toLocaleString()}pp` : '—'}
-              </p>
-            </div>
-          </div>
-            ); })()}
+          <ProfileStats
+            preferredMode={user.preferredModes?.[0] ?? 'osu'}
+            globalRank={user.globalRank}
+            countryRank={user.countryRank ?? null}
+            countryCode={user.countryCode}
+            pp={user.pp ?? null}
+            taikoGlobalRank={(user as any).taikoGlobalRank ?? null}
+            taikoPp={(user as any).taikoPp ?? null}
+            catchGlobalRank={(user as any).catchGlobalRank ?? null}
+            catchPp={(user as any).catchPp ?? null}
+            maniaGlobalRank={(user as any).maniaGlobalRank ?? null}
+            maniaPp={(user as any).maniaPp ?? null}
+          />
 
           {user.preferredModes.length > 0 && (
             <div>
