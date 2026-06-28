@@ -111,7 +111,7 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
 
   return (
     <>
-      <div className="mb-3">
+      <div className="flex items-center justify-between mb-1">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
@@ -121,34 +121,34 @@ export default function DiscoverClient({ users, userPp, modePp, friendIds, allRo
           <span className="text-sm font-normal text-gray-500">{currentStarRange}</span>
           <RefreshButton />
         </h2>
-        <p className="text-xs text-gray-600 mt-0.5 ml-5">Hosts within your skill level towards top</p>
-      </div>
 
-      {/* Mode filter + any-difficulty toggle */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        {MODES.map(m => (
+        {/* Mode filter + any-difficulty toggle — far right */}
+        <div className="flex flex-wrap items-center gap-2">
+          {MODES.map(m => (
+            <button
+              key={m.id}
+              onClick={() => { setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id })); setPage(1); }}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+
+          <div className="w-px h-5 bg-gray-700 mx-1" />
+
           <button
-            key={m.id}
-            onClick={() => { setFilters(f => ({ ...f, mode: f.mode === m.id ? '' : m.id })); setPage(1); }}
+            onClick={() => setAnyDifficulty(v => !v)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filters.mode === m.id ? 'bg-pink-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+              anyDifficulty ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
             }`}
           >
-            {m.label}
+            Any difficulty
           </button>
-        ))}
-
-        <div className="w-px h-5 bg-gray-700 mx-1" />
-
-        <button
-          onClick={() => setAnyDifficulty(v => !v)}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            anyDifficulty ? 'bg-purple-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-          }`}
-        >
-          Any difficulty
-        </button>
+        </div>
       </div>
+      <p className="text-xs text-gray-600 mb-4 ml-5">Hosts within your skill level towards top</p>
 
       {lobbyExtras}
       <LiveLobbiesClient
