@@ -24,7 +24,8 @@ interface RivalRow {
 
 export async function GET(req: NextRequest, { params }: { params: { username: string } }) {
   try {
-    const host = req.headers.get('host') ?? 'osufriends.com';
+    const rawHost = req.headers.get('host') ?? 'osufriends.com';
+    const host = rawHost.replace(/^www\./, '');
     const proto = host.startsWith('localhost') ? 'http' : 'https';
     const dataUrl = `${proto}://${host}/api/widget/${encodeURIComponent(params.username)}/data`;
 
@@ -159,10 +160,13 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
           </div>
         </div>
       ),
-      { width: W, height }
+      {
+        width: W,
+        height,
+        headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' },
+      }
     );
 
-    img.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=60');
     return img;
   } catch (e) {
     console.error('[widget]', e);
