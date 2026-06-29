@@ -50,13 +50,18 @@ export async function GET() {
   </div>
 
   <script>
-    var input = document.getElementById('username');
-    var btn   = document.getElementById('save');
-    var status = document.getElementById('status');
+    var input     = document.getElementById('username');
+    var btn       = document.getElementById('save');
+    var statusEl  = document.getElementById('status');
 
     input.addEventListener('input', function() {
       btn.disabled = !input.value.trim();
     });
+
+    function setStatus(msg, color) {
+      statusEl.textContent = msg;
+      statusEl.style.color = color;
+    }
 
     function tryRead() {
       try {
@@ -76,14 +81,16 @@ export async function GET() {
     btn.addEventListener('click', function() {
       var username = input.value.trim();
       if (!username) return;
+      if (!window.Twitch || !window.Twitch.ext) {
+        setStatus('Twitch helper not available — try refreshing.', '#f87171');
+        return;
+      }
       try {
         window.Twitch.ext.configuration.set('broadcaster', '1', JSON.stringify({ username: username }));
-        status.textContent = 'Saved!';
-        status.style.color = '#34d399';
-        setTimeout(function() { status.textContent = ''; }, 2500);
+        setStatus('Saved!', '#34d399');
+        setTimeout(function() { statusEl.textContent = ''; }, 2500);
       } catch(e) {
-        status.textContent = 'Error: ' + e.message;
-        status.style.color = '#f87171';
+        setStatus('Error: ' + e.message, '#f87171');
       }
     });
 
