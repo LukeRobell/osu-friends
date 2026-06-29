@@ -176,6 +176,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10">
+          <Image src="/osufriends-icon.svg" alt="" width={90} height={90} className="mx-auto mb-5" priority />
           <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">osu! is better with friends</p>
           <h1 className="text-6xl sm:text-7xl font-bold text-pink-400 mb-5 tracking-tight">osu!friends</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">

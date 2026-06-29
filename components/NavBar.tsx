@@ -12,8 +12,9 @@ export default function NavBar() {
     <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-30">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/" className="text-pink-400 font-bold text-xl">
-            osu!friends
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/osufriends-icon.svg" alt="osu!friends" width={28} height={28} />
+            <span className="text-pink-400 font-bold text-xl">osu!friends</span>
           </Link>
           <Link href="/discover" className="text-gray-400 hover:text-white text-sm transition-colors">
             Discover
