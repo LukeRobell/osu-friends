@@ -9,7 +9,6 @@ export async function GET() {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>osufriends</title>
-  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 10px; }
@@ -237,7 +236,7 @@ export async function GET() {
       if (authorized) return;
       document.getElementById('root').innerHTML =
         '<div style="padding:4px 0">'
-        + '<p style="font-size:11px;color:#6b7280;margin-bottom:8px">Enter your osufriends username to preview:</p>'
+        + '<p style="font-size:11px;color:#6b7280;margin-bottom:8px">Enter your osufriends username:</p>'
         + '<input id="fb-input" type="text" placeholder="e.g. Sinzuna" autocomplete="off" style="width:100%;padding:7px 9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:white;font-size:12px;box-sizing:border-box;margin-bottom:8px;outline:none">'
         + '<button id="fb-btn" style="width:100%;padding:8px;background:#ec4899;border:none;border-radius:6px;color:white;font-size:12px;font-weight:600;cursor:pointer">Load Rivals</button>'
         + '</div>';
@@ -247,28 +246,32 @@ export async function GET() {
       });
     }
 
-    function init() {
-      if (window.Twitch && window.Twitch.ext) {
-        window.Twitch.ext.onAuthorized(function(auth) {
-          authorized = true;
-          var channelId = auth.channelId;
-          if (!channelId) { showFallback(); return; }
-          fetch(API + '/api/twitch-extension/panel?channelId=' + channelId)
-            .then(function(res) { return res.ok ? res.json() : null; })
-            .then(function(data) {
-              if (!data || !data.username) { showFallback(); return; }
-              loadRivals(data.username);
-              if (refreshTimer) clearInterval(refreshTimer);
-              refreshTimer = setInterval(function() { loadRivals(data.username); }, REFRESH_MS);
-            })
-            .catch(function() { showFallback(); });
-        });
-      }
-      // If onAuthorized hasn't fired after 5s, show manual fallback
-      setTimeout(showFallback, 5000);
+    function tryOnAuthorized() {
+      if (!window.Twitch || !window.Twitch.ext) { showFallback(); return; }
+      var authTimer = setTimeout(showFallback, 4000);
+      window.Twitch.ext.onAuthorized(function(auth) {
+        clearTimeout(authTimer);
+        authorized = true;
+        var channelId = auth.channelId;
+        if (!channelId) { showFallback(); return; }
+        fetch(API + '/api/twitch-extension/panel?channelId=' + channelId)
+          .then(function(res) { return res.ok ? res.json() : null; })
+          .then(function(data) {
+            if (!data || !data.username) { showFallback(); return; }
+            loadRivals(data.username);
+            if (refreshTimer) clearInterval(refreshTimer);
+            refreshTimer = setInterval(function() { loadRivals(data.username); }, REFRESH_MS);
+          })
+          .catch(function() { showFallback(); });
+      });
     }
 
-    init();
+    // Load Twitch helper async — doesn't block our script
+    var helperScript = document.createElement('script');
+    helperScript.src = 'https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js';
+    helperScript.onload = tryOnAuthorized;
+    helperScript.onerror = showFallback;
+    document.head.appendChild(helperScript);
   </script>
 </body>
 </html>`;
