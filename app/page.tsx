@@ -179,7 +179,7 @@ export default function Home() {
           {/* Wordmark: icon + text side-by-side, matching original logo layout */}
           <div className="flex items-center justify-center gap-5 mb-6">
             <Image src="/osufriends-logo-addfriend.svg" alt="osu!friends" width={140} height={140} priority />
-            <h1 className="text-6xl sm:text-8xl font-black leading-none">
+            <h1 className="text-6xl sm:text-8xl font-extrabold leading-none">
               <span className="text-pink-400">osu!</span><span className="text-white">friends</span>
             </h1>
           </div>
