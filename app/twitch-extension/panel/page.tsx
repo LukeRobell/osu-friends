@@ -6,7 +6,7 @@ declare global {
   interface Window {
     Twitch?: {
       ext: {
-        onAuthorized: (cb: (auth: { token: string }) => void) => void;
+        onAuthorized: (cb: (auth: { token: string; channelId: string; userId?: string }) => void) => void;
         configuration: {
           broadcaster?: { version: string; content: string };
           set: (segment: string, version: string, content: string) => void;
