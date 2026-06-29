@@ -25,15 +25,26 @@ export default function TwitchConfig() {
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js';
-    script.onload = () => {
-      window.Twitch?.ext?.onAuthorized(() => {
-        const raw = window.Twitch?.ext?.configuration?.broadcaster?.content;
-        if (raw) {
-          try { setUsername(JSON.parse(raw).username ?? ''); } catch {}
-        }
-        setReady(true);
-      });
+
+    const tryReadConfig = () => {
+      const raw = window.Twitch?.ext?.configuration?.broadcaster?.content;
+      if (raw) {
+        try { setUsername(JSON.parse(raw).username ?? ''); } catch {}
+      }
     };
+
+    script.onload = () => {
+      // onAuthorized doesn't fire reliably in broadcaster dashboard config context,
+      // so enable the form as soon as the script loads and read config directly
+      tryReadConfig();
+      window.Twitch?.ext?.configuration?.onChanged(tryReadConfig);
+      // onAuthorized fires when viewing as a channel — handle both contexts
+      window.Twitch?.ext?.onAuthorized(tryReadConfig);
+      setReady(true);
+    };
+    // If the Twitch script fails to load, still show the form
+    script.onerror = () => setReady(true);
+
     document.head.appendChild(script);
     return () => { document.head.removeChild(script); };
   }, []);
