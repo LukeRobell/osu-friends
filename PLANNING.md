@@ -273,12 +273,18 @@ Next.js 14 (App Router) · TypeScript · Tailwind CSS · Prisma · PostgreSQL (S
 
 ---
 
-## Sprint 8 — Leaderboards ✅
+## Sprint 8 — Leaderboards + Polish ✅
 
 - [x] `/leaderboard` page — Players tab (ranked by pp), Rivals tab (ranked by snipes), Teams tab (placeholder)
 - [x] Leaderboard link added to NavBar
-- [x] Snipe system — `SnipeChallenge` model tracks open challenges; cron detects when watcher beats rival's score; notifies both players; leaderboard counts confirmed snipes
+- [x] Snipe system — `SnipeChallenge` model tracks open challenges; 3-phase cron: (1) detect new rival plays above tiered pp threshold, notify watcher + create challenge; (2) check open challenges — if watcher's pp > target pp, mark SNIPED and notify both; (3) expire challenges older than 7 days
 - [x] Tiered rival notification threshold by pp bracket (stops low-rank spam)
+- [x] Auth: pp fetch failure no longer blocks new user login (wrapped in try/catch; login proceeds with pp = null)
+- [x] Nunito font (osu! website style) applied site-wide — layout, widget image generator, rivals dashboard
+- [x] NavBar wordmark: "osu!" pink / "friends" white, matching hero section
+- [x] Hero wordmark: font-extrabold (800) to match Nunito's rounded style
+- [x] SVG logos cleaned up: transparent backgrounds, white ring border + drop shadow on both `osufriends-logo.svg` and `osufriends-logo-addfriend.svg`
+- [x] Partner brief: `snipe-system-explainer.html` — plain-English doc explaining snipe detection for business partner
 
 ---
 
