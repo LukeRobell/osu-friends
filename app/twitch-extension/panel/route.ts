@@ -13,7 +13,7 @@ export async function GET() {
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 10px; }
 
-    #status-msg { font-size: 11px; color: #4b5563; text-align: center; padding: 20px 0; }
+    #status-msg { font-size: 12px; color: #9ca3af; text-align: center; padding: 20px 0; }
 
     .header {
       display: flex; align-items: center; justify-content: space-between;
@@ -111,6 +111,7 @@ export async function GET() {
 
     function setStatus(msg) {
       document.getElementById('root').innerHTML = '<p id="status-msg">' + msg + '</p>';
+      console.log('[osufriends]', msg);
     }
 
     function renderDots(total, current) {
@@ -210,11 +211,16 @@ export async function GET() {
     }
 
     function loadRivals(username) {
+      setStatus('Loading rivals…');
       fetch(API + '/api/widget/' + encodeURIComponent(username) + '/data')
-        .then(function(res) { return res.ok ? res.json() : null; })
+        .then(function(res) {
+          console.log('[osufriends] data fetch status', res.status);
+          return res.ok ? res.json() : null;
+        })
         .then(function(data) {
+          console.log('[osufriends] data', JSON.stringify(data && { username: data.username, rivalCount: data.rivals && data.rivals.length }));
           if (!data || !data.rivals || !data.rivals.length) {
-            setStatus('No rivals yet');
+            setStatus('No rivals yet — add one at osufriends.com');
             return;
           }
           myName = data.username || username;
@@ -223,7 +229,7 @@ export async function GET() {
           showRival(0);
           startCycle();
         })
-        .catch(function() { setStatus('Failed to load rivals'); });
+        .catch(function(e) { setStatus('Error: ' + e); });
     }
 
     var authorized = false;
