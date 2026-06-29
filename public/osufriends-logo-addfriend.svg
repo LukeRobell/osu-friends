@@ -3,7 +3,10 @@
     <clipPath id="inner">
       <circle cx="256" cy="256" r="218"/>
     </clipPath>
-<filter id="iconglow" x="-60%" y="-60%" width="220%" height="220%">
+    <filter id="outershadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="14" flood-color="#888" flood-opacity="0.35"/>
+    </filter>
+    <filter id="iconglow" x="-60%" y="-60%" width="220%" height="220%">
       <feGaussianBlur stdDeviation="16" result="big"/>
       <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="med"/>
       <feMerge>
@@ -14,6 +17,8 @@
     </filter>
   </defs>
 
+  <circle cx="256" cy="256" r="248" fill="#d0d0d0" filter="url(#outershadow)"/>
+  <circle cx="256" cy="256" r="244" fill="white"/>
   <circle cx="256" cy="256" r="218" fill="#f06aab"/>
 
   <g clip-path="url(#inner)">
