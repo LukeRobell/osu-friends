@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import Script from 'next/script';
 
 declare global {
   interface Window {
@@ -158,14 +157,11 @@ export default function TwitchPanel() {
     setConfigured(true);
   }, []);
 
-  // Script is loaded via <Script strategy="beforeInteractive"> so window.Twitch.ext
-  // is available synchronously before this effect runs
   useEffect(() => {
     window.Twitch?.ext?.onAuthorized(() => {
       readConfig();
       window.Twitch?.ext?.configuration?.onChanged(readConfig);
     });
-    // If already authorized (config context), read immediately
     readConfig();
   }, [readConfig]);
 
@@ -194,8 +190,6 @@ export default function TwitchPanel() {
   const minutesAgo = lastUpdated ? Math.floor((Date.now() - lastUpdated.getTime()) / 60000) : null;
 
   return (
-    <>
-    <Script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js" strategy="beforeInteractive" />
     <div style={{ backgroundColor: '#0d0d12', minHeight: '100vh', padding: '10px', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: 298 }}>
         {/* Header */}
@@ -235,6 +229,5 @@ export default function TwitchPanel() {
         </div>
       </div>
     </div>
-    </>
   );
 }
