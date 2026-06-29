@@ -211,7 +211,7 @@ export async function GET() {
     }
 
     function loadRivals(username) {
-      fetch(API + '/api/widget/' + encodeURIComponent(username) + '/data?panel=1')
+      fetch(API + '/api/widget/' + encodeURIComponent(username) + '/data')
         .then(function(res) { return res.ok ? res.json() : null; })
         .then(function(data) {
           if (!data || !data.rivals || !data.rivals.length) {
