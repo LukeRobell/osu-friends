@@ -7,7 +7,7 @@ import NavWrapper from '@/components/NavWrapper';
 
 const nunito = Nunito({
   subsets: ['latin'],
-  weight: ['800', '900'],
+  weight: ['400', '600', '700', '800', '900'],
   variable: '--font-nunito',
 });
 
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased bg-gray-950 text-white`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased bg-gray-950 text-white`} style={{ fontFamily: 'var(--font-nunito), sans-serif' }}>
         <Providers>
           <NavWrapper />
           {children}
