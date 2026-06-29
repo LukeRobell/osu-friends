@@ -146,30 +146,27 @@ export default function TwitchPanel() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [configured, setConfigured] = useState(false);
 
-  const readConfig = useCallback(() => {
-    const raw = window.Twitch?.ext?.configuration?.broadcaster?.content;
-    if (raw) {
-      try {
-        const { username: u } = JSON.parse(raw);
-        if (u) setUsername(u);
-      } catch {}
-    }
-    setConfigured(true);
-  }, []);
-
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js';
     script.onload = () => {
-      window.Twitch?.ext?.onAuthorized(() => {
-        readConfig();
-        window.Twitch?.ext?.configuration?.onChanged(readConfig);
+      window.Twitch?.ext?.onAuthorized(async (auth) => {
+        const channelId = auth.channelId;
+        if (!channelId) { setConfigured(true); return; }
+        try {
+          const res = await fetch(`https://www.osufriends.com/api/twitch-extension/panel?channelId=${channelId}`);
+          if (res.ok) {
+            const { username: u } = await res.json();
+            if (u) setUsername(u);
+          }
+        } catch {}
+        setConfigured(true);
       });
     };
     script.onerror = () => setConfigured(true);
     document.head.appendChild(script);
     return () => { document.head.removeChild(script); };
-  }, [readConfig]);
+  }, []);
 
   const load = useCallback(async () => {
     if (!username) return;

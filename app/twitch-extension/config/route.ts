@@ -9,102 +9,63 @@ export async function GET() {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>osufriends config</title>
-  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 20px; }
-    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-    .sword { color: #ec4899; font-size: 18px; }
+    body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 24px; }
+    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .sword { color: #ec4899; font-size: 20px; }
     .title { font-size: 16px; font-weight: 700; }
-    .desc { font-size: 12px; color: #6b7280; margin-bottom: 16px; line-height: 1.5; }
-    label { font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px; }
-    input {
-      width: 100%; padding: 8px 10px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px; color: white; font-size: 13px;
-      margin-bottom: 10px; outline: none;
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 18px;
     }
-    input:focus { border-color: #ec4899; }
-    button {
-      width: 100%; padding: 9px;
-      background: #ec4899; border: none; border-radius: 6px;
-      color: white; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: opacity 0.2s;
+    .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+    .step:last-child { margin-bottom: 0; }
+    .num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #ec4899; color: white;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
     }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
-    #status { font-size: 11px; margin-top: 12px; text-align: center; min-height: 16px; }
+    .step-text { font-size: 12px; color: #9ca3af; line-height: 1.5; }
+    .step-text strong { color: white; }
+    a { color: #ec4899; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 18px 0; }
+    .note { font-size: 11px; color: #4b5563; line-height: 1.5; }
   </style>
 </head>
 <body>
   <div style="max-width:340px">
     <div class="header">
       <span class="sword">⚔</span>
-      <span class="title">osufriends configuration</span>
+      <span class="title">osufriends setup</span>
     </div>
-    <p class="desc">Enter your osufriends username to show your rival dashboard on your Twitch panel.</p>
-    <label for="username">osufriends username</label>
-    <input id="username" type="text" placeholder="e.g. Sinzuna" autocomplete="off" />
-    <button id="save" disabled>Save</button>
-    <p id="status"></p>
+    <div class="card">
+      <div class="step">
+        <div class="num">1</div>
+        <div class="step-text">
+          Go to <a href="https://www.osufriends.com" target="_blank">osufriends.com</a> and sign in with your osu! account.
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="step-text">
+          Visit your <strong>profile settings</strong> and click <strong>Connect Twitch</strong> to link this channel.
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="step-text">
+          Add rivals on your profile — they'll appear automatically in this panel.
+        </div>
+      </div>
+    </div>
+    <hr class="divider">
+    <p class="note">Once your Twitch account is linked on osufriends.com, this panel will automatically show your rival dashboards to viewers — no further configuration needed.</p>
   </div>
-
-  <script>
-    var input     = document.getElementById('username');
-    var btn       = document.getElementById('save');
-    var statusEl  = document.getElementById('status');
-
-    input.addEventListener('input', function() {
-      btn.disabled = !input.value.trim();
-    });
-
-    function setStatus(msg, color) {
-      statusEl.textContent = msg;
-      statusEl.style.color = color;
-    }
-
-    function tryRead() {
-      try {
-        var raw = window.Twitch
-          && window.Twitch.ext
-          && window.Twitch.ext.configuration
-          && window.Twitch.ext.configuration.broadcaster
-          && window.Twitch.ext.configuration.broadcaster.content;
-        if (raw) {
-          var cfg = JSON.parse(raw);
-          if (cfg && cfg.username) input.value = cfg.username;
-          btn.disabled = !input.value.trim();
-        }
-      } catch(e) {}
-    }
-
-    btn.addEventListener('click', function() {
-      var username = input.value.trim();
-      if (!username) return;
-      if (!window.Twitch || !window.Twitch.ext) {
-        setStatus('Twitch helper not available — try refreshing.', '#f87171');
-        return;
-      }
-      try {
-        window.Twitch.ext.configuration.set('broadcaster', '1', JSON.stringify({ username: username }));
-        setStatus('Saved!', '#34d399');
-        setTimeout(function() { statusEl.textContent = ''; }, 2500);
-      } catch(e) {
-        setStatus('Error: ' + e.message, '#f87171');
-      }
-    });
-
-    if (window.Twitch && window.Twitch.ext) {
-      window.Twitch.ext.configuration.onChanged(tryRead);
-      window.Twitch.ext.onAuthorized(tryRead);
-    }
-    // Poll for config in case onAuthorized fires after script evaluation
-    var attempts = 0;
-    var poll = setInterval(function() {
-      tryRead();
-      if (input.value || ++attempts >= 10) clearInterval(poll);
-    }, 500);
-  </script>
 </body>
 </html>`;
 
