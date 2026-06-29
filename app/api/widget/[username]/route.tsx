@@ -63,14 +63,9 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
         <div style={{ display: 'flex', flexDirection: 'column', width: W, height: H, backgroundColor: '#0d0d12', fontFamily: 'sans-serif' }}>
 
           {/* ── Brand header ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: W, height: 72, backgroundColor: '#0a0a0f', borderBottom: '1px solid #1c1c28' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ display: 'flex', color: '#ec4899', fontSize: 22 }}>⚔</div>
-              <div style={{ display: 'flex', color: '#f3f4f6', fontSize: 21, fontWeight: 700 }}>osufriends.com</div>
-            </div>
-            <div style={{ display: 'flex', fontSize: 12, color: '#3d3d50', marginTop: 4 }}>
-              meet friends · challenge rivals · opt-in for tournaments
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: W, height: 72, backgroundColor: '#0a0a0f', borderBottom: '1px solid #1c1c28', gap: 10 }}>
+            <img src={`${proto}://${rawHost}/favicon-96x96.png`} width={38} height={38} alt="" style={{ borderRadius: 19 }} />
+            <div style={{ display: 'flex', color: '#ec4899', fontSize: 22, fontWeight: 700 }}>osufriends.com</div>
           </div>
 
           {/* ── Player row ── */}
@@ -172,7 +167,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
 
           {/* ── Footer ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: W, height: 34, marginTop: 'auto', backgroundColor: '#09090e', borderTop: '1px solid #1c1c28' }}>
-            <div style={{ display: 'flex', fontSize: 13, color: '#ec4899', fontWeight: 700 }}>osufriends.com</div>
+            <div style={{ display: 'flex', fontSize: 11, color: '#3d3d50' }}>meet friends · challenge rivals · opt-in for tournaments</div>
           </div>
 
         </div>

@@ -18,6 +18,14 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: 'osu!friends — find your osu! crew',
   description: 'Match with osu! players at your skill level who play when you do.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+    other: { rel: 'manifest', url: '/site.webmanifest' },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
