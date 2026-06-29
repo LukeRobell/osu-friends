@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Script from 'next/script';
 
 declare global {
   interface Window {
@@ -22,31 +23,19 @@ export default function TwitchConfig() {
   const [saved, setSaved] = useState(false);
   const [ready, setReady] = useState(false);
 
+  // Script is loaded via <Script strategy="beforeInteractive"> so window.Twitch.ext
+  // is available synchronously before this effect runs
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js';
-
     const tryReadConfig = () => {
       const raw = window.Twitch?.ext?.configuration?.broadcaster?.content;
       if (raw) {
         try { setUsername(JSON.parse(raw).username ?? ''); } catch {}
       }
     };
-
-    script.onload = () => {
-      // onAuthorized doesn't fire reliably in broadcaster dashboard config context,
-      // so enable the form as soon as the script loads and read config directly
-      tryReadConfig();
-      window.Twitch?.ext?.configuration?.onChanged(tryReadConfig);
-      // onAuthorized fires when viewing as a channel — handle both contexts
-      window.Twitch?.ext?.onAuthorized(tryReadConfig);
-      setReady(true);
-    };
-    // If the Twitch script fails to load, still show the form
-    script.onerror = () => setReady(true);
-
-    document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
+    tryReadConfig();
+    window.Twitch?.ext?.configuration?.onChanged(tryReadConfig);
+    window.Twitch?.ext?.onAuthorized(tryReadConfig);
+    setReady(true);
   }, []);
 
   function save() {
@@ -57,6 +46,8 @@ export default function TwitchConfig() {
   }
 
   return (
+    <>
+    <Script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js" strategy="beforeInteractive" />
     <div style={{ backgroundColor: '#0d0d12', minHeight: '100vh', padding: 20, fontFamily: 'sans-serif', color: 'white' }}>
       <div style={{ maxWidth: 340 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
@@ -119,5 +110,6 @@ export default function TwitchConfig() {
         )}
       </div>
     </div>
+    </>
   );
 }
