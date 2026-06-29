@@ -9,6 +9,7 @@ export async function GET() {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>osufriends config</title>
+  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 24px; }
