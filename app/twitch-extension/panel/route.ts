@@ -9,6 +9,7 @@ export async function GET() {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>osufriends</title>
+  <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 10px; }
@@ -262,12 +263,8 @@ export async function GET() {
       });
     }
 
-    // Load Twitch helper async — doesn't block our script
-    var helperScript = document.createElement('script');
-    helperScript.src = 'https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js';
-    helperScript.onload = tryOnAuthorized;
-    helperScript.onerror = showFallback;
-    document.head.appendChild(helperScript);
+    // Helper loaded sync in <head> — already available, call immediately
+    tryOnAuthorized();
   </script>
 </body>
 </html>`;
