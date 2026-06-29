@@ -176,13 +176,10 @@ export default function Home() {
         </div>
 
         <div className="relative z-10">
-          <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-6">osu! is better with friends</p>
-          <div className="flex items-center justify-center gap-4 mb-5">
-            <Image src="/osufriends-icon.svg" alt="osu!friends" width={80} height={80} priority />
-            <h1 className="text-6xl sm:text-7xl font-extrabold tracking-tight">
-              <span className="text-pink-400">osu!</span><span className="text-white">friends</span>
-            </h1>
-          </div>
+          <p className="text-pink-400 text-sm font-medium tracking-widest uppercase mb-4">osu! is better with friends</p>
+          <h1 className="text-6xl sm:text-8xl font-black mb-5" style={{ fontFamily: 'var(--font-nunito)' }}>
+            <span className="text-pink-400">osu!</span><span className="text-white">friends</span>
+          </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
             Find your people. Let&apos;s build the community this game deserves.
           </p>

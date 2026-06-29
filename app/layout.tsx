@@ -1,8 +1,15 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { Nunito } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
 import NavWrapper from '@/components/NavWrapper';
+
+const nunito = Nunito({
+  subsets: ['latin'],
+  weight: ['800', '900'],
+  variable: '--font-nunito',
+});
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -31,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-white`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased bg-gray-950 text-white`}>
         <Providers>
           <NavWrapper />
           {children}
