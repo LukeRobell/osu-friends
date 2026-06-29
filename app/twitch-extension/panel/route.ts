@@ -231,27 +231,41 @@ export async function GET() {
         .catch(function() { setStatus('Failed to load rivals'); });
     }
 
-    function init() {
-      if (!window.Twitch || !window.Twitch.ext) {
-        setStatus('Twitch helper unavailable');
-        return;
-      }
-      window.Twitch.ext.onAuthorized(function(auth) {
-        var channelId = auth.channelId;
-        if (!channelId) { setStatus('No channel info'); return; }
-        fetch(API + '/api/twitch-extension/panel?channelId=' + channelId)
-          .then(function(res) { return res.ok ? res.json() : null; })
-          .then(function(data) {
-            if (!data || !data.username) {
-              setStatus('Link your Twitch on osufriends.com to enable this panel');
-              return;
-            }
-            loadRivals(data.username);
-            if (refreshTimer) clearInterval(refreshTimer);
-            refreshTimer = setInterval(function() { loadRivals(data.username); }, REFRESH_MS);
-          })
-          .catch(function() { setStatus('Could not load channel info'); });
+    var authorized = false;
+
+    function showFallback() {
+      if (authorized) return;
+      document.getElementById('root').innerHTML =
+        '<div style="padding:4px 0">'
+        + '<p style="font-size:11px;color:#6b7280;margin-bottom:8px">Enter your osufriends username to preview:</p>'
+        + '<input id="fb-input" type="text" placeholder="e.g. Sinzuna" autocomplete="off" style="width:100%;padding:7px 9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:white;font-size:12px;box-sizing:border-box;margin-bottom:8px;outline:none">'
+        + '<button id="fb-btn" style="width:100%;padding:8px;background:#ec4899;border:none;border-radius:6px;color:white;font-size:12px;font-weight:600;cursor:pointer">Load Rivals</button>'
+        + '</div>';
+      document.getElementById('fb-btn').addEventListener('click', function() {
+        var u = document.getElementById('fb-input').value.trim();
+        if (u) { setStatus('Loading…'); loadRivals(u); }
       });
+    }
+
+    function init() {
+      if (window.Twitch && window.Twitch.ext) {
+        window.Twitch.ext.onAuthorized(function(auth) {
+          authorized = true;
+          var channelId = auth.channelId;
+          if (!channelId) { showFallback(); return; }
+          fetch(API + '/api/twitch-extension/panel?channelId=' + channelId)
+            .then(function(res) { return res.ok ? res.json() : null; })
+            .then(function(data) {
+              if (!data || !data.username) { showFallback(); return; }
+              loadRivals(data.username);
+              if (refreshTimer) clearInterval(refreshTimer);
+              refreshTimer = setInterval(function() { loadRivals(data.username); }, REFRESH_MS);
+            })
+            .catch(function() { showFallback(); });
+        });
+      }
+      // If onAuthorized hasn't fired after 5s, show manual fallback
+      setTimeout(showFallback, 5000);
     }
 
     init();
