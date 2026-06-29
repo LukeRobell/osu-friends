@@ -95,10 +95,15 @@ export async function GET() {
     });
 
     if (window.Twitch && window.Twitch.ext) {
-      tryRead();
       window.Twitch.ext.configuration.onChanged(tryRead);
       window.Twitch.ext.onAuthorized(tryRead);
     }
+    // Poll for config in case onAuthorized fires after script evaluation
+    var attempts = 0;
+    var poll = setInterval(function() {
+      tryRead();
+      if (input.value || ++attempts >= 10) clearInterval(poll);
+    }, 500);
   </script>
 </body>
 </html>`;

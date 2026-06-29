@@ -158,11 +158,17 @@ export default function TwitchPanel() {
   }, []);
 
   useEffect(() => {
-    window.Twitch?.ext?.onAuthorized(() => {
-      readConfig();
-      window.Twitch?.ext?.configuration?.onChanged(readConfig);
-    });
-    readConfig();
+    const script = document.createElement('script');
+    script.src = 'https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js';
+    script.onload = () => {
+      window.Twitch?.ext?.onAuthorized(() => {
+        readConfig();
+        window.Twitch?.ext?.configuration?.onChanged(readConfig);
+      });
+    };
+    script.onerror = () => setConfigured(true);
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
   }, [readConfig]);
 
   const load = useCallback(async () => {
