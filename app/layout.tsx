@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} antialiased bg-gray-950 text-white`} style={{ fontFamily: 'var(--font-nunito), sans-serif' }}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} font-sans antialiased bg-gray-950 text-white`}>
         <Providers>
           <NavWrapper />
           {children}
