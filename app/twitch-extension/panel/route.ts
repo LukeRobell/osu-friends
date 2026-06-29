@@ -11,83 +11,92 @@ export async function GET() {
   <title>osufriends</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0d0d12; color: white; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 14px; }
+    html, body { height: 100%; }
+    body {
+      background: #0d0d12; color: white;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 10px;
+      display: flex; flex-direction: column;
+    }
 
-    #status-msg { font-size: 13px; color: #4b5563; text-align: center; padding: 30px 0; }
+    #status-msg { font-size: 11px; color: #4b5563; text-align: center; padding: 20px 0; }
+
+    .panel-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 
     .header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 8px; flex-shrink: 0;
     }
-    .header-left { display: flex; align-items: center; gap: 6px; }
-    .sword { color: #ec4899; font-size: 15px; }
-    .username { color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 700; }
-    .rivals-label { color: #374151; font-size: 12px; }
+    .header-left { display: flex; align-items: center; gap: 5px; }
+    .sword { color: #ec4899; font-size: 12px; }
+    .username { color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 600; }
+    .rivals-label { color: #374151; font-size: 10px; }
 
-    .dots { display: flex; align-items: center; gap: 4px; }
+    .dots { display: flex; align-items: center; gap: 3px; }
     .dot {
-      height: 6px; border-radius: 3px;
+      height: 5px; border-radius: 3px;
       background: rgba(255,255,255,0.1);
-      transition: all 0.3s ease;
-      display: inline-block;
+      transition: all 0.3s ease; display: inline-block;
     }
     .dot.active { background: #ec4899; }
 
     .card {
       background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px; padding: 14px 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 10px 12px;
       transition: opacity 0.4s ease;
+      flex: 1; display: flex; flex-direction: column;
     }
     .card.fade { opacity: 0; }
+    .card-inner { display: flex; flex-direction: column; flex: 1; }
 
     .rival-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+      flex-shrink: 0;
     }
-    .rival-left { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 40px; height: 40px; border-radius: 20px; flex-shrink: 0; }
-    .rival-name { color: #f3f4f6; font-size: 15px; font-weight: 700; }
-    .rival-stats { color: #4b5563; font-size: 12px; margin-top: 3px; }
+    .rival-left { display: flex; align-items: center; gap: 7px; }
+    .avatar { width: 28px; height: 28px; border-radius: 14px; flex-shrink: 0; }
+    .rival-name { color: #f3f4f6; font-size: 12px; font-weight: 700; }
+    .rival-stats { color: #4b5563; font-size: 10px; margin-top: 2px; }
     .mode-badge {
-      font-size: 11px; padding: 3px 9px;
-      background: rgba(255,255,255,0.06);
+      font-size: 9px; padding: 2px 7px;
+      background: rgba(255,255,255,0.05);
       border-radius: 99px; color: #6b7280;
     }
 
+    .stats-block { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
     .section-label {
       display: flex; justify-content: space-between;
-      font-size: 11px; color: #374151; font-weight: 700; letter-spacing: 0.05em;
-      margin-bottom: 6px;
+      font-size: 9px; color: #374151; font-weight: 600;
+      margin-bottom: 4px;
     }
-    .ahead { color: #34d399; font-weight: 600; }
-    .behind { color: #f87171; font-weight: 600; }
+    .ahead { color: #34d399; }
+    .behind { color: #f87171; }
 
-    .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-    .bar-label { font-size: 11px; color: #6b7280; width: 28px; flex-shrink: 0; }
+    .bar-row { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+    .bar-label { font-size: 9px; color: #6b7280; width: 22px; flex-shrink: 0; }
     .bar-track {
-      flex: 1; height: 7px; border-radius: 7px;
+      flex: 1; height: 5px; border-radius: 5px;
       background: rgba(255,255,255,0.06); overflow: hidden;
     }
-    .bar-fill {
-      height: 100%; border-radius: 7px;
-      width: 0%; transition: width 1s ease-out;
-    }
-    .bar-val { font-size: 11px; color: #9ca3af; width: 60px; text-align: right; flex-shrink: 0; }
+    .bar-fill { height: 100%; border-radius: 5px; width: 0%; transition: width 1s ease-out; }
+    .bar-val { font-size: 9px; color: #9ca3af; width: 52px; text-align: right; flex-shrink: 0; }
 
     .snipes-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);
-      margin-top: 14px;
+      padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: 10px; flex-shrink: 0;
     }
-    .snipes-left { display: flex; align-items: center; gap: 8px; }
-    .snipe-lbl { font-size: 11px; color: #374151; font-weight: 700; letter-spacing: 0.05em; }
-    .snipe-num { font-size: 18px; font-weight: 700; }
-    .snipe-vs { font-size: 11px; color: #1f2937; }
-    .recent-play { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-    .play-title { font-size: 11px; color: #4b5563; }
-    .play-pp { font-size: 13px; color: #818cf8; font-weight: 700; }
+    .snipes-left { display: flex; align-items: center; gap: 6px; }
+    .snipe-lbl { font-size: 9px; color: #374151; font-weight: 600; }
+    .snipe-num { font-size: 13px; font-weight: 700; }
+    .snipe-vs { font-size: 9px; color: #1f2937; }
+    .recent-play { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+    .play-title { font-size: 9px; color: #4b5563; }
+    .play-pp { font-size: 10px; color: #818cf8; font-weight: 700; }
 
-    .footer { margin-top: 10px; text-align: center; color: #374151; font-size: 10px; }
+    .footer { margin-top: 6px; text-align: center; color: #374151; font-size: 8px; flex-shrink: 0; }
   </style>
 </head>
 <body>
@@ -149,6 +158,7 @@ export async function GET() {
         + '<span class="mode-badge">' + mode + '</span>'
         + '</div>'
 
+        + '<div class="stats-block">'
         + '<div class="section-label"><span>RANK</span>'
         + (myRankAhead ? '<span class="ahead">You&#39;re ahead</span>' : (bothRanks ? '<span class="behind">They&#39;re ahead</span>' : '<span></span>'))
         + '</div>'
@@ -160,6 +170,7 @@ export async function GET() {
         + '</div>'
         + '<div class="bar-row"><span class="bar-label">' + tag + '</span><div class="bar-track"><div class="bar-fill" id="bar-mp" style="background:#ec4899"></div></div><span class="bar-val">' + fmtPp(r.myPp) + '</span></div>'
         + '<div class="bar-row"><span class="bar-label">⚔</span><div class="bar-track"><div class="bar-fill" id="bar-rp" style="background:#818cf8"></div></div><span class="bar-val">' + fmtPp(r.rivalPp) + '</span></div>'
+        + '</div>'
 
         + '<div class="snipes-row">'
         + '<div class="snipes-left"><span class="snipe-lbl">SNIPES</span>'
@@ -191,12 +202,14 @@ export async function GET() {
       var r = rivals[i];
       var root = document.getElementById('root');
       root.innerHTML =
-        '<div class="header">'
+        '<div class="panel-wrap">'
+        + '<div class="header">'
         + '<div class="header-left"><span class="sword">⚔</span><span class="username">' + myName + '</span><span class="rivals-label">· rivals</span></div>'
         + renderDots(rivals.length, i)
         + '</div>'
-        + '<div class="card" id="card">' + renderCard(r) + '</div>'
-        + '<div class="footer">osufriends.com</div>';
+        + '<div class="card" id="card"><div class="card-inner">' + renderCard(r) + '</div></div>'
+        + '<div class="footer">osufriends.com</div>'
+        + '</div>';
       animateBars(r);
     }
 
