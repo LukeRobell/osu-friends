@@ -111,7 +111,6 @@ export async function GET() {
 
     function setStatus(msg) {
       document.getElementById('root').innerHTML = '<p id="status-msg">' + msg + '</p>';
-      console.log('[osufriends]', msg);
     }
 
     function renderDots(total, current) {
@@ -211,14 +210,9 @@ export async function GET() {
     }
 
     function loadRivals(username) {
-      setStatus('Loading rivals…');
       fetch(API + '/api/widget/' + encodeURIComponent(username) + '/data?panel=1')
-        .then(function(res) {
-          console.log('[osufriends] data fetch status', res.status);
-          return res.ok ? res.json() : null;
-        })
+        .then(function(res) { return res.ok ? res.json() : null; })
         .then(function(data) {
-          console.log('[osufriends] data', JSON.stringify(data && { username: data.username, rivalCount: data.rivals && data.rivals.length }));
           if (!data || !data.rivals || !data.rivals.length) {
             setStatus('No rivals yet — add one at osufriends.com');
             return;
@@ -229,7 +223,7 @@ export async function GET() {
           showRival(0);
           startCycle();
         })
-        .catch(function(e) { setStatus('Error: ' + e); });
+        .catch(function() { setStatus('Failed to load rivals'); });
     }
 
     var authorized = false;
