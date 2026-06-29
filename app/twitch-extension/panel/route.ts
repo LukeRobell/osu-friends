@@ -11,9 +11,9 @@ export async function GET() {
   <title>osufriends</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #cc0000; color: white; font-family: -apple-system, sans-serif; padding: 10px; }
+    body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 10px; }
 
-    #status-msg { font-size: 18px; color: #ffffff; text-align: center; padding: 20px 0; font-weight: bold; }
+    #status-msg { font-size: 12px; color: #9ca3af; text-align: center; padding: 20px 0; }
 
     .header {
       display: flex; align-items: center; justify-content: space-between;
