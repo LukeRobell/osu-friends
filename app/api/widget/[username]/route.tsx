@@ -12,8 +12,9 @@ async function getNunitoFont(): Promise<ArrayBuffer> {
   ).then(r => r.text());
   const url = css.match(/url\(([^)]+)\)/)?.[1];
   if (!url) throw new Error('Could not parse Nunito font URL');
-  _nunitoFont = await fetch(url).then(r => r.arrayBuffer());
-  return _nunitoFont;
+  const data = await fetch(url).then(r => r.arrayBuffer());
+  _nunitoFont = data;
+  return data;
 }
 
 const W     = 600;

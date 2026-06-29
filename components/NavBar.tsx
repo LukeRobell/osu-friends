@@ -13,7 +13,7 @@ export default function NavBar() {
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/osufriends-icon.svg" alt="osu!friends" width={28} height={28} />
+            <Image src="/osufriends-logo-addfriend.svg" alt="osu!friends" width={28} height={28} />
             <span className="text-pink-400 font-bold text-xl">osu!friends</span>
           </Link>
           <Link href="/discover" className="text-gray-400 hover:text-white text-sm transition-colors">
