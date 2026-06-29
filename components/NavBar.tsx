@@ -14,7 +14,7 @@ export default function NavBar() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/osufriends-logo.svg" alt="osu!friends" width={28} height={28} />
-            <span className="text-pink-400 font-bold text-xl">osu!friends</span>
+            <span className="font-bold text-xl"><span className="text-pink-400">osu!</span><span className="text-white">friends</span></span>
           </Link>
           <Link href="/discover" className="text-gray-400 hover:text-white text-sm transition-colors">
             Discover
