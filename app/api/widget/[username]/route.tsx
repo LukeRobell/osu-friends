@@ -3,6 +3,19 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
+let _nunitoFont: ArrayBuffer | null = null;
+async function getNunitoFont(): Promise<ArrayBuffer> {
+  if (_nunitoFont) return _nunitoFont;
+  const css = await fetch(
+    'https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap',
+    { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } }
+  ).then(r => r.text());
+  const url = css.match(/url\(([^)]+)\)/)?.[1];
+  if (!url) throw new Error('Could not parse Nunito font URL');
+  _nunitoFont = await fetch(url).then(r => r.arrayBuffer());
+  return _nunitoFont;
+}
+
 const W     = 600;
 const H     = 390;
 const PAD   = 20;
@@ -57,10 +70,11 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
     const rivalPpPct   = maxPp > 0 && rival?.rivalPp ? (rival.rivalPp / maxPp) * 100 : 0;
     const myPpAhead    = !!(rival?.myPp && rival?.rivalPp && rival.myPp > rival.rivalPp);
     const mySnipesAhead = (rival?.mySnipes ?? 0) >= (rival?.theirSnipes ?? 0);
+    const nunitoFont = await getNunitoFont();
 
     return new ImageResponse(
       (
-        <div style={{ display: 'flex', flexDirection: 'column', width: W, height: H, backgroundColor: '#0d0d12', fontFamily: 'sans-serif' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: W, height: H, backgroundColor: '#0d0d12', fontFamily: 'Nunito' }}>
 
           {/* ── Brand header ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: W, height: 72, backgroundColor: '#0a0a0f', borderBottom: '1px solid #1c1c28', gap: 10 }}>
@@ -175,6 +189,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
       {
         width: W,
         height: H,
+        fonts: [{ name: 'Nunito', data: nunitoFont, style: 'normal', weight: 700 }],
         headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' },
       }
     );

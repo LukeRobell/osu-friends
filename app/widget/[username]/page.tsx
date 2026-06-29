@@ -185,7 +185,7 @@ export default function Widget({ params }: { params: { username: string } }) {
   const minutesAgo = lastUpdated ? Math.floor((Date.now() - lastUpdated.getTime()) / 60000) : null;
 
   return (
-    <div style={{ backgroundColor: 'transparent', padding: 10, fontFamily: 'sans-serif', width: 360 }}>
+    <div style={{ backgroundColor: 'transparent', padding: 10, fontFamily: 'var(--font-nunito, sans-serif)', width: 360 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
