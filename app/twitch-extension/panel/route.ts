@@ -11,21 +11,13 @@ export async function GET() {
   <title>osufriends</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-    body {
-      background: #0d0d12; color: white;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: 10px;
-      display: flex; flex-direction: column;
-    }
+    body { background: #0d0d12; color: white; font-family: -apple-system, sans-serif; padding: 10px; }
 
     #status-msg { font-size: 11px; color: #4b5563; text-align: center; padding: 20px 0; }
 
-    .panel-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-
     .header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 8px; flex-shrink: 0;
+      margin-bottom: 8px;
     }
     .header-left { display: flex; align-items: center; gap: 5px; }
     .sword { color: #ec4899; font-size: 12px; }
@@ -45,14 +37,11 @@ export async function GET() {
       border: 1px solid rgba(255,255,255,0.07);
       border-radius: 12px; padding: 10px 12px;
       transition: opacity 0.4s ease;
-      flex: 1; display: flex; flex-direction: column;
     }
     .card.fade { opacity: 0; }
-    .card-inner { display: flex; flex-direction: column; flex: 1; }
 
     .rival-header {
       display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
-      flex-shrink: 0;
     }
     .rival-left { display: flex; align-items: center; gap: 7px; }
     .avatar { width: 28px; height: 28px; border-radius: 14px; flex-shrink: 0; }
@@ -63,8 +52,6 @@ export async function GET() {
       background: rgba(255,255,255,0.05);
       border-radius: 99px; color: #6b7280;
     }
-
-    .stats-block { flex: 1; display: flex; flex-direction: column; justify-content: center; }
 
     .section-label {
       display: flex; justify-content: space-between;
@@ -84,9 +71,9 @@ export async function GET() {
     .bar-val { font-size: 9px; color: #9ca3af; width: 52px; text-align: right; flex-shrink: 0; }
 
     .snipes-row {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: space-between; align-items: flex-end;
       padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05);
-      margin-top: 10px; flex-shrink: 0;
+      margin-top: 10px;
     }
     .snipes-left { display: flex; align-items: center; gap: 6px; }
     .snipe-lbl { font-size: 9px; color: #374151; font-weight: 600; }
@@ -96,7 +83,7 @@ export async function GET() {
     .play-title { font-size: 9px; color: #4b5563; }
     .play-pp { font-size: 10px; color: #818cf8; font-weight: 700; }
 
-    .footer { margin-top: 6px; text-align: center; color: #374151; font-size: 8px; flex-shrink: 0; }
+    .footer { margin-top: 6px; text-align: center; color: #374151; font-size: 8px; }
   </style>
 </head>
 <body>
@@ -158,7 +145,6 @@ export async function GET() {
         + '<span class="mode-badge">' + mode + '</span>'
         + '</div>'
 
-        + '<div class="stats-block">'
         + '<div class="section-label"><span>RANK</span>'
         + (myRankAhead ? '<span class="ahead">You&#39;re ahead</span>' : (bothRanks ? '<span class="behind">They&#39;re ahead</span>' : '<span></span>'))
         + '</div>'
@@ -170,7 +156,6 @@ export async function GET() {
         + '</div>'
         + '<div class="bar-row"><span class="bar-label">' + tag + '</span><div class="bar-track"><div class="bar-fill" id="bar-mp" style="background:#ec4899"></div></div><span class="bar-val">' + fmtPp(r.myPp) + '</span></div>'
         + '<div class="bar-row"><span class="bar-label">⚔</span><div class="bar-track"><div class="bar-fill" id="bar-rp" style="background:#818cf8"></div></div><span class="bar-val">' + fmtPp(r.rivalPp) + '</span></div>'
-        + '</div>'
 
         + '<div class="snipes-row">'
         + '<div class="snipes-left"><span class="snipe-lbl">SNIPES</span>'
@@ -202,14 +187,12 @@ export async function GET() {
       var r = rivals[i];
       var root = document.getElementById('root');
       root.innerHTML =
-        '<div class="panel-wrap">'
-        + '<div class="header">'
+        '<div class="header">'
         + '<div class="header-left"><span class="sword">⚔</span><span class="username">' + myName + '</span><span class="rivals-label">· rivals</span></div>'
         + renderDots(rivals.length, i)
         + '</div>'
-        + '<div class="card" id="card"><div class="card-inner">' + renderCard(r) + '</div></div>'
-        + '<div class="footer">osufriends.com</div>'
-        + '</div>';
+        + '<div class="card" id="card">' + renderCard(r) + '</div>'
+        + '<div class="footer">osufriends.com</div>';
       animateBars(r);
     }
 
