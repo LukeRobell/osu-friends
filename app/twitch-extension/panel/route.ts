@@ -84,7 +84,10 @@ export async function GET() {
     .play-title { font-size: 9px; color: #4b5563; }
     .play-pp { font-size: 10px; color: #818cf8; font-weight: 700; }
 
-    .footer { margin-top: 6px; text-align: center; color: #374151; font-size: 8px; }
+    .footer { margin-top: 6px; text-align: center; }
+    .footer a { color: #ec4899; font-size: 11px; font-weight: 600; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .footer-sub { color: #374151; font-size: 8px; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -193,7 +196,7 @@ export async function GET() {
         + renderDots(rivals.length, i)
         + '</div>'
         + '<div class="card" id="card">' + renderCard(r) + '</div>'
-        + '<div class="footer">osufriends.com</div>';
+        + '<div class="footer"><a href="https://www.osufriends.com" target="_blank">osufriends.com</a><div class="footer-sub">meet friends · challenge rivals · opt-in for tournaments</div></div>';
       animateBars(r);
     }
 
