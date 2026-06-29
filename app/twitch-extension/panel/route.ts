@@ -212,7 +212,7 @@ export async function GET() {
 
     function loadRivals(username) {
       setStatus('Loading rivals…');
-      fetch(API + '/api/widget/' + encodeURIComponent(username) + '/data')
+      fetch(API + '/api/widget/' + encodeURIComponent(username) + '/data?panel=1')
         .then(function(res) {
           console.log('[osufriends] data fetch status', res.status);
           return res.ok ? res.json() : null;
