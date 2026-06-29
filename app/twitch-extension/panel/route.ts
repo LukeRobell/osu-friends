@@ -150,13 +150,13 @@ export async function GET() {
         + '</div>'
 
         + '<div class="section-label"><span>RANK</span>'
-        + (myRankAhead ? '<span class="ahead">You\'re ahead</span>' : (bothRanks ? '<span class="behind">They\'re ahead</span>' : '<span></span>'))
+        + (myRankAhead ? '<span class="ahead">You&#39;re ahead</span>' : (bothRanks ? '<span class="behind">They&#39;re ahead</span>' : '<span></span>'))
         + '</div>'
         + '<div class="bar-row"><span class="bar-label">' + tag + '</span><div class="bar-track"><div class="bar-fill" id="bar-mr" style="background:#ec4899"></div></div><span class="bar-val">' + fmt(r.myRank) + '</span></div>'
         + '<div class="bar-row" style="margin-bottom:10px"><span class="bar-label">⚔</span><div class="bar-track"><div class="bar-fill" id="bar-rr" style="background:#818cf8"></div></div><span class="bar-val">' + fmt(r.rivalRank) + '</span></div>'
 
         + '<div class="section-label"><span>PP</span>'
-        + (myPpAhead ? '<span class="ahead">You\'re ahead</span>' : ((r.myPp && r.rivalPp) ? '<span class="behind">They\'re ahead</span>' : '<span></span>'))
+        + (myPpAhead ? '<span class="ahead">You&#39;re ahead</span>' : ((r.myPp && r.rivalPp) ? '<span class="behind">They&#39;re ahead</span>' : '<span></span>'))
         + '</div>'
         + '<div class="bar-row"><span class="bar-label">' + tag + '</span><div class="bar-track"><div class="bar-fill" id="bar-mp" style="background:#ec4899"></div></div><span class="bar-val">' + fmtPp(r.myPp) + '</span></div>'
         + '<div class="bar-row"><span class="bar-label">⚔</span><div class="bar-track"><div class="bar-fill" id="bar-rp" style="background:#818cf8"></div></div><span class="bar-val">' + fmtPp(r.rivalPp) + '</span></div>'
