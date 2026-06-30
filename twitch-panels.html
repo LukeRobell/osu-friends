@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>osu!friends — Twitch Panels</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #181820;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    h1 { color: #475569; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: -16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 320px);
+      gap: 20px;
+    }
+    .panel-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .panel-label { font-size: 11px; color: #334155; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ─── BASE PANEL ─── */
+    .panel {
+      width: 320px;
+      height: 160px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      background: #0d0d14;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+      border: 1px solid #1e1e30;
+    }
+
+    /* accent bars */
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ec4899, #818cf8);
+    }
+
+    .panel-icon {
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .panel-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #f1f5f9;
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
+    .panel-title .pink { color: #ec4899; }
+    .panel-title .indigo { color: #818cf8; }
+    .panel-body {
+      font-size: 10.5px;
+      color: #64748b;
+      line-height: 1.55;
+      flex: 1;
+    }
+    .panel-body strong { color: #94a3b8; }
+    .panel-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #ec4899;
+      margin-top: 6px;
+    }
+    .panel-cta::after { content: '→'; }
+
+    /* ── Panel 1: About ── */
+    .p1 { background: #0d0d14; }
+    .p1 .accent-blob {
+      position: absolute;
+      right: -20px; top: -20px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ec489930 0%, transparent 70%);
+    }
+
+    /* ── Panel 2: Rival ── */
+    .p2::before { background: linear-gradient(90deg, #f43f5e, #ec4899); }
+
+    /* ── Panel 3: Lobbies ── */
+    .p3::before { background: linear-gradient(90deg, #818cf8, #6366f1); }
+
+    /* ── Panel 4: Snipes ── */
+    .p4::before { background: linear-gradient(90deg, #ec4899, #a855f7); }
+
+    /* ── Panel 5: Join Free ── */
+    .p5 {
+      background: linear-gradient(135deg, #0d0d14 60%, #1a0a14);
+    }
+    .p5::before { background: linear-gradient(90deg, #34d399, #10b981); }
+    .p5 .panel-cta { color: #34d399; }
+
+    /* ── Panel 6: Discord ── */
+    .p6::before { background: linear-gradient(90deg, #5865F2, #818cf8); }
+    .p6 .panel-cta { color: #818cf8; }
+
+    /* big URL panels */
+    .panel-url {
+      font-size: 13px;
+      font-weight: 900;
+      color: #1e1e30;
+      background: #ec4899;
+      border-radius: 6px;
+      padding: 4px 10px;
+      display: inline-block;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+    .panel-url.indigo { background: #818cf8; }
+    .panel-url.green  { background: #34d399; color: #0a2018; }
+    .panel-url.discord { background: #5865F2; }
+
+    .pill {
+      display: inline-block;
+      background: #ec489920;
+      color: #ec4899;
+      border: 1px solid #ec489938;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      margin-bottom: 6px;
+    }
+    .pill.indigo { background: #818cf820; color: #818cf8; border-color: #818cf838; }
+    .pill.green  { background: #34d39920; color: #34d399; border-color: #34d39938; }
+    .pill.discord { background: #5865F220; color: #818cf8; border-color: #5865F238; }
+  </style>
+</head>
+<body>
+
+  <h1>osu!friends — Twitch Panels (320 × 160px each — screenshot individually)</h1>
+
+  <div class="grid">
+
+    <!-- Panel 1: About -->
+    <div class="panel-wrap">
+      <div class="panel-label">1 — About</div>
+      <div class="panel p1">
+        <div class="accent-blob"></div>
+        <div>
+          <div class="pill">What is this?</div>
+          <div class="panel-title"><span class="pink">osu!</span>friends</div>
+          <div class="panel-body">
+            A <strong>free community platform</strong> for osu! players — find rivals at your skill level, get matched into live lobbies, snipe each other's scores, and actually make friends.
+          </div>
+        </div>
+        <div class="panel-cta">osufriends.com</div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Rival -->
+    <div class="panel-wrap">
+      <div class="panel-label">2 — My Rival</div>
+      <div class="panel p2">
+        <div>
+          <div class="pill">⚔ Rivalry</div>
+          <div class="panel-title">My <span class="pink">Rival</span></div>
+          <div class="panel-body">
+            On osu!friends I've locked in a rival at my skill level. When they hit a big play, I get an alert and have <strong>7 days to snipe it</strong> on the same beatmap. Watch it happen live.
+          </div>
+        </div>
+        <div class="panel-cta">Set your own rival</div>
+      </div>
+    </div>
+
+    <!-- Panel 3: Lobbies -->
+    <div class="panel-wrap">
+      <div class="panel-label">3 — Live Lobbies</div>
+      <div class="panel p3">
+        <div>
+          <div class="pill indigo">🎮 Multiplayer</div>
+          <div class="panel-title">Live <span class="indigo">Lobby Finder</span></div>
+          <div class="panel-body">
+            osu!friends finds real-time multiplayer rooms at <strong>your exact pp bracket</strong> — so you always play with people at your level. No more stomping or getting stomped.
+          </div>
+        </div>
+        <div class="panel-cta" style="color:#818cf8">Find a lobby now</div>
+      </div>
+    </div>
+
+    <!-- Panel 4: Snipes -->
+    <div class="panel-wrap">
+      <div class="panel-label">4 — Snipe System</div>
+      <div class="panel p4">
+        <div>
+          <div class="pill">🎯 Score Sniping</div>
+          <div class="panel-title">Snipe <span class="pink">Challenges</span></div>
+          <div class="panel-body">
+            Rival hits a big play → <strong>you get a DM in game</strong> → you have 7 days to beat their pp on that same map. Confirmed snipe = points on the <strong>osu!friends leaderboard</strong>.
+          </div>
+        </div>
+        <div class="panel-cta">See the leaderboard</div>
+      </div>
+    </div>
+
+    <!-- Panel 5: Join Free -->
+    <div class="panel-wrap">
+      <div class="panel-label">5 — Join Free</div>
+      <div class="panel p5">
+        <div>
+          <div class="pill green">✓ Free Forever</div>
+          <div class="panel-title">Join <span style="color:#34d399">osu!friends</span></div>
+          <div class="panel-body">
+            Sign in with your <strong>osu! account</strong> — no new password needed. Takes 10 seconds. Free forever. Find rivals, join lobbies, and challenge friends today.
+          </div>
+        </div>
+        <div class="panel-url green">osufriends.com</div>
+      </div>
+    </div>
+
+    <!-- Panel 6: Discord -->
+    <div class="panel-wrap">
+      <div class="panel-label">6 — Community</div>
+      <div class="panel p6">
+        <div>
+          <div class="pill discord">💬 Community</div>
+          <div class="panel-title" style="color:#818cf8">Join the <span style="color:#f1f5f9">Discord</span></div>
+          <div class="panel-body">
+            The osu!friends Discord is where the community lives — <strong>tournament announcements</strong>, rival call-outs, feature updates, and direct access to the founders.
+          </div>
+        </div>
+        <div class="panel-cta" style="color:#818cf8">discord.gg/osufriends</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="color:#334155; font-size:12px; margin-top:8px; line-height:1.8;">
+    <strong style="color:#475569">How to export panels:</strong><br/>
+    Open in Chrome → right-click a panel → Inspect → select the panel div → right-click in Elements → "Capture node screenshot"<br/>
+    Or zoom the browser to 100% and use a crop tool. Each panel is exactly <strong style="color:#ec4899">320 × 160 px</strong>.
+  </div>
+
+</body>
+</html>
