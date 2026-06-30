@@ -28,7 +28,7 @@ export default function RecentMembersFeed() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    fetch('/api/recent-members')
+    fetch('/api/public/recent-signups')
       .then(r => r.json())
       .then(setMembers)
       .catch(() => {});

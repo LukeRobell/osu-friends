@@ -242,11 +242,50 @@
 
   </div>
 
-  <div style="color:#334155; font-size:12px; margin-top:8px; line-height:1.8;">
-    <strong style="color:#475569">How to export panels:</strong><br/>
-    Open in Chrome → right-click a panel → Inspect → select the panel div → right-click in Elements → "Capture node screenshot"<br/>
-    Or zoom the browser to 100% and use a crop tool. Each panel is exactly <strong style="color:#ec4899">320 × 160 px</strong>.
+  <div style="margin-top:16px;">
+    <button id="export-btn" onclick="exportAll()" style="
+      font-family:'Nunito',sans-serif;
+      font-size:13px; font-weight:800;
+      background: linear-gradient(90deg,#ec4899,#818cf8);
+      color:#fff; border:none; border-radius:8px;
+      padding:10px 24px; cursor:pointer; letter-spacing:0.03em;
+    ">⬇ Download All Panels (320×160)</button>
+    <span id="export-status" style="margin-left:12px; font-size:12px; color:#475569;"></span>
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    const PANEL_NAMES = ['about','rival','lobbies','snipes','join-free','discord'];
+
+    async function exportAll() {
+      const btn = document.getElementById('export-btn');
+      const status = document.getElementById('export-status');
+      btn.disabled = true;
+      btn.textContent = 'Exporting…';
+
+      const panels = document.querySelectorAll('.panel');
+      for (let i = 0; i < panels.length; i++) {
+        status.textContent = `${i + 1} / ${panels.length}`;
+        const canvas = await html2canvas(panels[i], {
+          width: 320, height: 160,
+          scale: 2,
+          backgroundColor: null,
+          useCORS: true,
+          logging: false,
+        });
+        const link = document.createElement('a');
+        link.download = `osufriends-panel-${PANEL_NAMES[i]}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        await new Promise(r => setTimeout(r, 300));
+      }
+
+      btn.disabled = false;
+      btn.textContent = '⬇ Download All Panels (320×160)';
+      status.textContent = '✓ Done!';
+      setTimeout(() => status.textContent = '', 3000);
+    }
+  </script>
 
 </body>
 </html>

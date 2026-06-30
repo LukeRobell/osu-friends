@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=420" />
+  <meta name="viewport" content="width=360" />
   <title>osu!friends — Recent Signups</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -11,103 +11,98 @@
     body {
       font-family: 'Nunito', sans-serif;
       background: transparent;
-      width: 420px;
+      width: 360px;
       overflow: hidden;
     }
 
     .widget {
-      width: 420px;
+      width: 360px;
       background: #0d0d14;
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
       border: 1px solid #1e1e30;
       box-shadow: 0 8px 40px rgba(0,0,0,0.6);
     }
 
+    /* ── Gradient accent bar ── */
+    .widget::before {
+      content: '';
+      display: block;
+      height: 3px;
+      background: linear-gradient(90deg, #ec4899, #a855f7, #818cf8);
+    }
+
     /* ── Header ── */
     .header {
-      background: linear-gradient(135deg, #ec4899 0%, #a855f7 60%, #818cf8 100%);
-      padding: 12px 16px;
+      padding: 10px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      background: #0d0d14;
     }
     .header-brand {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      background: rgba(255,255,255,0.25);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
+    .brand-logo {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
     }
     .brand-name {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 900;
-      color: white;
       letter-spacing: -0.3px;
+      line-height: 1;
     }
-    .brand-name span { opacity: 0.85; }
-    .header-url {
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.8);
-      background: rgba(0,0,0,0.2);
-      border-radius: 999px;
-      padding: 3px 10px;
-    }
+    .brand-name .osu { color: #ec4899; }
+    .brand-name .friends { color: #f1f5f9; }
 
-    /* ── Section label ── */
-    .section-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px 6px;
-    }
-    .section-label {
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #ec4899;
-    }
-    .live-dot {
+    .live-pill {
       display: flex;
       align-items: center;
       gap: 5px;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
       color: #475569;
+      background: #13131f;
+      border: 1px solid #1e1e30;
+      border-radius: 999px;
+      padding: 3px 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
-    .live-dot::before {
+    .live-pill::before {
       content: '';
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background: #34d399;
+      flex-shrink: 0;
       animation: pulse 2s infinite;
     }
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #34d39960; }
+      50% { opacity: 0.5; box-shadow: 0 0 0 4px transparent; }
     }
 
-    /* ── User cards ── */
-    .cards {
-      padding: 0 12px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-height: 280px;
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: #1e1e30;
+      margin: 0 14px;
     }
 
-    .card {
+    /* ── Carousel area ── */
+    .carousel-area {
+      padding: 10px 12px 12px;
+      min-height: 76px;
+      position: relative;
+    }
+
+    /* ── Member card ── */
+    .member-card {
       background: #13131f;
       border: 1px solid #1e1e30;
       border-left: 3px solid #ec4899;
@@ -116,31 +111,26 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      animation: slideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+      opacity: 0;
+      transition: opacity 0.6s ease;
     }
-    .card.new {
+    .member-card.visible {
+      opacity: 1;
+    }
+    .member-card.new-member {
       border-left-color: #34d399;
-      animation: slideInNew 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-16px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes slideInNew {
-      from { opacity: 0; transform: translateX(-20px) scale(0.96); }
-      to   { opacity: 1; transform: translateX(0) scale(1); }
     }
 
     .card-avatar {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       object-fit: cover;
       flex-shrink: 0;
       border: 2px solid #2a2a3e;
     }
-    .card-avatar.new-ring {
-      border-color: #34d399;
+    .new-member .card-avatar {
+      border-color: #34d39960;
     }
 
     .card-info { flex: 1; min-width: 0; }
@@ -151,75 +141,58 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.2;
     }
-    .card-stats {
+    .card-meta {
       font-size: 11px;
       color: #64748b;
-      margin-top: 2px;
+      margin-top: 3px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      flex-wrap: wrap;
     }
-    .card-flag { font-size: 13px; }
-    .card-pp {
-      color: #818cf8;
-      font-weight: 700;
-    }
+    .card-flag { font-size: 13px; line-height: 1; }
+    .card-pp { color: #818cf8; font-weight: 700; }
     .card-rank { color: #475569; }
-    .card-time {
+    .card-joined {
       font-size: 10px;
       color: #334155;
-      margin-top: 3px;
+      margin-top: 4px;
       font-weight: 600;
     }
+    .card-joined span { color: #ec4899; }
 
     .card-badge {
       font-size: 9px;
       font-weight: 900;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 999px;
       flex-shrink: 0;
+      align-self: flex-start;
     }
     .badge-new {
-      background: #34d39920;
+      background: #34d39918;
       color: #34d399;
-      border: 1px solid #34d39940;
+      border: 1px solid #34d39938;
     }
-    .badge-joined {
-      background: #ec489918;
+    .badge-member {
+      background: #ec489914;
       color: #ec4899;
       border: 1px solid #ec489930;
     }
 
-    /* ── Empty state ── */
-    .empty {
+    /* ── Loading state ── */
+    .loading {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
+      min-height: 56px;
       color: #334155;
-      font-size: 13px;
-      gap: 8px;
-    }
-
-    /* ── Footer ── */
-    .footer {
-      border-top: 1px solid #1e1e30;
-      padding: 10px 16px;
-      background: #09090e;
-    }
-    .footer-tagline {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
-      color: #475569;
-      text-align: center;
-      line-height: 1.5;
-    }
-    .footer-tagline strong {
-      color: #ec4899;
     }
   </style>
 </head>
@@ -227,34 +200,38 @@
   <div class="widget">
     <div class="header">
       <div class="header-brand">
-        <div class="brand-icon">🎮</div>
-        <div class="brand-name">osu!<span>friends</span></div>
+        <img class="brand-logo"
+             src="https://osufriends.com/osufriends-logo-addfriend.svg"
+             alt="osu!friends" />
+        <div class="brand-name">
+          <span class="osu">osu!</span><span class="friends">friends</span>
+        </div>
       </div>
-      <div class="header-url">osufriends.com</div>
+      <div class="live-pill">Members joining</div>
     </div>
 
-    <div class="section-bar">
-      <div class="section-label">New Members Joining</div>
-      <div class="live-dot">Live</div>
-    </div>
+    <div class="divider"></div>
 
-    <div class="cards" id="cards">
-      <div class="empty">Loading recent members…</div>
-    </div>
-
-    <div class="footer">
-      <div class="footer-tagline">
-        <strong>osu!friends</strong> — Find rivals at your skill level, join live lobbies,<br/>
-        and challenge friends to score snipes. <strong>Free at osufriends.com</strong>
-      </div>
+    <div class="carousel-area" id="carousel">
+      <div class="loading">Loading…</div>
     </div>
   </div>
 
   <script>
     const API = 'https://osufriends.com/api/public/recent-signups';
-    let knownIds = new Set();
-    let firstLoad = true;
 
+    const SHOW_MS   = 5000;  // how long a card stays visible
+    const FADE_MS   = 600;   // CSS transition duration
+    const PAUSE_MS  = 400;   // gap between cards
+
+    let members     = [];
+    let idx         = 0;
+    let knownIds    = new Set();
+    let firstLoad   = true;
+    let cardEl      = null;
+    let cycleTimer  = null;
+
+    /* ── Helpers ── */
     function flag(code) {
       if (!code) return '';
       return code.toUpperCase().split('').map(c =>
@@ -264,54 +241,99 @@
 
     function timeAgo(iso) {
       const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
-      if (diff < 60)   return 'just now';
-      if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-      if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
-      return `${Math.floor(diff/86400)}d ago`;
+      if (diff < 60)    return 'just now';
+      if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      return `${Math.floor(diff / 86400)}d ago`;
     }
 
-    function render(users) {
-      const container = document.getElementById('cards');
-      if (!users.length) {
-        container.innerHTML = '<div class="empty">No members yet</div>';
-        return;
+    /* ── Build a single card DOM node ── */
+    function buildCard(user) {
+      const isNew = !firstLoad && !knownIds.has(user.osuId);
+      const card  = document.createElement('div');
+      card.className = `member-card${isNew ? ' new-member' : ''}`;
+      card.innerHTML = `
+        <img class="card-avatar"
+             src="${user.avatarUrl}"
+             alt="${user.username}"
+             onerror="this.src='https://a.ppy.sh/0'" />
+        <div class="card-info">
+          <div class="card-username">${user.username}</div>
+          <div class="card-meta">
+            <span class="card-flag">${flag(user.countryCode)}</span>
+            ${user.globalRank ? `<span class="card-rank">#${user.globalRank.toLocaleString()}</span>` : ''}
+            ${user.pp ? `<span class="card-pp">${Math.round(user.pp)}pp</span>` : ''}
+          </div>
+          <div class="card-joined">
+            signed up on <span>osufriends.com</span> · ${timeAgo(user.createdAt)}
+          </div>
+        </div>
+        <div class="card-badge ${isNew ? 'badge-new' : 'badge-member'}">
+          ${isNew ? 'New!' : 'Member'}
+        </div>`;
+      return card;
+    }
+
+    /* ── Show next card in sequence ── */
+    function showNext() {
+      if (!members.length) return;
+
+      const container = document.getElementById('carousel');
+
+      /* fade out existing card */
+      if (cardEl) {
+        cardEl.classList.remove('visible');
+        setTimeout(() => {
+          if (cardEl && cardEl.parentNode) cardEl.parentNode.removeChild(cardEl);
+          insertCard(container);
+        }, FADE_MS);
+      } else {
+        insertCard(container);
       }
-
-      const newIds = new Set(users.map(u => u.osuId));
-
-      container.innerHTML = users.slice(0, 5).map((u, i) => {
-        const isNew = !firstLoad && !knownIds.has(u.osuId);
-        const delay = i * 80;
-        return `
-          <div class="card ${isNew ? 'new' : ''}" style="animation-delay:${delay}ms">
-            <img class="card-avatar ${isNew ? 'new-ring' : ''}"
-                 src="${u.avatarUrl}" alt="${u.username}"
-                 onerror="this.src='https://a.ppy.sh/0'" />
-            <div class="card-info">
-              <div class="card-username">${u.username}</div>
-              <div class="card-stats">
-                <span class="card-flag">${flag(u.countryCode)}</span>
-                ${u.globalRank ? `<span class="card-rank">#${u.globalRank.toLocaleString()}</span>` : ''}
-                ${u.pp ? `<span class="card-pp">${Math.round(u.pp)}pp</span>` : ''}
-              </div>
-              <div class="card-time">joined ${timeAgo(u.createdAt)}</div>
-            </div>
-            <div class="card-badge ${isNew ? 'badge-new' : 'badge-joined'}">
-              ${isNew ? 'New!' : 'Member'}
-            </div>
-          </div>`;
-      }).join('');
-
-      knownIds = newIds;
-      firstLoad = false;
     }
 
+    function insertCard(container) {
+      container.innerHTML = '';
+      const user = members[idx % members.length];
+      idx = (idx + 1) % members.length;
+
+      cardEl = buildCard(user);
+      container.appendChild(cardEl);
+
+      /* trigger fade-in on next frame */
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => cardEl.classList.add('visible'));
+      });
+
+      /* schedule fade-out + next */
+      cycleTimer = setTimeout(showNext, SHOW_MS + FADE_MS + PAUSE_MS);
+    }
+
+    /* ── Fetch and refresh member list ── */
     async function fetchSignups() {
       try {
         const res = await fetch(API + '?t=' + Date.now());
         if (!res.ok) return;
         const users = await res.json();
-        render(users);
+        if (!users.length) return;
+
+        const prevCount = members.length;
+        members = users;
+
+        /* mark newly seen ids before updating knownIds */
+        if (firstLoad) {
+          knownIds = new Set(users.map(u => u.osuId));
+          firstLoad = false;
+        } else {
+          const newIds = new Set(users.map(u => u.osuId));
+          knownIds = newIds;
+        }
+
+        /* start carousel on first load */
+        if (prevCount === 0) {
+          clearTimeout(cycleTimer);
+          showNext();
+        }
       } catch (e) {
         console.warn('Fetch failed', e);
       }
