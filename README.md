@@ -1,6 +1,8 @@
-# osufriends.com
-
 A matchmaking web app for osu! players to find friends with similar skill levels and playtimes.
+
+**THIS PROJECT IS AN OPEN SOURCE PORTFOLIO PROJECT AND USES OSU! API.
+
+WE ARE NOT AFFILIATED WITH OSU! IN ANY WAY.**
 
 ## What it does
 
