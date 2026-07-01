@@ -69,10 +69,10 @@ export default function NavBar() {
             </div>
           ) : (
             <button
-              onClick={() => signIn('osu')}
+              onClick={() => signIn('demo', { callbackUrl: '/discover' })}
               className="px-3 py-1.5 bg-pink-500 hover:bg-pink-600 rounded-lg text-sm font-medium transition-colors"
             >
-              Sign in
+              Try Demo
             </button>
           )}
         </div>

@@ -223,66 +223,67 @@ const OPEN_SNIPES = [
   },
 ];
 
-// ─── SNIPED challenges (completed this month — drives Rivals leaderboard) ─────
+// ─── SNIPED challenges (completed THIS month — drives Rivals leaderboard) ──────
+// snipedAt must be >= start of current month; use hours so they're always current
 const SNIPED_SNIPES = [
-  // mrekk sniped Vaxei 3× this month
+  // mrekk sniped Vaxei 3×
   {
     watcher: 'mrekk', rival: 'Vaxei',
     osuScoreId: '9001001', beatmapId: '3698782', beatmapsetId: '1818068',
     mapTitle: 'Freedom Dive', mapVersion: 'FOUR DIMENSIONS',
-    targetPp: 878.2, createdAt: ago(20 * day), snipedAt: ago(18 * day),
+    targetPp: 878.2, createdAt: ago(72 * hr), snipedAt: ago(58 * hr),
   },
   {
     watcher: 'mrekk', rival: 'Vaxei',
     osuScoreId: '9001002', beatmapId: '129891', beatmapsetId: '42158',
-    mapTitle: 'Blue Zenith', mapVersion: 'ktgster\'s Extreme',
-    targetPp: 845.6, createdAt: ago(14 * day), snipedAt: ago(11 * day),
+    mapTitle: 'Blue Zenith', mapVersion: "ktgster's Extreme",
+    targetPp: 845.6, createdAt: ago(48 * hr), snipedAt: ago(36 * hr),
   },
   {
     watcher: 'mrekk', rival: 'Vaxei',
     osuScoreId: '9001003', beatmapId: '2757309', beatmapsetId: '1322181',
     mapTitle: 'Kaguya', mapVersion: 'Lunatic',
-    targetPp: 901.3, createdAt: ago(7 * day), snipedAt: ago(5 * day),
+    targetPp: 901.3, createdAt: ago(20 * hr), snipedAt: ago(10 * hr),
   },
   // Spare sniped Akolibed 2×
   {
     watcher: 'Spare', rival: 'Akolibed',
     osuScoreId: '9001004', beatmapId: '2872932', beatmapsetId: '1234567',
     mapTitle: 'Camellia Compilation', mapVersion: 'Extra',
-    targetPp: 387.1, createdAt: ago(22 * day), snipedAt: ago(19 * day),
+    targetPp: 387.1, createdAt: ago(60 * hr), snipedAt: ago(44 * hr),
   },
   {
     watcher: 'Spare', rival: 'Akolibed',
     osuScoreId: '9001005', beatmapId: '1983456', beatmapsetId: '987654',
     mapTitle: 'Uta', mapVersion: 'Insane',
-    targetPp: 412.8, createdAt: ago(10 * day), snipedAt: ago(8 * day),
+    targetPp: 412.8, createdAt: ago(30 * hr), snipedAt: ago(18 * hr),
   },
   // fieryrage sniped Tekkito 2×
   {
     watcher: 'fieryrage', rival: 'Tekkito',
     osuScoreId: '9001006', beatmapId: '2918234', beatmapsetId: '1450000',
     mapTitle: 'Onegai Ranking', mapVersion: 'EX',
-    targetPp: 698.4, createdAt: ago(25 * day), snipedAt: ago(23 * day),
+    targetPp: 698.4, createdAt: ago(66 * hr), snipedAt: ago(50 * hr),
   },
   {
     watcher: 'fieryrage', rival: 'Tekkito',
     osuScoreId: '9001007', beatmapId: '3012345', beatmapsetId: '1560000',
     mapTitle: 'Haitai', mapVersion: 'Extreme',
-    targetPp: 721.9, createdAt: ago(9 * day), snipedAt: ago(7 * day),
+    targetPp: 721.9, createdAt: ago(24 * hr), snipedAt: ago(12 * hr),
   },
   // cheetoblast sniped worst hr player 1×
   {
     watcher: 'cheetoblast', rival: 'worst hr player',
     osuScoreId: '9001008', beatmapId: '2345678', beatmapsetId: '1100000',
     mapTitle: 'xi - Blue Zenith', mapVersion: 'Hard',
-    targetPp: 289.5, createdAt: ago(15 * day), snipedAt: ago(12 * day),
+    targetPp: 289.5, createdAt: ago(40 * hr), snipedAt: ago(28 * hr),
   },
   // Karcher sniped lain 1×
   {
     watcher: 'Karcher', rival: 'lain',
     osuScoreId: '9001009', beatmapId: '1876543', beatmapsetId: '890000',
     mapTitle: 'Muse Dash', mapVersion: 'Extra',
-    targetPp: 543.2, createdAt: ago(18 * day), snipedAt: ago(15 * day),
+    targetPp: 543.2, createdAt: ago(52 * hr), snipedAt: ago(38 * hr),
   },
 ];
 

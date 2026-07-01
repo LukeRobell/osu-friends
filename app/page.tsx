@@ -224,17 +224,18 @@ export default function Home() {
           ) : (
             <div className="flex flex-col items-center gap-3">
               <button
-                onClick={() => signIn('osu')}
-                className="px-10 py-3.5 border-2 border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-semibold text-lg transition-colors"
-              >
-                Sign in with osu!
-              </button>
-              <button
                 onClick={() => signIn('demo', { callbackUrl: '/discover' })}
-                className="px-8 py-2.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white/80 hover:text-white rounded-full font-medium text-sm transition-colors"
+                className="px-10 py-3.5 border-2 border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-semibold text-lg transition-colors"
               >
                 Try Demo →
               </button>
+              <p className="text-gray-500 text-xs">
+                Self-hosting?{' '}
+                <a href="https://github.com/LukeRobell/osu-friends" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline transition-colors">
+                  Fork on GitHub
+                </a>{' '}
+                to enable real osu! sign-in.
+              </p>
             </div>
           )
         )}
@@ -389,17 +390,18 @@ export default function Home() {
             ) : (
               <div className="flex flex-col items-center gap-3">
                 <button
-                  onClick={() => signIn('osu')}
-                  className="px-12 py-4 bg-pink-500 hover:bg-pink-600 rounded-full font-semibold text-xl transition-colors shadow-lg shadow-pink-500/20"
-                >
-                  Sign in with osu!
-                </button>
-                <button
                   onClick={() => signIn('demo', { callbackUrl: '/discover' })}
-                  className="px-8 py-2.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white/70 hover:text-white rounded-full font-medium text-sm transition-colors"
+                  className="px-12 py-4 bg-pink-500 hover:bg-pink-600 rounded-full font-semibold text-xl transition-colors shadow-lg shadow-pink-500/20"
                 >
                   Try Demo →
                 </button>
+                <p className="text-gray-500 text-xs">
+                  Want real osu! sign-in?{' '}
+                  <a href="https://github.com/LukeRobell/osu-friends" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white underline transition-colors">
+                    Fork the project
+                  </a>{' '}
+                  and add your osu! API credentials.
+                </p>
               </div>
             )
           )}
