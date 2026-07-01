@@ -8,6 +8,7 @@ declare module 'next-auth' {
       globalRank: number | null;
       avatarUrl: string;
       countryCode: string;
+      isDemo?: boolean;
     } & DefaultSession['user'];
   }
 }
@@ -23,5 +24,6 @@ declare module 'next-auth/jwt' {
     refreshToken?: string;
     expiresAt?: number; // unix seconds
     error?: string;
+    isDemo?: boolean;
   }
 }

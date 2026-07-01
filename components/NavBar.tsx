@@ -10,6 +10,20 @@ export default function NavBar() {
 
   return (
     <nav className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-30">
+      {session?.user?.isDemo && (
+        <div className="bg-amber-500/10 border-b border-amber-500/20 text-amber-300/90 text-xs text-center py-1.5 px-4">
+          Demo Mode — browsing as a demo account.{' '}
+          <a
+            href="https://github.com/LukeRobell/osu-friends"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-amber-200 transition-colors"
+          >
+            Fork on GitHub
+          </a>{' '}
+          to enable real osu! sign-in.
+        </div>
+      )}
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">

@@ -1,4 +1,5 @@
 import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from './prisma';
 import { fetchUserAvgTopPp } from './osu-api';
 
@@ -17,6 +18,27 @@ interface OsuProfile {
 export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
   providers: [
+    CredentialsProvider({
+      id: 'demo',
+      name: 'Demo',
+      credentials: {},
+      async authorize() {
+        const demo = await prisma.user.findFirst({
+          where: { username: 'im a fancy lad' },
+          select: { osuId: true, username: true, avatarUrl: true, globalRank: true, countryCode: true },
+        });
+        if (!demo) return null;
+        return {
+          id: String(demo.osuId),
+          name: demo.username,
+          image: demo.avatarUrl,
+          osuId: demo.osuId,
+          globalRank: demo.globalRank,
+          countryCode: demo.countryCode,
+          isDemo: true,
+        } as never;
+      },
+    }),
     {
       id: 'osu',
       name: 'osu!',
@@ -87,7 +109,19 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, user }) {
+      // Demo credentials login — user object comes from authorize(), not osu! profile
+      if (user && (user as { isDemo?: boolean }).isDemo) {
+        const u = user as { osuId: number; globalRank: number | null; countryCode: string; isDemo: boolean };
+        token.osuId = u.osuId;
+        token.username = user.name ?? '';
+        token.avatarUrl = user.image ?? '';
+        token.globalRank = u.globalRank;
+        token.countryCode = u.countryCode;
+        token.isDemo = true;
+        return token;
+      }
+
       if (profile) {
         const p = profile as unknown as OsuProfile;
         token.osuId = p.id;
@@ -96,6 +130,9 @@ export const authOptions: NextAuthOptions = {
         token.avatarUrl = p.avatar_url;
         token.countryCode = p.country_code;
       }
+
+      // Skip osu! token refresh for demo sessions
+      if (token.isDemo) return token;
 
       if (account) {
         // Fresh sign-in — store access token, refresh token, and expiry
@@ -151,6 +188,7 @@ export const authOptions: NextAuthOptions = {
       session.user.globalRank = token.globalRank;
       session.user.avatarUrl = token.avatarUrl;
       session.user.countryCode = token.countryCode;
+      session.user.isDemo = token.isDemo ?? false;
       return session;
     },
   },

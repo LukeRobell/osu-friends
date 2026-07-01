@@ -190,7 +190,7 @@ export default function Home() {
 
         <div className="relative z-10 mt-6">
         {status !== 'loading' && (
-          session ? (
+          session && !session.user.isDemo ? (
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-3">
                 {session.user.avatarUrl && (
@@ -222,12 +222,20 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <button
-              onClick={() => signIn('osu')}
-              className="px-10 py-3.5 border-2 border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-semibold text-lg transition-colors"
-            >
-              Sign in with osu!
-            </button>
+            <div className="flex flex-col items-center gap-3">
+              <button
+                onClick={() => signIn('osu')}
+                className="px-10 py-3.5 border-2 border-pink-500 text-pink-400 hover:bg-pink-500/10 rounded-full font-semibold text-lg transition-colors"
+              >
+                Sign in with osu!
+              </button>
+              <button
+                onClick={() => signIn('demo', { callbackUrl: '/discover' })}
+                className="px-8 py-2.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white/80 hover:text-white rounded-full font-medium text-sm transition-colors"
+              >
+                Try Demo →
+              </button>
+            </div>
           )
         )}
         </div>
@@ -379,12 +387,20 @@ export default function Home() {
                 Go to Discover →
               </Link>
             ) : (
-              <button
-                onClick={() => signIn('osu')}
-                className="px-12 py-4 bg-pink-500 hover:bg-pink-600 rounded-full font-semibold text-xl transition-colors shadow-lg shadow-pink-500/20"
-              >
-                Sign in with osu!
-              </button>
+              <div className="flex flex-col items-center gap-3">
+                <button
+                  onClick={() => signIn('osu')}
+                  className="px-12 py-4 bg-pink-500 hover:bg-pink-600 rounded-full font-semibold text-xl transition-colors shadow-lg shadow-pink-500/20"
+                >
+                  Sign in with osu!
+                </button>
+                <button
+                  onClick={() => signIn('demo', { callbackUrl: '/discover' })}
+                  className="px-8 py-2.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white/70 hover:text-white rounded-full font-medium text-sm transition-colors"
+                >
+                  Try Demo →
+                </button>
+              </div>
             )
           )}
         </div>
