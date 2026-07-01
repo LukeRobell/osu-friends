@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>osu!friends — Project Brief</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:   #ec4899;
+      --indigo: #818cf8;
+      --purple: #a855f7;
+      --green:  #34d399;
+      --dark:   #0d0d14;
+      --card:   #13131f;
+      --border: #1e1e30;
+      --muted:  #475569;
+      --sub:    #64748b;
+      --text:   #f1f5f9;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d14 40%, #1a0820);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 60px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 700px 300px at 80% 50%, #ec489912 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-top {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .hero-logo {
+      width: 64px;
+      height: 64px;
+    }
+    .hero-brand h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+    .hero-brand h1 .pink   { color: var(--pink); }
+    .hero-brand h1 .white  { color: var(--text); }
+    .hero-brand .tagline {
+      font-size: 14px;
+      color: var(--sub);
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+    .chip-pink   { background: #ec489918; color: var(--pink);   border: 1px solid #ec489938; }
+    .chip-indigo { background: #818cf818; color: var(--indigo); border: 1px solid #818cf838; }
+    .chip-green  { background: #34d39918; color: var(--green);  border: 1px solid #34d39938; }
+    .chip-purple { background: #a855f718; color: var(--purple); border: 1px solid #a855f738; }
+    .chip-muted  { background: #1e1e30;   color: var(--muted);  border: 1px solid #2a2a3e; }
+    .chip .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
+
+    /* ── Layout ── */
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 60px 80px;
+    }
+
+    /* ── Section ── */
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      margin-top: 20px;
+    }
+    p { color: #94a3b8; margin-bottom: 12px; font-size: 14px; }
+    p strong { color: var(--text); font-weight: 800; }
+    a { color: var(--pink); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .badge {
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+    .card-body { font-size: 13px; color: #64748b; line-height: 1.6; }
+    .card-body strong { color: #94a3b8; }
+
+    /* ── Grid ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    /* ── Tech pills ── */
+    .tech-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .tech {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: #1a1a28;
+      border: 1px solid var(--border);
+      color: #94a3b8;
+    }
+    .tech.primary { border-color: #ec489940; color: var(--pink); }
+    .tech.accent  { border-color: #818cf840; color: var(--indigo); }
+
+    /* ── Stat boxes ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-box .stat-val {
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--pink), var(--indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+    .stat-box .stat-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Bullet list ── */
+    ul.bullets {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    ul.bullets li {
+      font-size: 13px;
+      color: #64748b;
+      padding-left: 16px;
+      position: relative;
+      line-height: 1.55;
+    }
+    ul.bullets li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--pink);
+      font-weight: 900;
+    }
+    ul.bullets li strong { color: #94a3b8; }
+
+    /* ── API route table ── */
+    .route-grid {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .route {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 12px;
+      background: #0a0a12;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+    }
+    .route .method {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      padding: 1px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .method-get  { background: #34d39920; color: #34d399; }
+    .method-post { background: #818cf820; color: #818cf8; }
+    .route .path { font-family: monospace; color: #94a3b8; font-size: 12px; flex: 1; }
+    .route .desc { color: var(--sub); font-size: 11px; }
+
+    /* ── Timeline ── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: flex;
+      gap: 20px;
+      padding-bottom: 20px;
+      position: relative;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 28px;
+    }
+    .tl-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--pink);
+      border: 2px solid var(--dark);
+      box-shadow: 0 0 0 3px #ec489930;
+      flex-shrink: 0;
+    }
+    .tl-line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      margin-top: 4px;
+    }
+    .tl-right { flex: 1; padding-top: 0; }
+    .tl-date {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .tl-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .tl-body { font-size: 12px; color: var(--sub); }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 60px;
+      background: #09090e;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .footer strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <img class="hero-logo" src="https://www.osufriends.com/osufriends-logo-addfriend.svg" alt="osu!friends logo" />
+    <div class="hero-brand">
+      <h1><span class="pink">osu!</span><span class="white">friends</span></h1>
+      <div class="tagline">Rival matchmaking &amp; community platform for osu! players</div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <span class="chip chip-green"><span class="dot"></span>Live · osufriends.com</span>
+    <span class="chip chip-pink">Co-founder &amp; Full-Stack Developer</span>
+    <span class="chip chip-indigo">Next.js 14 · TypeScript · Prisma · Supabase</span>
+    <span class="chip chip-muted">Launched June 2026</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ CONTENT -->
+<div class="content">
+
+  <!-- ── Stats ── -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-val">30+</div>
+      <div class="stat-label">Active Users</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">7</div>
+      <div class="stat-label">Dev Sprints</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">35+</div>
+      <div class="stat-label">API Routes</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">&lt;7d</div>
+      <div class="stat-label">MVP to Launch</div>
+    </div>
+  </div>
+
+  <!-- ── What is it ── -->
+  <div class="section">
+    <div class="section-title">Project Overview</div>
+    <h2>What is osu!friends?</h2>
+    <p>
+      <strong>osu!friends</strong> is a full-stack web platform that solves a real problem in the osu! rhythm game community:
+      finding players at the exact same skill level to compete with. The game has millions of players across a massive
+      performance-point (pp) spectrum, but no built-in tools for targeted rival matchmaking, score sniping challenges,
+      or skill-matched multiplayer lobbies.
+    </p>
+    <p>
+      osu!friends fills that gap — players sign in with their osu! account, are automatically profiled by their pp ranking,
+      and can find rivals, join or create live multiplayer lobbies filtered to their bracket, issue 7-day snipe challenges
+      when a rival posts a big score, and compete on a persistent leaderboard.
+    </p>
+    <p>
+      Built from zero to 30+ active users in under one week, shipping new features daily across 7 sprints.
+      The platform is live at <a href="https://www.osufriends.com">osufriends.com</a>.
+    </p>
+  </div>
+
+  <!-- ── My Role ── -->
+  <div class="section">
+    <div class="section-title">My Role</div>
+    <div class="card">
+      <div class="card-title">Co-Founder &amp; Full-Stack Developer <span class="badge chip-pink">Lead Engineer</span></div>
+      <div class="card-body">
+        Responsible for all engineering, product decisions, deployment infrastructure, and marketing assets.
+        Designed the data model, built every feature from API routes through React UI, set up CI/CD on Vercel,
+        integrated multiple third-party OAuth providers (osu!, Discord, Twitch), and shipped a bot notification
+        system backed by the osu! in-game messaging API.
+      </div>
+    </div>
+    <ul class="bullets" style="margin-top:12px;">
+      <li>Architected the full application from scaffold → production in under 7 days</li>
+      <li>Sole engineer across all layers: database schema, API design, React UI, deployment, streaming/content assets</li>
+      <li>Owned product roadmap, sprint planning, and feature prioritization alongside a non-technical co-founder</li>
+      <li>Built and deployed a bot token auth system and in-game DM notifications via the osu! OAuth2 + API</li>
+    </ul>
+  </div>
+
+  <!-- ── Tech Stack ── -->
+  <div class="section">
+    <div class="section-title">Technology Stack</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Frontend</div>
+        <div class="tech-list">
+          <span class="tech primary">Next.js 14 App Router</span>
+          <span class="tech primary">TypeScript</span>
+          <span class="tech">Tailwind CSS</span>
+          <span class="tech">React Server Components</span>
+          <span class="tech">next/font (Nunito)</span>
+          <span class="tech">next/image</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Backend &amp; Data</div>
+        <div class="tech-list">
+          <span class="tech accent">Prisma ORM</span>
+          <span class="tech accent">Supabase (PostgreSQL)</span>
+          <span class="tech">Next.js API Routes</span>
+          <span class="tech">Vercel Cron Jobs</span>
+          <span class="tech">Server Actions</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Auth &amp; Integrations</div>
+        <div class="tech-list">
+          <span class="tech">NextAuth.js (next-auth)</span>
+          <span class="tech">osu! OAuth2 API</span>
+          <span class="tech">Discord OAuth2 + Bot Token</span>
+          <span class="tech">Twitch OAuth2</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Infra &amp; Tooling</div>
+        <div class="tech-list">
+          <span class="tech">Vercel Pro (CI/CD)</span>
+          <span class="tech">GitHub</span>
+          <span class="tech">ESLint</span>
+          <span class="tech">html2canvas</span>
+          <span class="tech">OBS Browser Source</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Features ── -->
+  <div class="section">
+    <div class="section-title">Features Built</div>
+
+    <h3>Core Platform</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">osu! OAuth Authentication</div>
+        <div class="card-body">
+          Sign-in with osu! account via NextAuth. On first login, the osu! API is queried to populate the user's
+          <strong>pp, global rank, country code, avatar</strong>, and game mode. Profile auto-syncs on returning sessions.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Player Discovery</div>
+        <div class="card-body">
+          Browse and filter the community by <strong>country, language, pp bracket, and play schedule</strong>.
+          Fully server-rendered with client-side filter state; each profile card links to a full player page.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Live Lobby Finder</div>
+        <div class="card-body">
+          Real-time multiplayer room browser that queries the osu! API for active matches and filters by
+          <strong>game mode and skill bracket</strong> (pp-derived star rating target) so players only see
+          rooms appropriate for their rank.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Rival System</div>
+        <div class="card-body">
+          Send and accept rival requests; each user tracks a persistent rival relationship with
+          <strong>head-to-head pp comparison</strong> and rivalry stats. Rivals can be removed or replaced.
+          A dedicated compare card renders on both player profiles.
+        </div>
+      </div>
+    </div>
+
+    <h3>Snipe &amp; Competition Layer</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Score Snipe Challenges</div>
+        <div class="card-body">
+          When a rival posts a notable score, their opponent is notified via <strong>osu! in-game DM</strong>
+          (sent through the bot token system) with a 7-day window to beat it on the same beatmap.
+          Confirmed snipes award leaderboard points.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Rival Check Cron Job</div>
+        <div class="card-body">
+          Vercel Cron runs periodically to <strong>poll recent scores for all users with rivals</strong>,
+          detect snipeable plays, and dispatch notifications. Built with idempotency to avoid duplicate alerts.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Leaderboard</div>
+        <div class="card-body">
+          Global leaderboard tracking snipe points across the community, with a
+          <strong>game-mode filter</strong> (Standard, Taiko, Catch, Mania) and pp-ranked member list.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Notification System</div>
+        <div class="card-body">
+          In-app notification feed with <strong>read/unread state</strong>, rival request alerts, and snipe
+          notifications. API-backed with mark-as-read endpoint; unread count badge in the nav.
+        </div>
+      </div>
+    </div>
+
+    <h3>Tournament Matchmaking</h3>
+    <div class="card">
+      <div class="card-title">Automated Tournament System <span class="badge chip-indigo">Sprint 6</span></div>
+      <div class="card-body">
+        Players opt into tournament pools by skill bracket. A matchmaking cron job pairs contestants,
+        creates tournament records, and notifies both players. Each match has a <strong>voting round</strong>
+        where players vote on map pool picks, and a host can start the match which triggers
+        an <strong>osu! in-game bot DM</strong> with the lobby invite command. Timezone-aware reminder
+        crons send pre-match alerts. Includes <strong>graceful fallback</strong> when DM is unavailable.
+      </div>
+    </div>
+
+    <h3>Social &amp; Profile</h3>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">Rich Player Profiles</div>
+        <div class="card-body">
+          Each user has a public profile with <strong>avatar, stats, social links</strong> (Discord, Twitch),
+          language tags, play schedule, map style preference, About Me section, rival card, and friend list.
+          All fields editable in-place via API-backed mutations.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Discord &amp; Twitch Connect</div>
+        <div class="card-body">
+          Separate OAuth flows for <strong>Discord and Twitch</strong> that link accounts without replacing
+          the primary osu! session. Discord tag and Twitch handle appear on profiles with one-click copy.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Team Pages</div>
+        <div class="card-body">
+          osu! team integration with <strong>team profile pages, application system</strong>, and a team
+          management dashboard. Applications are reviewed and accepted/rejected by team managers.
+        </div>
+      </div>
+    </div>
+
+    <h3>Streaming &amp; Content Tools</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">OBS Signup Overlay</div>
+        <div class="card-body">
+          Animated <strong>OBS Browser Source widget</strong> at <code>/obs-signup-overlay.html</code>.
+          Fetches recent signups from the public API and displays them one at a time as a fade-in/out
+          carousel (5s hold, 0.6s transition). Compact 360px footprint with live logo and member stats.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Twitch Panels + Stream Widget</div>
+        <div class="card-body">
+          6 branded <strong>Twitch panels</strong> (320×160px) generated from HTML with one-click PNG
+          export via html2canvas. A <strong>stream overlay widget</strong> per username embeds at
+          <code>/widget/[username]</code> and displays live profile stats.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── API Surface ── -->
+  <div class="section">
+    <div class="section-title">API Surface (Selected Routes)</div>
+    <div class="route-grid">
+      <div class="route"><span class="method method-post">POST</span><span class="path">/api/rival/request</span><span class="desc">Send a rival request to another user</span></div>
+      <div class="route"><span class="method method-post">POST</span><span class="path">/api/rival/request/[id]/accept</span><span class="desc">Accept an incoming rival request</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/rival/status</span><span class="desc">Check mutual rival relationship status</span></div>
+      <div class="route"><span class="method method-post">POST</span><span class="path">/api/tournament/[id]/vote</span><span class="desc">Cast map pool vote in tournament match</span></div>
+      <div class="route"><span class="method method-post">POST</span><span class="path">/api/tournament/[id]/start</span><span class="desc">Start match and send in-game DM invite</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/cron/matchmake</span><span class="desc">Vercel Cron — pair tournament contestants</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/cron/rival-check</span><span class="desc">Vercel Cron — poll scores, trigger snipe alerts</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/cron/remind</span><span class="desc">Vercel Cron — timezone-aware pre-match reminders</span></div>
+      <div class="route"><span class="method method-post">POST</span><span class="path">/api/bot/authorize</span><span class="desc">Bot OAuth initiation for in-game DM access</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/notifications</span><span class="desc">Fetch user notification feed with read state</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/public/recent-signups</span><span class="desc">Public CORS-open feed of recent members (OBS overlay)</span></div>
+      <div class="route"><span class="method method-post">POST</span><span class="path">/api/sync</span><span class="desc">Re-sync osu! profile stats from the osu! API</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/widget/[username]/data</span><span class="desc">Public widget data endpoint for stream overlays</span></div>
+      <div class="route"><span class="method method-post">POST</span><span class="path">/api/teams/[tag]/apply</span><span class="desc">Submit application to join an osu! team</span></div>
+      <div class="route"><span class="method method-get">GET</span><span class="path">/api/lobby/dm-status</span><span class="desc">Check if bot DM is available for lobby invites</span></div>
+    </div>
+  </div>
+
+  <!-- ── Architecture ── -->
+  <div class="section">
+    <div class="section-title">Architecture</div>
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title">Data Flow</div>
+      <div class="card-body">
+        <strong>Browser → Next.js App Router (Vercel)</strong> — RSC pages fetch data server-side via Prisma;
+        interactive components are Client Components. API routes handle mutations and external API calls.
+        <strong>Prisma → Supabase PostgreSQL</strong> as the single source of truth for users, rivals,
+        tournaments, notifications, and team data. <strong>osu! API</strong> is the authoritative source
+        for live player stats and active multiplayer lobbies.
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Authentication Model</div>
+        <div class="card-body">
+          <strong>Primary session:</strong> osu! OAuth via NextAuth with JWT strategy.
+          <strong>Secondary integrations:</strong> Discord and Twitch each have their own OAuth callback routes
+          that store tokens independently — users stay logged in with osu! while linking additional accounts.
+          <strong>Bot token:</strong> separate osu! OAuth scope that authorizes in-game DM sending, stored
+          per-user in the database and refreshed automatically.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Background Jobs</div>
+        <div class="card-body">
+          Three Vercel Cron jobs run on schedules:
+          <strong>matchmake</strong> (pairs tournament contestants),
+          <strong>rival-check</strong> (polls osu! API for snipeable scores and fires DM notifications),
+          and <strong>remind</strong> (sends timezone-adjusted pre-match reminders via in-game DM).
+          All three are idempotent and guarded against duplicate runs.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Resume Bullets ── -->
+  <div class="section">
+    <div class="section-title">Resume-Ready Accomplishment Bullets</div>
+    <p style="margin-bottom:16px;">These are extracted highlights suitable for use directly on a resume or in a cover letter. Adjust metrics as they grow.</p>
+    <ul class="bullets">
+      <li>Co-founded and sole-engineered <strong>osu!friends</strong> (osufriends.com), a full-stack rival matchmaking platform built with <strong>Next.js 14, TypeScript, Prisma, and Supabase</strong>, growing to <strong>30+ active users within one week of launch</strong></li>
+      <li>Designed and shipped a <strong>real-time multiplayer lobby finder</strong> that queries the osu! API and filters results by skill bracket, giving players matched competition at their exact pp rank</li>
+      <li>Built an <strong>automated score-sniping notification system</strong> using Vercel Cron Jobs and the osu! in-game messaging API — when a rival posts a notable play, their opponent receives a direct in-game challenge alert within minutes</li>
+      <li>Implemented a <strong>multi-provider OAuth architecture</strong> using NextAuth.js, supporting independent osu!, Discord, and Twitch account linking in a single session without conflicts</li>
+      <li>Engineered a <strong>tournament matchmaking engine</strong> with automated pairing, map pool voting, and bot-initiated in-game lobby invites — all deployed as serverless Vercel Cron routes with graceful failure handling</li>
+      <li>Delivered <strong>MVP to production in under 7 days</strong> across 7 sprints, maintaining a CI/CD pipeline via GitHub + Vercel Pro with zero-downtime deployments</li>
+      <li>Developed <strong>branded streaming content tools</strong> including an animated OBS Browser Source overlay and exportable Twitch panel assets, directly supporting streamer user acquisition</li>
+    </ul>
+  </div>
+
+  <!-- ── Timeline ── -->
+  <div class="section">
+    <div class="section-title">Build Timeline</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-right">
+          <div class="tl-date">June 22, 2026</div>
+          <div class="tl-title">Sprints 1–4 — Foundation</div>
+          <div class="tl-body">Project scaffold, osu! OAuth auth, player discover page, live lobby finder, osu! friends list, rival system (request / accept / compare card)</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-right">
+          <div class="tl-date">June 23, 2026</div>
+          <div class="tl-title">Sprints 5–6 — Social &amp; Tournament Layer</div>
+          <div class="tl-body">Discord / Twitch OAuth, notification system, team pages + applications, tournament matchmaking with voting, bot token system for in-game DMs, timezone-aware reminders, live match section</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-right">
+          <div class="tl-date">June 28–29, 2026</div>
+          <div class="tl-title">Sprint 7 — Polish &amp; Growth Tools</div>
+          <div class="tl-body">Nunito font, hero / nav styling, SVG logo system (pink tessellation + white ring border), osu! team banner/logo assets, Twitch panels with 1-click export, OBS signup overlay (fade carousel), site live feed fix</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot"></div></div>
+        <div class="tl-right">
+          <div class="tl-date">Now</div>
+          <div class="tl-title">30+ Active Users · Growing</div>
+          <div class="tl-body">Live at osufriends.com — actively acquiring users through Twitch streams and the osu! community</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ FOOTER -->
+<div class="footer">
+  <strong>osu!friends</strong> · <a href="https://www.osufriends.com">osufriends.com</a> ·
+  Built by Luke Robell · Co-founded June 2026 ·
+  Next.js 14 · TypeScript · Prisma · Supabase · Vercel
+</div>
+
+</body>
+</html>

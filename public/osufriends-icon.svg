@@ -1,55 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <defs>
-    <linearGradient id="leftArc" x1="70" y1="22" x2="28" y2="94" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ec4899"/>
-      <stop offset="100%" stop-color="#818cf8"/>
+    <linearGradient id="leftGrad" x1="39" y1="135" x2="100" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#ec4899"/>
     </linearGradient>
   </defs>
 
+  <!-- Ring arcs — drawn first so smileys sit on top -->
   <!-- Right arc: top → bottom-right, CW, pink -->
-  <path d="M 70,22 A 48,48 0 0 1 112,94"
+  <path d="M 100,30 A 70,70 0 0 1 161,135"
     fill="none" stroke="#ec4899" stroke-width="7" stroke-linecap="round"/>
-
-  <!-- Left arc: top → bottom-left, CCW, pink→purple -->
-  <path d="M 70,22 A 48,48 0 0 0 28,94"
-    fill="none" stroke="url(#leftArc)" stroke-width="7" stroke-linecap="round"/>
-
-  <!-- Bottom arc: bottom-left → bottom-right, CCW, dark -->
-  <path d="M 28,94 A 48,48 0 0 0 112,94"
+  <!-- Bottom arc: bottom-right → bottom-left through 6-o'clock, dark -->
+  <path d="M 161,135 A 70,70 0 0 1 39,135"
     fill="none" stroke="#1e293b" stroke-width="7" stroke-linecap="round"/>
+  <!-- Left arc: bottom-left → top up left side, purple→pink gradient -->
+  <path d="M 39,135 A 70,70 0 0 1 100,30"
+    fill="none" stroke="url(#leftGrad)" stroke-width="7" stroke-linecap="round"/>
 
   <!-- osu! target rings -->
-  <circle cx="70" cy="70" r="5"  fill="#ec4899"/>
-  <circle cx="70" cy="70" r="11" fill="none" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
-  <circle cx="70" cy="70" r="18" fill="none" stroke="#ec4899" stroke-width="1.5" opacity="0.35"/>
-  <circle cx="70" cy="70" r="25" fill="none" stroke="#ec4899" stroke-width="1.5" opacity="0.2"/>
+  <circle cx="100" cy="100" r="40" fill="none" stroke="#ec4899" stroke-width="1.5" opacity="0.18"/>
+  <circle cx="100" cy="100" r="30" fill="none" stroke="#ec4899" stroke-width="1.5" opacity="0.32"/>
+  <circle cx="100" cy="100" r="20" fill="none" stroke="#ec4899" stroke-width="1.5" opacity="0.55"/>
+  <circle cx="100" cy="100" r="13" fill="#ec4899"/>
 
-  <!-- Sparkle -->
-  <g transform="translate(91,50)" stroke="#ec4899" stroke-width="1.5" stroke-linecap="round">
-    <line x1="0" y1="-5" x2="0" y2="5"/>
-    <line x1="-5" y1="0" x2="5" y2="0"/>
+  <!-- 4-pointed sparkle (upper-right of center) -->
+  <g transform="translate(139,62)" stroke="#ec4899" stroke-width="2.2" stroke-linecap="round">
+    <line x1="0" y1="-8" x2="0" y2="8"/>
+    <line x1="-8" y1="0" x2="8" y2="0"/>
   </g>
 
   <!-- Accent dots -->
-  <circle cx="52" cy="50" r="2"   fill="#ec4899" opacity="0.45"/>
-  <circle cx="94" cy="82" r="1.5" fill="#ec4899" opacity="0.3"/>
-  <circle cx="50" cy="84" r="1.5" fill="#818cf8" opacity="0.5"/>
+  <circle cx="64"  cy="86"  r="2.8" fill="#ec4899" opacity="0.65"/>
+  <circle cx="66"  cy="110" r="2.2" fill="#ec4899" opacity="0.5"/>
+  <circle cx="84"  cy="60"  r="2.2" fill="#ec4899" opacity="0.55"/>
+  <circle cx="150" cy="105" r="2"   fill="#ec4899" opacity="0.45"/>
 
   <!-- Top smiley — pink -->
-  <circle cx="70" cy="22" r="14" fill="#ec4899"/>
-  <circle cx="66" cy="19"  r="1.8" fill="white"/>
-  <circle cx="74" cy="19"  r="1.8" fill="white"/>
-  <path d="M 66,26 Q 70,30 74,26" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="100" cy="30" r="23" fill="#ec4899"/>
+  <circle cx="93"  cy="24" r="2.8" fill="white"/>
+  <circle cx="107" cy="24" r="2.8" fill="white"/>
+  <path d="M 92,33 Q 100,41 108,33"
+    fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
 
   <!-- Bottom-right smiley — pink -->
-  <circle cx="112" cy="94" r="11" fill="#ec4899"/>
-  <circle cx="109" cy="91" r="1.4" fill="white"/>
-  <circle cx="115" cy="91" r="1.4" fill="white"/>
-  <path d="M 109,97 Q 112,101 115,97" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+  <circle cx="161" cy="135" r="23" fill="#ec4899"/>
+  <circle cx="154" cy="129" r="2.8" fill="white"/>
+  <circle cx="168" cy="129" r="2.8" fill="white"/>
+  <path d="M 153,138 Q 161,146 169,138"
+    fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
 
-  <!-- Bottom-left smiley — purple -->
-  <circle cx="28" cy="94" r="10" fill="#818cf8"/>
-  <circle cx="25" cy="91" r="1.3" fill="white"/>
-  <circle cx="31" cy="91" r="1.3" fill="white"/>
-  <path d="M 25,97 Q 28,101 31,97" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- Bottom-left smiley — purple, slightly larger -->
+  <circle cx="39" cy="135" r="27" fill="#818cf8"/>
+  <circle cx="31" cy="128" r="3.2" fill="white"/>
+  <circle cx="47" cy="128" r="3.2" fill="white"/>
+  <path d="M 30,138 Q 39,147 48,138"
+    fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
 </svg>

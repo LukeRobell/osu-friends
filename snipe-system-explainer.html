@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>osu!friends — Snipe System Explained</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #0d0d14;
+      color: #e2e8f0;
+      line-height: 1.7;
+      padding: 48px 24px 80px;
+    }
+
+    .container { max-width: 780px; margin: 0 auto; }
+
+    .badge {
+      display: inline-block;
+      background: #ec489920;
+      color: #ec4899;
+      border: 1px solid #ec489940;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    h1 span { color: #ec4899; }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 16px;
+      margin-bottom: 48px;
+    }
+
+    .section { margin-bottom: 40px; }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #f1f5f9;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #ec4899;
+      color: white;
+      font-size: 13px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    p { color: #94a3b8; margin-bottom: 12px; }
+    p strong { color: #e2e8f0; font-weight: 700; }
+
+    .card {
+      background: #13131f;
+      border: 1px solid #1e1e30;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ec4899;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      color: #475569;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 6px 12px 10px;
+    }
+    td {
+      padding: 9px 12px;
+      border-top: 1px solid #1e1e30;
+      color: #94a3b8;
+    }
+    td:first-child { color: #e2e8f0; font-weight: 700; }
+    td .pill {
+      display: inline-block;
+      background: #818cf820;
+      color: #818cf8;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    td .pill.pink {
+      background: #ec489920;
+      color: #ec4899;
+    }
+
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .flow-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .flow-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .flow-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ec4899;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .flow-dot.indigo { background: #818cf8; }
+    .flow-dot.green  { background: #34d399; }
+    .flow-dot.gray   { background: #334155; }
+
+    .flow-connector {
+      width: 2px;
+      flex: 1;
+      min-height: 28px;
+      background: #1e1e30;
+      margin: 4px 0;
+    }
+
+    .flow-body { padding-bottom: 28px; }
+
+    .flow-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 4px;
+    }
+
+    .flow-desc { font-size: 14px; color: #64748b; }
+    .flow-desc strong { color: #94a3b8; }
+
+    .highlight-box {
+      background: #13131f;
+      border: 1px solid #ec489930;
+      border-left: 3px solid #ec4899;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+
+    .highlight-box p { margin-bottom: 0; font-size: 14px; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1e1e30;
+      margin: 40px 0;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #1e1e30;
+      color: #64748b;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    .status-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .status-dot.open    { background: #f59e0b; }
+    .status-dot.sniped  { background: #34d399; }
+    .status-dot.expired { background: #475569; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="badge">Internal — Partner Brief</div>
+    <h1>How the <span>Snipe System</span> Works</h1>
+    <p class="subtitle">A plain-English walkthrough of how osu!friends detects rival plays, triggers challenges, and confirms snipes.</p>
+
+    <hr class="divider" />
+
+    <!-- OVERVIEW -->
+    <div class="section">
+      <h2><span class="step-num">1</span> The Big Picture</h2>
+      <p>Every user on osu!friends can add up to <strong>3 rivals</strong>. Once rivals are set, a background cron job runs periodically and does three things in order:</p>
+      <div class="flow" style="margin-top: 20px;">
+
+        <div class="flow-step">
+          <div class="flow-line">
+            <div class="flow-dot"></div>
+            <div class="flow-connector"></div>
+          </div>
+          <div class="flow-body">
+            <div class="flow-label">Phase 1 — Detect new rival plays</div>
+            <div class="flow-desc">Fetch each rival's recent top plays from the osu! API. If a play is <strong>significant and new</strong>, notify the watcher and open a snipe challenge.</div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-line">
+            <div class="flow-dot indigo"></div>
+            <div class="flow-connector"></div>
+          </div>
+          <div class="flow-body">
+            <div class="flow-label">Phase 2 — Check open challenges</div>
+            <div class="flow-desc">For every open snipe challenge, check whether the watcher has <strong>beaten the target score</strong> on that specific map yet.</div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-line">
+            <div class="flow-dot gray"></div>
+          </div>
+          <div class="flow-body" style="padding-bottom: 0;">
+            <div class="flow-label">Phase 3 — Expire old challenges</div>
+            <div class="flow-desc">Any challenge older than <strong>7 days</strong> that hasn't been sniped is marked expired. The window has closed.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- HOW WE GET THE PLAY -->
+    <div class="section">
+      <h2><span class="step-num">2</span> How We Get the "Latest Play"</h2>
+      <p>We don't watch a rival's recent activity feed — we pull their <strong>top 50 best plays</strong> from the osu! API for their chosen game mode, then filter down to what's new and significant.</p>
+
+      <div class="card">
+        <div class="card-title">What we fetch</div>
+        <p style="margin:0; font-size:14px;">
+          <span class="tag">GET /users/{osuId}/scores/best?mode={mode}&limit=50</span>
+          <br/><br/>
+          This returns the rival's 50 highest-pp scores of all time. We look at <strong>when each score was set</strong> to find plays from the last 48 hours.
+        </p>
+      </div>
+
+      <div class="highlight-box">
+        <p><strong>Why top plays, not recent activity?</strong> The osu! API's recent activity endpoint doesn't include pp values reliably for all modes. Top plays always have clean pp data and are the scores rivals are proudest of — exactly the ones worth sniping.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- WHAT COUNTS AS SIGNIFICANT -->
+    <div class="section">
+      <h2><span class="step-num">3</span> What Counts as a "Significant" Play</h2>
+      <p>Not every score triggers a notification. A play must pass two filters:</p>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">Filter 1 — Recency</div>
+        <p style="margin:0; font-size:14px;">The score must have been set within the <strong>last 48 hours</strong>. Anything older is ignored.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Filter 2 — Significance threshold (dynamic)</div>
+        <p style="font-size:14px; margin-bottom:16px;">The play's pp must be above a percentage of the rival's average top-play pp. The threshold scales based on their skill level — lower-ranked players set "significant" plays constantly, so we raise the bar to avoid spam.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Rival's avg pp</th>
+              <th>Play must be ≥</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Under 100pp</td>
+              <td><span class="pill">97% of avg</span></td>
+              <td>Avg 80pp → play needs 77.6pp+</td>
+            </tr>
+            <tr>
+              <td>100 – 299pp</td>
+              <td><span class="pill">92% of avg</span></td>
+              <td>Avg 200pp → play needs 184pp+</td>
+            </tr>
+            <tr>
+              <td>300 – 499pp</td>
+              <td><span class="pill">85% of avg</span></td>
+              <td>Avg 400pp → play needs 340pp+</td>
+            </tr>
+            <tr>
+              <td>500 – 999pp</td>
+              <td><span class="pill">80% of avg</span></td>
+              <td>Avg 700pp → play needs 560pp+</td>
+            </tr>
+            <tr>
+              <td>1000pp+</td>
+              <td><span class="pill pink">75% of avg</span></td>
+              <td>Avg 1200pp → play needs 900pp+</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="font-size:13px; color:#475569;">We also track every play we've already notified about per watcher, so you never get two notifications for the same score even if the cron runs again before the watcher checks.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- WHAT HAPPENS WHEN A PLAY IS FOUND -->
+    <div class="section">
+      <h2><span class="step-num">4</span> What Happens When a Play Is Found</h2>
+      <p>When a new significant play passes both filters, three things fire simultaneously:</p>
+
+      <div class="card">
+        <div class="card-title">① In-app notification</div>
+        <p style="margin:0; font-size:14px;">The watcher gets a bell notification inside osu!friends: <em>"Rival hit a 342pp play! — Map Name [Hard] — Want to snipe it?"</em> with a direct link to the beatmap.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">② osu! in-game DM</div>
+        <p style="margin:0; font-size:14px;">Our osu! bot sends a direct message to the watcher inside the game itself. They don't need to have osu!friends open to find out.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">③ SnipeChallenge created</div>
+        <p style="margin:0; font-size:14px;">A challenge record is saved to the database containing the <strong>beatmap ID, the rival's pp on that map, and a 7-day expiry clock</strong>. This is what Phase 2 monitors.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- WHAT COUNTS AS A SNIPE -->
+    <div class="section">
+      <h2><span class="step-num">5</span> What Counts as a Snipe</h2>
+      <p>On each subsequent cron run, Phase 2 checks every open challenge:</p>
+
+      <div class="card">
+        <div class="card-title">The check</div>
+        <p style="font-size:14px; margin-bottom:0;">
+          We call <span class="tag">GET /beatmaps/{beatmapId}/scores/users/{watcherOsuId}</span> — this returns the watcher's personal best score on that specific map.<br/><br/>
+          If <strong>watcher's pp &gt; rival's target pp</strong> → <span style="color:#34d399; font-weight:800;">Snipe confirmed.</span><br/>
+          If not → challenge stays open until it expires.
+        </p>
+      </div>
+
+      <div class="highlight-box">
+        <p><strong>Important:</strong> it's a pp comparison on the same beatmap, not a leaderboard rank comparison. You just need to post a better pp score than your rival did on that map within 7 days.</p>
+      </div>
+
+      <p style="margin-top:20px;">When a snipe is confirmed, both players get notified:</p>
+      <ul style="color:#94a3b8; font-size:14px; padding-left:20px; margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+        <li>Watcher gets: <em>"Snipe confirmed! You beat [rival]'s score on [map]."</em></li>
+        <li>Rival gets an in-app notification and an osu! DM: <em>"[watcher] just sniped your score!"</em></li>
+      </ul>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- CHALLENGE STATES -->
+    <div class="section">
+      <h2>Challenge States</h2>
+      <div class="status-row">
+        <div class="status"><div class="status-dot open"></div> OPEN — waiting, 7-day window still active</div>
+        <div class="status"><div class="status-dot sniped"></div> SNIPED — watcher beat the target pp</div>
+        <div class="status"><div class="status-dot expired"></div> EXPIRED — 7 days passed, no snipe</div>
+      </div>
+      <p style="margin-top:16px; font-size:13px;">Monthly snipe counts on the profile and leaderboard only count <strong>SNIPED</strong> challenges. Expired challenges count for neither player.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <p style="font-size:13px; color:#334155; text-align:center;">osu!friends internal document · not for distribution</p>
+
+  </div>
+</body>
+</html>
