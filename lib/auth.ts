@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account, profile, user }) {
       // Demo credentials login — user object comes from authorize(), not osu! profile
       if (user && (user as { isDemo?: boolean }).isDemo) {
-        const u = user as { osuId: number; globalRank: number | null; countryCode: string; isDemo: boolean };
+        const u = user as unknown as { osuId: number; globalRank: number | null; countryCode: string; isDemo: boolean };
         token.osuId = u.osuId;
         token.username = user.name ?? '';
         token.avatarUrl = user.image ?? '';
