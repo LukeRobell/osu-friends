@@ -4,10 +4,8 @@ import React from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import RecentMembersFeed from '@/components/RecentMembersFeed';
-
-const VIDEO_SRC = '/osufriendshome.mp4';
 
 const FOUNDERS = [
   {
@@ -86,56 +84,10 @@ const STEPS = [
   },
 ];
 
-interface MuteButtonProps {
-  isMuted: boolean;
-  volume: number;
-  onToggle: () => void;
-  onVolumeChange: (v: number) => void;
-}
-
-function MuteButton({ isMuted, volume, onToggle, onVolumeChange }: MuteButtonProps) {
-  const trackStyle = {
-    background: `linear-gradient(to right, #ec4899 ${volume}%, rgba(255,255,255,0.15) ${volume}%)`,
-  };
-
-  return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-3 py-2.5 bg-gray-900/70 hover:bg-gray-900/90 backdrop-blur-md border border-white/10 hover:border-pink-500/50 rounded-full transition-all duration-300 group">
-      <button onClick={onToggle} className="flex-shrink-0 focus:outline-none">
-        <svg viewBox="0 0 24 24" className="w-5 h-5 text-gray-300 group-hover:text-pink-400 transition-colors duration-300" fill="currentColor">
-          <path d="M13 3.586L7.707 8H4a1 1 0 00-1 1v6a1 1 0 001 1h3.707L13 20.414V3.586z" />
-          {isMuted && (
-            <path d="M16.293 9.293a1 1 0 011.414 1.414L16.414 12l1.293 1.293a1 1 0 01-1.414 1.414L15 13.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 12l-1.293-1.293a1 1 0 011.414-1.414L15 10.586l1.293-1.293z" />
-          )}
-        </svg>
-      </button>
-      {!isMuted && (
-        <>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={volume}
-            onChange={e => onVolumeChange(Number(e.target.value))}
-            className="volume-slider w-20"
-            style={trackStyle}
-          />
-          <div className="flex items-end gap-0.5 h-3.5 pr-0.5">
-            <span className="w-[3px] rounded-full bg-pink-400" style={{ height: '40%', animation: 'volumeBar 0.9s ease-in-out infinite 0s', opacity: volume / 100 }} />
-            <span className="w-[3px] rounded-full bg-pink-400" style={{ height: '70%', animation: 'volumeBar 0.9s ease-in-out infinite 0.2s', opacity: volume / 100 }} />
-            <span className="w-[3px] rounded-full bg-pink-400" style={{ height: '50%', animation: 'volumeBar 0.9s ease-in-out infinite 0.1s', opacity: volume / 100 }} />
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 export default function Home() {
   const { data: session, status } = useSession();
   const seeded = useRef(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(80);
 
   useEffect(() => {
     if (session?.user?.globalRank && !seeded.current) {
@@ -147,33 +99,13 @@ export default function Home() {
     }
   }, [session]);
 
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (isMuted) { video.muted = false; video.volume = volume / 100; }
-    else { video.muted = true; }
-    setIsMuted(!isMuted);
-  };
-
-  const handleVolumeChange = (v: number) => {
-    setVolume(v);
-    if (videoRef.current) videoRef.current.volume = v / 100;
-  };
-
   return (
     <>
-      <MuteButton isMuted={isMuted} volume={volume} onToggle={toggleMute} onVolumeChange={handleVolumeChange} />
       <RecentMembersFeed />
 
       {/* ── HERO ───────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center gap-8 px-4 text-center overflow-hidden pb-32">
-        {/* Video background — scoped to hero only */}
-        <div className="absolute inset-0 bg-gray-950">
-          <video ref={videoRef} autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-            <source src={VIDEO_SRC} type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gray-950/75" />
-        </div>
+        <div className="absolute inset-0 bg-gray-950" />
 
         <div className="relative z-10">
           {/* Wordmark: icon + text side-by-side, matching original logo layout */}

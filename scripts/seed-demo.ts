@@ -297,7 +297,6 @@ async function seed() {
     prisma.notification.deleteMany(),
     prisma.rivalNotifiedPlay.deleteMany(),
     prisma.lobbyDm.deleteMany(),
-    prisma.memberDm.deleteMany(),
     prisma.tournamentParticipant.deleteMany(),
     prisma.tournament.deleteMany(),
     prisma.rivalRequest.deleteMany(),
